@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector android:height="384.0dip" android:width="330.0dip" android:viewportWidth="330.0" android:viewportHeight="384.0"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/colorPodMain" android:pathData="M8.9,77c0,-5 0.6,-31.6 22,-53S78.9,2 83.9,2h163c4.6,-0.1 33.2,-0.1 55,23 20,21.2 20.1,46.8 20,52V306c0.2,4.4 0.9,32.1 -21,54s-49.6,21.2 -54,21h-163c-4.8,0.1 -31.4,0.2 -53,-21 -22.2,-21.8 -22.1,-49.4 -22,-54Z" />
+    <path android:fillColor="@color/colorPodLightShadow" android:pathData="M165.9,381h81c4.4,0.2 32.1,0.9 54,-21a96.4,96.4 0,0 1,-54 14s-2.6,0.1 -81,-0c-39.7,-0.1 -68.4,-0.2 -82,0a96.8,96.8 0,0 1,-34 -5,93.8 93.8,0 0,1 -19,-9c21.6,21.2 48.2,21.1 53,21Z" />
+    <path android:fillColor="@color/colorPodLightShadow" android:pathData="M83.9,97a11.1,11.1 0,0 1,11 -11h141a11.1,11.1 0,0 1,11 11Z" />
+    <path android:fillColor="#00000000" android:pathData="M8.9,97L321.9,97" android:strokeColor="@color/colorPodShadow" android:strokeWidth="0.5" />
+    <path android:fillColor="#00000000" android:pathData="M246.9,97a11.1,11.1 0,0 1,-11 11h-141a11.1,11.1 0,0 1,-11 -11" android:strokeColor="@color/colorPodShadow" android:strokeWidth="0.5" />
+    <path android:fillColor="#00000000" android:pathData="M83.9,97a11.1,11.1 0,0 1,11 -11h141a11.1,11.1 0,0 1,11 11" android:strokeColor="@color/colorPodDarkShadow" android:strokeWidth="0.5" />
+</vector>
