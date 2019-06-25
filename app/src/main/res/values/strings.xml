@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Airdroid</string>
     <string name="not_your_airpods">Not your AirPods</string>
+    <string name="connect">Connect</string>
 </resources>
