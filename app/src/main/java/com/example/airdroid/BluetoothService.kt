@@ -35,35 +35,3 @@ class BluetoothService : Service() {
         unregisterReceiver(bluetoothReceiver)
     }
 }
-
-//class BluetoothService : IntentService("BluetoothService") {
-//
-//    //TODO inject
-//    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-//    private val bluetoothStateChangedIntentFilter = IntentFilter(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
-//    private val bluetoothReceiver = BluetoothReceiver()
-//
-//    override fun onCreate() {
-//        if (bluetoothAdapter == null) {
-//            stopSelf() // If the device does not support bluetooth, the service doesn't run
-//            return
-//        }
-//
-//        try {
-//            registerReceiver(bluetoothReceiver, bluetoothStateChangedIntentFilter)
-//        } catch (e: InterruptedException) {
-//            // Restore interrupt status.
-//            Thread.currentThread().interrupt()
-//        }
-//    }
-//
-//    override fun onHandleIntent(intent: Intent?) {
-//
-//
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        unregisterReceiver(bluetoothReceiver)
-//    }
-//}
