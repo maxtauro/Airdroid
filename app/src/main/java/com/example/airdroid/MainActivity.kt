@@ -1,14 +1,20 @@
 package com.example.airdroid
 
+import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothProfile
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
+    // TODO should this be injected?
+    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private lateinit var bluetoothUtil: BluetoothUtil
 
     private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else
 
@@ -17,33 +23,50 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
 
-        val bluetoothAdapter: BluetoothAdapter =
-            BluetoothAdapter.getDefaultAdapter() ?: TODO("Handle device not having bluetooth compatibility")
-
-        if (!bluetoothAdapter.isEnabled) {
+        if (bluetoothAdapter == null) {
+            TODO("Handle bluetooth not supported")
+        } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+        } else if (bluetoothAdapter.isEnabled) {
+            setupBluetooth()
         }
-
-        val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter.bondedDevices
-
-
-        if (!areAirpodsPaired(pairedDevices)) {
-            TODO("No airpods paired, prompt user for pairing workflow")
-        }
-
-
-
-        val stop = "hammer time"
     }
 
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
 
-    private fun areAirpodsPaired(pairedDevices: Set<BluetoothDevice>?): Boolean {
-        // TODO find cleaner way to check if a device is airpod
-        return pairedDevices?.any { device -> device.name.equals("Airpods", true) } ?: return false
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_ENABLE_BT) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(this, "Bluetooth has been enabled", Toast.LENGTH_SHORT).show()
+                setupBluetooth()
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupBluetooth() {
+
+        bluetoothUtil = BluetoothUtil(bluetoothAdapter!!)
+        startBluetoothService()
+
+        if (!bluetoothUtil.areAirpodsPaired()) {
+            TODO("No airpods paired, prompt user for pairing workflow")
+            return
+        }
+    }
+
+    private fun startBluetoothService() {
+        Intent(this, BluetoothService::class.java).also { intent ->
+            startService(intent)
+        }
     }
 
     fun closeWindow(view: View) {
