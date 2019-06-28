@@ -1,7 +1,8 @@
-package com.example.airdroid
+package com.example.airdroid.utils
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothHeadset
 import android.bluetooth.BluetoothProfile
 
 class BluetoothUtil(private val bluetoothAdapter: BluetoothAdapter) {
@@ -15,5 +16,9 @@ class BluetoothUtil(private val bluetoothAdapter: BluetoothAdapter) {
 
         // TODO find cleaner way to check if a device is airpod
         return pairedDevices?.any { device -> device.name.equals("Airpods", true) } ?: return false
+    }
+
+    fun isConnectedDeviceAirpods(): Boolean {
+        return bluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED
     }
 }

@@ -2,14 +2,16 @@ package com.example.airdroid
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothProfile
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import com.example.airdroid.services.BluetoothConnectionService
+import com.example.airdroid.utils.BluetoothUtil
+import org.greenrobot.eventbus.EventBus
 
+//TODO rename this (also is the activity the presenter or should that be extracted from the activity?)
 class MainActivity : AppCompatActivity() {
 
     // TODO should this be injected?
@@ -18,9 +20,17 @@ class MainActivity : AppCompatActivity() {
 
     private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else
 
+    private lateinit var devicesActivityPresenter: DevicesPresenter
+
+    private val eventBus = EventBus()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val devicesFragment = supportFragmentManager.findFragmentById(R.id.fragment_devices)
+            as DevicesFragment ?: DevicesFragment.newInstance()
+        devicesActivityPresenter = DevicesPresenter(devicesFragment, eventBus)
     }
 
     override fun onStart() {
@@ -53,18 +63,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBluetooth() {
-
-        bluetoothUtil = BluetoothUtil(bluetoothAdapter!!)
         startBluetoothService()
-
-        if (!bluetoothUtil.areAirpodsPaired()) {
-            TODO("No airpods paired, prompt user for pairing workflow")
-            return
-        }
+        //TODO does anything else need to happen here?
     }
 
     private fun startBluetoothService() {
-        Intent(this, BluetoothService::class.java).also { intent ->
+        Intent(this, BluetoothConnectionService::class.java).also { intent ->
             startService(intent)
         }
     }
