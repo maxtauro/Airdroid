@@ -17,8 +17,9 @@
             android:orientation="horizontal"
     />
 
-    <include
-        layout="@layout/fragment_main"
+    <fragment
+        android:name="com.example.airdroid.DevicesFragment"
+        android:id="@+id/fragment_devices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
