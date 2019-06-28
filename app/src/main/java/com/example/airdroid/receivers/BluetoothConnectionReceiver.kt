@@ -7,9 +7,9 @@ import android.content.Context
 import android.content.Intent
 import com.example.airdroid.utils.BluetoothUtil
 
-class BluetoothConnectionReceiver: BroadcastReceiver() {
+class BluetoothConnectionReceiver : BroadcastReceiver() {
 
-    private val bluetoothAdapter =  BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val bluetoothUtil = BluetoothUtil(bluetoothAdapter)
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -20,9 +20,7 @@ class BluetoothConnectionReceiver: BroadcastReceiver() {
             if (bluetoothUtil.isConnectedDeviceAirpods()) {
                 TODO("Start activity")
             }
-        }
-
-        else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
+        } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
             // Do I want to do something here? perhaps update the view? (but the view might just update on it's own from the activity)
         }
     }

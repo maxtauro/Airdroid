@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-class DevicesFragment: Fragment(), DevicesContract.View {
+class DevicesFragment : Fragment(), DevicesContract.View {
 
     override lateinit var presenter: DevicesContract.Presenter
-
 
     override var isActive: Boolean = false
         get() = isAdded
@@ -27,5 +26,4 @@ class DevicesFragment: Fragment(), DevicesContract.View {
 
         fun newInstance() = DevicesFragment()
     }
-
 }

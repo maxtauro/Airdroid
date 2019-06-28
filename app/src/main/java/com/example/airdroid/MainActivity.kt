@@ -16,13 +16,11 @@ class MainActivity : AppCompatActivity() {
 
     // TODO should this be injected?
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private lateinit var bluetoothUtil: BluetoothUtil
+    private val eventBus = EventBus()
 
     private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else
 
     private lateinit var devicesActivityPresenter: DevicesPresenter
-
-    private val eventBus = EventBus()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
