@@ -3,12 +3,14 @@ package com.example.airdroid
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.airdroid.services.BluetoothConnectionService
-import com.example.airdroid.utils.BluetoothUtil
 import org.greenrobot.eventbus.EventBus
 
 //TODO rename this (also is the activity the presenter or should that be extracted from the activity?)
@@ -19,6 +21,13 @@ class MainActivity : AppCompatActivity() {
     private val eventBus = EventBus()
 
     private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else
+    private val REQUEST_ENABLE_COARSE_LOCATION = 1001
+
+    private val isLocationPermissionEnabled
+        get() = ContextCompat.checkSelfPermission(
+            this,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     private lateinit var devicesActivityPresenter: DevicesPresenter
 
@@ -33,6 +42,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        if (!isLocationPermissionEnabled) {
+            //TODO show explanatory dialog as to why we need this permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),
+                REQUEST_ENABLE_COARSE_LOCATION
+            )
+        }
 
         if (bluetoothAdapter == null) {
             TODO("Handle bluetooth not supported")

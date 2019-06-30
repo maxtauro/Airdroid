@@ -1,25 +1,17 @@
 package com.example.airdroid.services
 
-import android.app.Service
-import android.bluetooth.BluetoothAdapter
+
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.IBinder
 import com.example.airdroid.receivers.BluetoothConnectionReceiver
 
 /** Service class for bluetooth connection/disconnection **/
-class BluetoothConnectionService : Service() {
+class BluetoothConnectionService : AbstractBluetoothService() {
 
-    //TODO inject
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothReceiver = BluetoothConnectionReceiver()
     private val bluetoothDeviceConnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED)
     private val bluetoothDeviceDisconnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-    private val bluetoothReceiver = BluetoothConnectionReceiver()
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
