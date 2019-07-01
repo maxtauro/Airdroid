@@ -1,6 +1,5 @@
 package com.example.airdroid.services
 
-
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
@@ -14,7 +13,6 @@ class BluetoothConnectionService : AbstractBluetoothService() {
     private val bluetoothDeviceDisconnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         if (bluetoothAdapter == null) {
             stopSelf() // If the device does not support bluetooth, the service doesn't run
             return super.onStartCommand(intent, flags, startId)

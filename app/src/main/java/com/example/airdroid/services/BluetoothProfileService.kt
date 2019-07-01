@@ -2,8 +2,8 @@ package com.example.airdroid.services
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
 import android.content.Intent
+import com.example.airdroid.callbacks.AirpodGattCallback
 
 /**
  * This is a service that will start when airpods are connected, it is responsible for registering receivers for
@@ -17,8 +17,7 @@ class BluetoothProfileService : AbstractBluetoothService() {
     private lateinit var mBluetoothDevice: BluetoothDevice
     private lateinit var bluetoothGatt: BluetoothGatt
 
-    private var bluetoothGattCallback = object : BluetoothGattCallback() {
-    }
+    private var bluetoothGattCallback = AirpodGattCallback()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -28,6 +27,7 @@ class BluetoothProfileService : AbstractBluetoothService() {
         }
 
         val bluetoothMACAddress = intent?.getStringExtra("DEVICE_ADDRESS")
+
         if (bluetoothMACAddress != null) {
             mBluetoothDevice = bluetoothAdapter.getRemoteDevice(bluetoothMACAddress)
             bluetoothGatt = mBluetoothDevice.connectGatt(this, true, bluetoothGattCallback)
