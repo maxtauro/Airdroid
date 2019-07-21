@@ -1,12 +1,17 @@
 package com.example.airdroid.services
 
+import android.app.Service
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.IBinder
 import com.example.airdroid.receivers.BluetoothConnectionReceiver
 
 /** Service class for bluetooth connection/disconnection **/
-class BluetoothConnectionService : AbstractBluetoothService() {
+class BluetoothConnectionService : Service() {
+
+    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private val bluetoothReceiver = BluetoothConnectionReceiver()
     private val bluetoothDeviceConnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED)
@@ -27,5 +32,9 @@ class BluetoothConnectionService : AbstractBluetoothService() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(bluetoothReceiver)
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 }
