@@ -11,18 +11,13 @@ import com.example.airdroid.receivers.BluetoothConnectionReceiver
 /** Service class for bluetooth connection/disconnection **/
 class BluetoothConnectionService : Service() {
 
-    //TODO inject
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+    private val bluetoothReceiver = BluetoothConnectionReceiver()
     private val bluetoothDeviceConnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED)
     private val bluetoothDeviceDisconnectedIntentFilter = IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-    private val bluetoothReceiver = BluetoothConnectionReceiver()
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         if (bluetoothAdapter == null) {
             stopSelf() // If the device does not support bluetooth, the service doesn't run
             return super.onStartCommand(intent, flags, startId)
@@ -37,5 +32,9 @@ class BluetoothConnectionService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(bluetoothReceiver)
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 }
