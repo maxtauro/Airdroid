@@ -1,10 +1,10 @@
-package com.example.airdroid
+package com.example.airdroid.mainfragment.viewmodel
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirpodModel private constructor(
+data class AirpodViewModel private constructor(
     val leftAirpod: AirpodPiece,
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
@@ -13,14 +13,14 @@ data class AirpodModel private constructor(
 ) : Parcelable {
 
     companion object {
-        val EMPTY = AirpodModel(
+        val EMPTY = AirpodViewModel(
             AirpodPiece.EMPTY,
             AirpodPiece.EMPTY,
             AirpodPiece.EMPTY
         )
 
         // TODO figure out how to parse 5% increments from the manufacturer data
-        fun create(manufacturerSpecificData: ByteArray): AirpodModel {
+        fun create(manufacturerSpecificData: ByteArray): AirpodViewModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
@@ -47,7 +47,7 @@ data class AirpodModel private constructor(
             val isRightConnected = rightChargeLevel != 15
             val isCaseConnected = caseChargeLevel != 15
 
-            return AirpodModel(
+            return AirpodViewModel(
                 AirpodPiece(
                     leftChargeLevel,
                     leftChargingStatus,

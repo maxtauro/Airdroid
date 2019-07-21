@@ -4,11 +4,11 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.os.SystemClock
 import android.util.Log
-import com.example.airdroid.AirpodModel
+import com.example.airdroid.mainfragment.viewmodel.AirpodViewModel
 
 class AirpodLeScanCallback(
     private val recentBeacons: ArrayList<ScanResult>,
-    private val broadcastUpdate: (AirpodModel) -> Unit
+    private val broadcastUpdate: (AirpodViewModel) -> Unit
 ) :
     ScanCallback() {
 
@@ -29,7 +29,7 @@ class AirpodLeScanCallback(
         }
     }
 
-    private fun getAirpodModelForStrongestBeacon(result: ScanResult): AirpodModel? {
+    private fun getAirpodModelForStrongestBeacon(result: ScanResult): AirpodViewModel? {
         val resultData = result.scanRecord?.getManufacturerSpecificData(76)
 
         resultData?.let {
@@ -40,7 +40,7 @@ class AirpodLeScanCallback(
             if (it.size != 27 || strongestBeaconResult == null) return null
 
             val manufacturerSpecificData = strongestBeaconResult.scanRecord!!.getManufacturerSpecificData(76)!!
-            return AirpodModel.create(manufacturerSpecificData)
+            return AirpodViewModel.create(manufacturerSpecificData)
         }
 
         return null
