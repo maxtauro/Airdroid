@@ -4,7 +4,7 @@ import android.app.Service
 import android.bluetooth.le.ScanResult
 import android.content.Intent
 import android.os.IBinder
-import com.example.airdroid.mainfragment.viewmodel.AirpodViewModel
+import com.example.airdroid.AirpodModel
 import com.example.airdroid.callbacks.AirpodLeScanCallback
 import com.example.airdroid.utils.BluetoothScannerUtil
 
@@ -28,7 +28,7 @@ class BluetoothScanService : Service() {
         return null
     }
 
-    private fun broadcastUpdate(connectedAirpod: AirpodViewModel) {
+    private fun broadcastUpdate(connectedAirpod: AirpodModel) {
 //        TODO("Implement the result from the service")
 //        val intent = Intent(action)
 //        sendBroadcast(intent)

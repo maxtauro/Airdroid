@@ -1,10 +1,10 @@
-package com.example.airdroid.mainfragment.viewmodel
+package com.example.airdroid
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirpodViewModel private constructor(
+data class AirpodModel private constructor(
     val leftAirpod: AirpodPiece,
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
@@ -12,15 +12,18 @@ data class AirpodViewModel private constructor(
 
 ) : Parcelable {
 
+    val isConnected
+        get() = leftAirpod.isConnected || rightAirpod.isConnected || case.isConnected
+
     companion object {
-        val EMPTY = AirpodViewModel(
-            AirpodPiece.EMPTY,
-            AirpodPiece.EMPTY,
-            AirpodPiece.EMPTY
+        val EMPTY = AirpodModel(
+            AirpodPiece.LEFT_EMPTY,
+            AirpodPiece.RIGHT_EMPTY,
+            AirpodPiece.CASE_EMPTY
         )
 
         // TODO figure out how to parse 5% increments from the manufacturer data
-        fun create(manufacturerSpecificData: ByteArray): AirpodViewModel {
+        fun create(manufacturerSpecificData: ByteArray): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
@@ -47,21 +50,24 @@ data class AirpodViewModel private constructor(
             val isRightConnected = rightChargeLevel != 15
             val isCaseConnected = caseChargeLevel != 15
 
-            return AirpodViewModel(
+            return AirpodModel(
                 AirpodPiece(
                     leftChargeLevel,
                     leftChargingStatus,
-                    isLeftConnected
+                    isLeftConnected,
+                    WhichPiece.LEFT
                 ),
                 AirpodPiece(
                     rightChargeLevel,
                     rightChargingStatus,
-                    isRightConnected
+                    isRightConnected,
+                    WhichPiece.RIGHT
                 ),
                 AirpodPiece(
                     caseChargeLevel,
                     caseChargingStatus,
-                    isCaseConnected
+                    isCaseConnected,
+                    WhichPiece.CASE
                 )
             )
         }
@@ -79,14 +85,35 @@ data class AirpodViewModel private constructor(
 @Parcelize
 data class AirpodPiece(
     val chargeLevel: Int,
-    val chargingStatus: Boolean,
-    val isConnected: Boolean
+    val isCharging: Boolean,
+    val isConnected: Boolean,
+    val whichPiece: WhichPiece
 ) : Parcelable {
     companion object {
-        val EMPTY = AirpodPiece(
-            -1,
-            chargingStatus = false,
-            isConnected = false
+
+        val LEFT_EMPTY = AirpodPiece(
+            0,
+            isCharging = false,
+            isConnected = true,
+            whichPiece = WhichPiece.LEFT
+        )
+        val RIGHT_EMPTY = AirpodPiece(
+            0,
+            isCharging = false,
+            isConnected = true,
+            whichPiece = WhichPiece.RIGHT
+        )
+        val CASE_EMPTY = AirpodPiece(
+            0,
+            isCharging = false,
+            isConnected = true,
+            whichPiece = WhichPiece.CASE
         )
     }
+}
+
+enum class WhichPiece {
+    LEFT,
+    RIGHT,
+    CASE
 }

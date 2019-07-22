@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Airdroid</string>
+    <string name="airpod_name">%1$s</string>
     <string name="not_your_airpods">Not your AirPods</string>
     <string name="connect">Connect</string>
+    <string name="charge_text">%1$d\%</string>
 </resources>
