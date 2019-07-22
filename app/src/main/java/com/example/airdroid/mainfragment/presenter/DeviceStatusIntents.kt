@@ -1,8 +1,8 @@
 package com.example.airdroid.mainfragment.presenter
 
-import com.example.airdroid.mainfragment.viewmodel.AirpodViewModel
+import com.example.airdroid.AirpodModel
 
 sealed class DeviceStatusIntent
 
-data class RefreshIntent(val newViewModel: AirpodViewModel) : DeviceStatusIntent()
+data class RefreshIntent(val updatedAirpods: AirpodModel) : DeviceStatusIntent()
 

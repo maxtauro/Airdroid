@@ -9,4 +9,7 @@
     <color name="colorPodLightShadow">#ffeaeaea</color>
     <color name="colorPodMain">#fff4f4f4</color>
     <color name="colorPodShadow">#ffbfbfbf</color>
+
+    <color name="batteryGreen">#00FF00</color>
+    <color name="batteryOutline">#C0C0C0</color>
 </resources>
