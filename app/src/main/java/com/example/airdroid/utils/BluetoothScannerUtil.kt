@@ -3,7 +3,9 @@ package com.example.airdroid.utils
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
+import android.util.Log
 
 class BluetoothScannerUtil {
 
@@ -13,8 +15,13 @@ class BluetoothScannerUtil {
     private val scanSettings = ScanSettings.Builder().setScanMode(2).setReportDelay(2).build()
     private val scanFilters = getScanFilters()
 
+    // TODO make set private
+    var isScanning:Boolean = false
+
     fun startScan(scanCallback: ScanCallback) {
+        Log.d(TAG, "Starting bluetooth scan")
         scanner.startScan(scanFilters, scanSettings, scanCallback)
+        isScanning = true
     }
 
     private fun getScanFilters(): List<ScanFilter> {
@@ -30,5 +37,18 @@ class BluetoothScannerUtil {
         val builder = ScanFilter.Builder()
         builder.setManufacturerData(76, manufacturerData, manufacturerDataMask)
         return listOf(builder.build())
+    }
+
+    fun stopScan() {
+        scanner.stopScan(object : ScanCallback() {
+            override fun onScanResult(callbackType: Int, result: ScanResult) {
+            }
+        })
+
+        isScanning = false
+    }
+
+    companion object {
+        private const val TAG = "BluetoothScannerUtil"
     }
 }

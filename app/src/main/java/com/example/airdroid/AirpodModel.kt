@@ -27,14 +27,14 @@ data class AirpodModel private constructor(
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
-                if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[12].toString(), 16)
-                else Integer.parseInt(decodedHexResult[13].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[12].toString(), 16)
+                else Integer.parseInt(decodedHexResult[13].toString(), 16)) * 10
 
             val rightChargeLevel =
-                if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[13].toString(), 16)
-                else Integer.parseInt(decodedHexResult[12].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[13].toString(), 16)
+                else Integer.parseInt(decodedHexResult[12].toString(), 16)) * 10
 
-            val caseChargeLevel = Integer.parseInt(decodedHexResult[15].toString(), 16)
+            val caseChargeLevel = Integer.parseInt(decodedHexResult[15].toString(), 16) * 10
 
             // charge status
             // - bit 0 = left charging status
@@ -46,28 +46,31 @@ data class AirpodModel private constructor(
             val rightChargingStatus = chargeStatus and 2 != 0
             val caseChargingStatus = chargeStatus and 4 != 0
 
-            val isLeftConnected = leftChargeLevel != 15
-            val isRightConnected = rightChargeLevel != 15
-            val isCaseConnected = caseChargeLevel != 15
+            val isLeftConnected = leftChargeLevel != 150
+            val isRightConnected = rightChargeLevel != 150
+            val isCaseConnected = caseChargeLevel != 150
 
             return AirpodModel(
                 AirpodPiece(
                     leftChargeLevel,
                     leftChargingStatus,
                     isLeftConnected,
-                    WhichPiece.LEFT
+                    WhichPiece.LEFT,
+                    true
                 ),
                 AirpodPiece(
                     rightChargeLevel,
                     rightChargingStatus,
                     isRightConnected,
-                    WhichPiece.RIGHT
+                    WhichPiece.RIGHT,
+                    true
                 ),
                 AirpodPiece(
                     caseChargeLevel,
                     caseChargingStatus,
                     isCaseConnected,
-                    WhichPiece.CASE
+                    WhichPiece.CASE,
+                    true
                 )
             )
         }
@@ -87,27 +90,31 @@ data class AirpodPiece(
     val chargeLevel: Int,
     val isCharging: Boolean,
     val isConnected: Boolean,
-    val whichPiece: WhichPiece
+    val whichPiece: WhichPiece,
+    val shouldShowBatteryInfo: Boolean
 ) : Parcelable {
     companion object {
 
         val LEFT_EMPTY = AirpodPiece(
             0,
             isCharging = false,
-            isConnected = true,
-            whichPiece = WhichPiece.LEFT
+            isConnected = false,
+            whichPiece = WhichPiece.LEFT,
+            shouldShowBatteryInfo = false
         )
         val RIGHT_EMPTY = AirpodPiece(
             0,
             isCharging = false,
-            isConnected = true,
-            whichPiece = WhichPiece.RIGHT
+            isConnected = false,
+            whichPiece = WhichPiece.RIGHT,
+            shouldShowBatteryInfo = false
         )
         val CASE_EMPTY = AirpodPiece(
             0,
             isCharging = false,
-            isConnected = true,
-            whichPiece = WhichPiece.CASE
+            isConnected = false,
+            whichPiece = WhichPiece.CASE,
+            shouldShowBatteryInfo = false
         )
     }
 }

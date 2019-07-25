@@ -6,3 +6,9 @@ sealed class DeviceStatusIntent
 
 data class RefreshIntent(val updatedAirpods: AirpodModel) : DeviceStatusIntent()
 
+class ConnectedIntent(val deviceName: String) : DeviceStatusIntent()
+
+class InitialScanIntent(val deviceName: String) : DeviceStatusIntent()
+
+object DisconnectedIntent : DeviceStatusIntent()
+
