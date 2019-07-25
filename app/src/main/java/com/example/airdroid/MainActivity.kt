@@ -10,10 +10,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.airdroid.services.BluetoothConnectionService
+import com.example.airdroid.mainfragment.DeviceStatusFragment
+
+var mIsActivityRunning = false
 
 //TODO rename
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var deviceStatusFragment: DeviceStatusFragment
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
@@ -29,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        deviceStatusFragment = supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
     }
 
     override fun onStart() {
@@ -49,8 +54,19 @@ class MainActivity : AppCompatActivity() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         } else if (bluetoothAdapter.isEnabled) {
-            startBluetoothService()
+            deviceStatusFragment.startBluetoothService()
         }
+    }
+
+    // TODO, find more elegant way to check this
+    override fun onResume() {
+        super.onResume()
+        mIsActivityRunning = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mIsActivityRunning = false
     }
 
     override fun onStop() {
@@ -62,16 +78,10 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "Bluetooth has been enabled", Toast.LENGTH_SHORT).show()
-                startBluetoothService()
+                deviceStatusFragment.startBluetoothService()
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
             }
-        }
-    }
-
-    private fun startBluetoothService() {
-        Intent(this, BluetoothConnectionService::class.java).also { intent ->
-            startService(intent)
         }
     }
 

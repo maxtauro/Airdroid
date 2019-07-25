@@ -1,6 +1,7 @@
 package com.example.airdroid
 
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
+const val EXTRA_DEVICE = "EXTRA_DEVICE"
 
 const val ACTION_GATT_CONNECTED = "com.example.bluetooth.le.ACTION_GATT_CONNECTED"
 const val ACTION_GATT_DISCONNECTED = "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED"

@@ -1,11 +1,15 @@
-package com.example.airdroid
+package com.example.airdroid.mainfragment
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
+import com.example.airdroid.AirpodPiece
+import com.example.airdroid.R
+import com.example.airdroid.WhichPiece
 
 class AirpodPieceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -14,6 +18,7 @@ class AirpodPieceView @JvmOverloads constructor(
     private lateinit var airpodPieceImg: ImageView
     private lateinit var airpodPieceChargeImg: ImageView
     private lateinit var airpodPieceChargeText: TextView
+    private lateinit var airpodPieceProgressBar: ProgressBar
 
     init {
         addView(View.inflate(context, R.layout.airpod_piece_view_layout, null))
@@ -22,23 +27,28 @@ class AirpodPieceView @JvmOverloads constructor(
 
     fun render(airpodPiece: AirpodPiece) {
         if (airpodPiece.isConnected) {
+            airpodPieceProgressBar.visibility = View.GONE
             renderImg(airpodPiece.whichPiece)
             renderChargingAttributes(airpodPiece.isCharging, airpodPiece.chargeLevel)
         } else {
             airpodPieceImg.visibility = View.GONE
             airpodPieceChargeImg.visibility = View.GONE
             airpodPieceChargeText.visibility = View.GONE
+            airpodPieceProgressBar.visibility = View.GONE
         }
     }
 
     fun renderDisconnected(airpodPiece: AirpodPiece) {
-        val resId = when (airpodPiece.whichPiece) {
-            WhichPiece.LEFT -> R.drawable.left_pod_disconnected
-            WhichPiece.RIGHT -> R.drawable.right_pod_disconnected
-            WhichPiece.CASE -> R.drawable.pod_case_disconnected
-        }
-        airpodPieceImg.setImageResource(resId)
+        airpodPieceImg.setImageResource(getImgResId(airpodPiece.whichPiece, isConnected = false))
 
+        airpodPieceProgressBar.visibility = View.INVISIBLE
+        airpodPieceChargeImg.visibility = View.INVISIBLE
+        airpodPieceChargeText.visibility = View.INVISIBLE
+    }
+
+    fun renderScanning(airpodPiece: AirpodPiece) {
+        airpodPieceImg.setImageResource(getImgResId(airpodPiece.whichPiece, isConnected = true))
+        airpodPieceProgressBar.visibility = View.VISIBLE
         airpodPieceChargeImg.visibility = View.INVISIBLE
         airpodPieceChargeText.visibility = View.INVISIBLE
     }
@@ -47,6 +57,7 @@ class AirpodPieceView @JvmOverloads constructor(
         airpodPieceImg = findViewById(R.id.airpod_piece_img)
         airpodPieceChargeImg = findViewById(R.id.airpod_piece_charge_img)
         airpodPieceChargeText = findViewById(R.id.airpod_piece_charge_text)
+        airpodPieceProgressBar = findViewById(R.id.airpod_piece_progress_bar)
     }
 
     private fun renderChargingAttributes(isCharging: Boolean, chargeLevel: Int) {
@@ -56,6 +67,7 @@ class AirpodPieceView @JvmOverloads constructor(
 
     private fun renderChargeTxt(chargeLevel: Int) {
         airpodPieceChargeText.text = "$chargeLevel%" //resources.getString(R.string.charge_text, chargeLevel)
+        airpodPieceChargeText.visibility = View.VISIBLE
     }
 
     private fun renderChargeImg(isCharging: Boolean, chargeLevel: Int) {
@@ -83,15 +95,29 @@ class AirpodPieceView @JvmOverloads constructor(
                 }
             }
         airpodPieceChargeImg.setImageResource(resId)
+        airpodPieceChargeImg.visibility = View.VISIBLE
     }
 
     private fun renderImg(whichPiece: WhichPiece) {
-        val resId = when (whichPiece) {
-            WhichPiece.LEFT -> R.drawable.left_pod
-            WhichPiece.RIGHT -> R.drawable.right_pod
-            WhichPiece.CASE -> R.drawable.pod_case
-        }
+        val resId = getImgResId(whichPiece, isConnected = true)
+        airpodPieceImg.visibility = View.VISIBLE
         airpodPieceImg.setImageResource(resId)
+    }
+
+    private fun getImgResId(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        return if (isConnected) {
+            when (whichPiece) {
+                WhichPiece.LEFT -> R.drawable.left_pod
+                WhichPiece.RIGHT -> R.drawable.right_pod
+                WhichPiece.CASE -> R.drawable.pod_case
+            }
+        } else {
+            when (whichPiece) {
+                WhichPiece.LEFT -> R.drawable.left_pod_disconnected
+                WhichPiece.RIGHT -> R.drawable.right_pod_disconnected
+                WhichPiece.CASE -> R.drawable.pod_case_disconnected
+            }
+        }
     }
 
     private enum class BatteryImgResId(val resId: Int) {

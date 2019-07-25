@@ -4,4 +4,5 @@
     <string name="not_your_airpods">Not your AirPods</string>
     <string name="connect">Connect</string>
     <string name="charge_text">%1$d\%</string>
+    <string name="no_airpods_connected">No AirPods Connected</string>
 </resources>

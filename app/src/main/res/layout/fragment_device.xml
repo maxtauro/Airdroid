@@ -1,7 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_devices"
     android:layout_width="320.0dip"
     android:layout_height="wrap_content"
@@ -14,7 +13,7 @@
     android:clickable="true">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -40,11 +39,11 @@
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp"
         android:animateLayoutChanges="true"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/title_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.example.airdroid.AirpodPieceView
+        <com.example.airdroid.mainfragment.AirpodPieceView
             android:id="@+id/left_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +54,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/case_airpod_piece"/>
 
-        <com.example.airdroid.AirpodPieceView
+        <com.example.airdroid.mainfragment.AirpodPieceView
             android:id="@+id/case_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +66,7 @@
             app:layout_constraintStart_toEndOf="@+id/left_airpod_piece"
             app:layout_constraintEnd_toStartOf="@+id/right_airpod_piece"/>
 
-        <com.example.airdroid.AirpodPieceView
+        <com.example.airdroid.mainfragment.AirpodPieceView
             android:id="@+id/right_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -87,10 +86,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:visibility="invisible"
         android:textColor="#2196F3"
         android:text="@string/connect"
         android:background="?android:attr/selectableItemBackground"
+        android:visibility="invisible"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintTop_toBottomOf="@+id/layout_devices"
         app:layout_constraintBottom_toBottomOf="parent"
