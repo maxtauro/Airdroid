@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.example.airdroid.mainfragment.AirpodPieceView
+        <com.example.airdroid.airpodviews.AirpodPieceView
             android:id="@+id/left_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/case_airpod_piece"/>
 
-        <com.example.airdroid.mainfragment.AirpodPieceView
+        <com.example.airdroid.airpodviews.AirpodPieceView
             android:id="@+id/case_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             app:layout_constraintStart_toEndOf="@+id/left_airpod_piece"
             app:layout_constraintEnd_toStartOf="@+id/right_airpod_piece"/>
 
-        <com.example.airdroid.mainfragment.AirpodPieceView
+        <com.example.airdroid.airpodviews.AirpodPieceView
             android:id="@+id/right_airpod_piece"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

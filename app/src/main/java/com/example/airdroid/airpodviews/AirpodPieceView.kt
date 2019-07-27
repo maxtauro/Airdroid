@@ -1,4 +1,4 @@
-package com.example.airdroid.mainfragment
+package com.example.airdroid.airpodviews
 
 import android.content.Context
 import android.util.AttributeSet

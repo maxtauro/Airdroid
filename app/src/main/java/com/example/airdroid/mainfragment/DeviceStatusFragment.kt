@@ -20,6 +20,7 @@ import com.example.airdroid.mainfragment.presenter.DeviceStatusPresenter
 import com.example.airdroid.mainfragment.presenter.InitialScanIntent
 import com.example.airdroid.mainfragment.presenter.RefreshIntent
 import com.example.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.example.airdroid.notification.NotificationService
 import com.example.airdroid.services.BluetoothConnectionService
 import com.example.airdroid.utils.BluetoothScannerUtil
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -86,6 +87,10 @@ class DeviceStatusFragment :
     override fun createPresenter() = DeviceStatusPresenter()
 
     override fun render(viewModel: DeviceViewModel) {
+        context?.let {
+            val notificationService = NotificationService(it, it.packageName)
+            notificationService.renderNotification(viewModel)
+        }
         view.render(viewModel)
     }
 
