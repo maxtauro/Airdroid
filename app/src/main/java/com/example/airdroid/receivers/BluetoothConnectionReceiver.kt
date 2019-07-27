@@ -9,9 +9,8 @@ import com.example.airdroid.EXTRA_DEVICE
 import com.example.airdroid.MainActivity
 import com.example.airdroid.mIsActivityRunning
 import com.example.airdroid.mainfragment.presenter.ConnectedIntent
-import com.example.airdroid.mainfragment.presenter.DeviceStatusIntent
 import com.example.airdroid.mainfragment.presenter.DisconnectedIntent
-import com.jakewharton.rxrelay2.PublishRelay
+import com.example.airdroid.notification.NotificationService
 import org.greenrobot.eventbus.EventBus
 
 class BluetoothConnectionReceiver : BroadcastReceiver() {
@@ -23,27 +22,42 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
         val action = intent.action
 
-        if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
-            val connectedDevice = intent.extras[BluetoothDevice.EXTRA_DEVICE] as? BluetoothDevice
-            connectedDevice?.let {
+        when (action) {
+            BluetoothDevice.ACTION_ACL_CONNECTED -> handleBluetoothConnected(intent, context)
+            BluetoothDevice.ACTION_ACL_DISCONNECTED -> handleBluetoothDisconnected(intent, context)
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_MY_PACKAGE_REPLACED,
+            Intent.ACTION_PACKAGE_INSTALL -> {
+            }//TODO handle reboot
+        }
+    }
 
-                Log.d(TAG, "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}")
-
-                if (isActivityInForegroud()) {
-                    eventBus.post(ConnectedIntent(connectedDevice.name))
-                } else {
-                    startMainActivity(context, connectedDevice)
-                }
-            }
-        } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
-            val disconnectedDevice = intent.extras[BluetoothDevice.EXTRA_DEVICE] as? BluetoothDevice
-            disconnectedDevice?.let {
-                Log.d(
-                    TAG,
-                    "Device Disconnected, Name: ${disconnectedDevice.name}, Address: ${disconnectedDevice.address}"
-                )
-            }
+    private fun handleBluetoothDisconnected(intent: Intent, context: Context?) {
+        val disconnectedDevice = intent.extras[BluetoothDevice.EXTRA_DEVICE] as? BluetoothDevice
+        disconnectedDevice?.let {
+            Log.d(
+                TAG,
+                "Device Disconnected, Name: ${disconnectedDevice.name}, Address: ${disconnectedDevice.address}"
+            )
+        }
+        if (isActivityInForegroud()) {
             eventBus.post(DisconnectedIntent)
+        } else {
+            context?.let { NotificationService.clearNotification(context) }
+        }
+    }
+
+    private fun handleBluetoothConnected(intent: Intent, context: Context?) {
+        val connectedDevice = intent.extras[BluetoothDevice.EXTRA_DEVICE] as? BluetoothDevice
+        connectedDevice?.let {
+
+            Log.d(TAG, "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}")
+
+            if (isActivityInForegroud()) {
+                eventBus.post(ConnectedIntent(connectedDevice.name))
+            } else {
+                startMainActivity(context, connectedDevice)
+            }
         }
     }
 

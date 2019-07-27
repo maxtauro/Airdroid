@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import com.example.airdroid.R
+import com.example.airdroid.airpodviews.AirpodPieceView
 import com.example.airdroid.mainfragment.viewmodel.DeviceViewModel
 
 class DeviceFragmentView(
