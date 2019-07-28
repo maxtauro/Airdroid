@@ -47,7 +47,7 @@ class AirpodPieceView @JvmOverloads constructor(
     }
 
     fun renderScanning(airpodPiece: AirpodPiece) {
-        airpodPieceImg.setImageResource(getImgResId(airpodPiece.whichPiece, isConnected = true))
+        airpodPieceImg.setImageResource(getImgResId(airpodPiece.whichPiece, isConnected = false))
         airpodPieceProgressBar.visibility = View.VISIBLE
         airpodPieceChargeImg.visibility = View.INVISIBLE
         airpodPieceChargeText.visibility = View.INVISIBLE

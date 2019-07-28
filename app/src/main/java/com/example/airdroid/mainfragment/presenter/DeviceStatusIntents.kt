@@ -10,5 +10,9 @@ class ConnectedIntent(val deviceName: String) : DeviceStatusIntent()
 
 class InitialScanIntent(val deviceName: String) : DeviceStatusIntent()
 
+class UpdateNameIntent(val deviceName: String) : DeviceStatusIntent()
+
+object StopScanIntent : DeviceStatusIntent()
+
 object DisconnectedIntent : DeviceStatusIntent()
 

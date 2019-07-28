@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".receivers.BluetoothConnectionReceiver"  android:exported="true">
+        <receiver android:name="com.example.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
@@ -37,8 +37,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.BluetoothConnectionService"/>
-        <service android:name=".services.BluetoothScanService"/>
+        <service android:name="com.example.airdroid.bluetooth.services.BluetoothConnectionService"/>
+        <service android:name=".notification.NotificationService"/>
     </application>
 
 </manifest>

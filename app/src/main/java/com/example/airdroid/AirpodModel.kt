@@ -4,11 +4,12 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirpodModel private constructor(
+data class AirpodModel(
     val leftAirpod: AirpodPiece,
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
-    val lastConnected: Long = System.currentTimeMillis()
+    val lastConnected: Long = System.currentTimeMillis(),
+    val macAddress: String = ""
 
 ) : Parcelable {
 
@@ -23,7 +24,7 @@ data class AirpodModel private constructor(
         )
 
         // TODO figure out how to parse 5% increments from the manufacturer data
-        fun create(manufacturerSpecificData: ByteArray): AirpodModel {
+        fun create(manufacturerSpecificData: ByteArray, address: String): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
@@ -71,7 +72,8 @@ data class AirpodModel private constructor(
                     isCaseConnected,
                     WhichPiece.CASE,
                     true
-                )
+                ),
+                macAddress = address
             )
         }
 

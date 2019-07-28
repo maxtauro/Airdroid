@@ -1,4 +1,4 @@
-package com.example.airdroid.callbacks
+package com.example.airdroid.bluetooth.callbacks
 
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -20,10 +20,12 @@ class AirpodLeScanCallback(
     }
 
     override fun onScanResult(unusedCallbackType: Int, result: ScanResult?) {
+        Log.d(TAG, "onScanResult with result : $result")
         result?.let {
             val airpodResult = getAirpodModelForStrongestBeacon(result)
 
             airpodResult?.let {
+                Log.d(TAG, "Strongest Beacon: ${airpodResult.macAddress}")
                 broadcastUpdate(it)
             }
         }
@@ -40,14 +42,13 @@ class AirpodLeScanCallback(
             if (it.size != 27 || strongestBeaconResult == null) return null
 
             val manufacturerSpecificData = strongestBeaconResult.scanRecord!!.getManufacturerSpecificData(76)!!
-            return AirpodModel.create(manufacturerSpecificData)
+            return AirpodModel.create(manufacturerSpecificData, strongestBeaconResult.device.address)
         }
 
         return null
     }
 
     private fun getStrongestBeacon(result: ScanResult): ScanResult? {
-
         var strongestBeacon: ScanResult? = null
         var i = 0
 

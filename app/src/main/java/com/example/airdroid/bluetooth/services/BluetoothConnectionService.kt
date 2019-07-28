@@ -1,4 +1,4 @@
-package com.example.airdroid.services
+package com.example.airdroid.bluetooth.services
 
 import android.app.Service
 import android.bluetooth.BluetoothAdapter
@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
-import com.example.airdroid.receivers.BluetoothConnectionReceiver
+import com.example.airdroid.bluetooth.receivers.BluetoothConnectionReceiver
 
 /** Service class for bluetooth connection/disconnection **/
 class BluetoothConnectionService : Service() {
