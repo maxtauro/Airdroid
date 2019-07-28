@@ -34,8 +34,8 @@ class DeviceFragmentView(
             }
 
         when {
-            viewModel.isInitialScan -> renderInitialScan(viewModel)
             viewModel.airpods.isConnected -> renderPieces(viewModel)
+            viewModel.isInitialScan -> renderInitialScan(viewModel)
             else -> renderDisconnectedView(viewModel)
         }
     }

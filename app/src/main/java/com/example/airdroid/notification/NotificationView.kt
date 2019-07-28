@@ -5,7 +5,6 @@ import android.widget.RemoteViews
 import com.example.airdroid.AirpodModel
 import com.example.airdroid.AirpodPiece
 import com.example.airdroid.R
-import com.example.airdroid.mainfragment.viewmodel.DeviceViewModel
 
 class NotificationView(packageName: String, isLargeNotification: Boolean) :
     RemoteViews(
@@ -19,8 +18,8 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     // For now, since the notification view is so similar to the fragment view,
     // we will use the same model for both, if they start getting different we will separate them out
-    fun render(viewModel: DeviceViewModel) {
-        if (viewModel.airpods.isConnected) renderConnected(viewModel.airpods)
+    fun render(airpods: AirpodModel) {
+        if (airpods.isConnected) renderConnected(airpods)
         else renderDisconnected()
     }
 

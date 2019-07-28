@@ -1,7 +1,7 @@
 package com.example.airdroid.mainfragment.presenter
 
 import com.example.airdroid.AirpodModel
-import com.example.airdroid.callbacks.AirpodLeScanCallback
+import com.example.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.example.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
 import com.example.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.example.airdroid.utils.BluetoothScannerUtil
@@ -58,7 +58,11 @@ class DeviceStatusPresenter : DeviceStatusContract.Presenter,
                 intentsRelay.accept(InitialScanIntent(intent.deviceName))
                 scannerUtil.startScan(scanCallback)
             }
-            is DisconnectedIntent -> {
+            is UpdateNameIntent -> {
+                if (!scannerUtil.isScanning) scannerUtil.startScan(scanCallback)
+            }
+            is DisconnectedIntent,
+            is StopScanIntent -> {
                 scannerUtil.stopScan()
             }
         }
