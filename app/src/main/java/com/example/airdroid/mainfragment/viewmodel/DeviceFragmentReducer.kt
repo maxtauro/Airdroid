@@ -14,7 +14,7 @@ class DeviceFragmentReducer {
             is InitialScanIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = true)
             is UpdateNameIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = false)
             is DisconnectedIntent -> DeviceViewModel.EMPTY
-            else -> viewModel
+            else -> viewModel.copy(isInitialScan = false)
         }
     }
 }
