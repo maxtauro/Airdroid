@@ -17,7 +17,6 @@ import com.example.airdroid.mainfragment.presenter.ConnectedIntent
 import com.example.airdroid.mainfragment.presenter.DeviceStatusContract
 import com.example.airdroid.mainfragment.presenter.DeviceStatusIntent
 import com.example.airdroid.mainfragment.presenter.DeviceStatusPresenter
-import com.example.airdroid.mainfragment.presenter.InitialScanIntent
 import com.example.airdroid.mainfragment.presenter.StopScanIntent
 import com.example.airdroid.mainfragment.presenter.UpdateNameIntent
 import com.example.airdroid.mainfragment.viewmodel.DeviceViewModel
@@ -40,6 +39,9 @@ class DeviceStatusFragment :
 
     private lateinit var view: DeviceFragmentView
     private var viewModel = DeviceViewModel.EMPTY
+
+    private val connectionState: Int
+        get() = BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET)
 
     private val actionIntentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
 
@@ -72,15 +74,11 @@ class DeviceStatusFragment :
         // So we just start the scan if something might be connected
         Handler().postDelayed(
             {
-                val connectionState =
-                    BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET)
-
                 if (connectionState == 2 || connectionState == 1) {
-
                     activity?.intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let {
                         actionIntentsRelay.accept(UpdateNameIntent(it))
                     }.orElse {
-                        val deviceName =  (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name ?: ""
+                        val deviceName = (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name ?: ""
                         actionIntentsRelay.accept(ConnectedIntent(deviceName))
                     }
                 }
@@ -92,7 +90,9 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
         actionIntentsRelay.accept(StopScanIntent)
-        if (viewModel.airpods.isConnected) {
+        if (viewModel.airpods.isConnected ||
+            connectionState == 2 ||
+            connectionState == 1) {
             startNotificationService()
         }
     }
