@@ -11,7 +11,7 @@ class BluetoothScannerUtil {
 
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-    private val scanner = bluetoothAdapter.bluetoothLeScanner
+    private val scanner = bluetoothAdapter?.bluetoothLeScanner
     private val scanSettings = ScanSettings.Builder().setScanMode(2).setReportDelay(2).build()
     private val scanFilters = getScanFilters()
 
@@ -20,7 +20,7 @@ class BluetoothScannerUtil {
 
     fun startScan(scanCallback: ScanCallback) {
         Log.d(TAG, "Starting bluetooth scan")
-        scanner.startScan(scanFilters, scanSettings, scanCallback)
+        scanner?.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
     }
 
@@ -40,7 +40,7 @@ class BluetoothScannerUtil {
     }
 
     fun stopScan() {
-        scanner.stopScan(object : ScanCallback() {
+        scanner?.stopScan(object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
             }
         })

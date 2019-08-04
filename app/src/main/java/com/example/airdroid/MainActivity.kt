@@ -1,6 +1,7 @@
 package com.example.airdroid
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,13 +50,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (bluetoothAdapter == null) {
-            TODO("Handle bluetooth not supported")
+            showBluetoothNotSupportedAlertDialog()
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         } else if (bluetoothAdapter.isEnabled) {
             deviceStatusFragment.startBluetoothService()
         }
+    }
+
+    private fun showBluetoothNotSupportedAlertDialog() {
+        AlertDialog
+            .Builder(this)
+            .setTitle("Bluetooth Not Supported")
+            .setMessage("It appears that your device is does not support bluetooth")
+            .setPositiveButton("Ok") { _, _ ->
+//                finish()
+            }
+            .show()
     }
 
     // TODO, find more elegant way to check this

@@ -40,8 +40,8 @@ class DeviceStatusFragment :
     private lateinit var view: DeviceFragmentView
     private var viewModel = DeviceViewModel.EMPTY
 
-    private val connectionState: Int
-        get() = BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET)
+    private val connectionState: Int?
+        get() = BluetoothAdapter.getDefaultAdapter()?.getProfileConnectionState(BluetoothA2dp.HEADSET)
 
     private val actionIntentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
 
