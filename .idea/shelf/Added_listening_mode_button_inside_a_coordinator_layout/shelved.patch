@@ -1,0 +1,122 @@
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<androidx.coordinatorlayout.widget.CoordinatorLayout\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    android:onClick=\"closeWindow\"\n    tools:context=\".MainActivity\">\n\n\n    <androidx.constraintlayout.widget.ConstraintLayout\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        app:behavior_hideable=\"false\"\n        app:behavior_peekHeight=\"320dp\"\n        app:layout_behavior=\"com.google.android.material.bottomsheet.BottomSheetBehavior\">\n\n        <androidx.constraintlayout.widget.Guideline\n            android:id=\"@+id/guideline\"\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\"\n            android:orientation=\"horizontal\"\n            app:layout_constraintTop_toTopOf=\"parent\"\n            app:layout_constraintGuide_percent=\"0.5\"\n            />\n\n        <fragment\n            android:id=\"@+id/fragment_devices\"\n            android:name=\"com.example.airdroid.mainfragment.DeviceStatusFragment\"\n            android:layout_width=\"320dp\"\n            android:layout_height=\"320dp\"\n            app:layout_constraintBottom_toTopOf=\"@id/guideline\"\n            app:layout_constraintStart_toStartOf=\"parent\"/>\n\n        <include\n            layout=\"@layout/bottom_sheet\"\n            android:id=\"@+id/listening_mode_fragment\"\n            android:layout_width=\"320dp\"\n            android:layout_height=\"wrap_content\"\n            android:layout_marginTop=\"8dp\"\n            app:layout_constraintTop_toBottomOf=\"@+id/fragment_devices\"\n            />\n    </androidx.constraintlayout.widget.ConstraintLayout>\n\n</androidx.coordinatorlayout.widget.CoordinatorLayout>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision f0dc8cadef0417a51df2be82a0411151aef1f087)
++++ app/src/main/res/layout/activity_main.xml	(date 1565136792000)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ 
+-<androidx.coordinatorlayout.widget.CoordinatorLayout
++<androidx.constraintlayout.widget.ConstraintLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+@@ -9,39 +9,53 @@
+     android:onClick="closeWindow"
+     tools:context=".MainActivity">
+ 
++    <androidx.coordinatorlayout.widget.CoordinatorLayout
++        android:id="@+id/coordinator"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        app:layout_constraintBottom_toBottomOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        android:background="@color/batteryGreen"
++        app:layout_constraintEnd_toEndOf="parent">
++
+ 
+-    <androidx.constraintlayout.widget.ConstraintLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        app:behavior_hideable="false"
+-        app:behavior_peekHeight="320dp"
+-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
++        <androidx.constraintlayout.widget.ConstraintLayout
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            app:behavior_hideable="false"
++            app:behavior_peekHeight="320dp"
++            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+ 
+-        <androidx.constraintlayout.widget.Guideline
+-            android:id="@+id/guideline"
+-            android:layout_width="wrap_content"
+-            android:layout_height="wrap_content"
+-            android:orientation="horizontal"
+-            app:layout_constraintTop_toTopOf="parent"
+-            app:layout_constraintGuide_percent="0.5"
+-            />
++            <androidx.constraintlayout.widget.Guideline
++                android:id="@+id/guideline"
++                android:layout_width="wrap_content"
++                android:layout_height="wrap_content"
++                android:orientation="horizontal"
++                app:layout_constraintTop_toTopOf="parent"
++                app:layout_constraintGuide_percent="0.5"
++                />
+ 
+-        <fragment
+-            android:id="@+id/fragment_devices"
+-            android:name="com.example.airdroid.mainfragment.DeviceStatusFragment"
+-            android:layout_width="320dp"
+-            android:layout_height="320dp"
+-            app:layout_constraintBottom_toTopOf="@id/guideline"
+-            app:layout_constraintStart_toStartOf="parent"/>
++            <fragment
++                android:id="@+id/fragment_devices"
++                android:name="com.example.airdroid.mainfragment.DeviceStatusFragment"
++                android:layout_width="320dp"
++                android:layout_height="320dp"
++                app:layout_constraintBottom_toTopOf="@id/guideline"
++                app:layout_constraintStart_toStartOf="parent"/>
+ 
+-        <include
+-            layout="@layout/bottom_sheet"
+-            android:id="@+id/listening_mode_fragment"
+-            android:layout_width="320dp"
+-            android:layout_height="wrap_content"
+-            android:layout_marginTop="8dp"
+-            app:layout_constraintTop_toBottomOf="@+id/fragment_devices"
+-            />
+-    </androidx.constraintlayout.widget.ConstraintLayout>
++            <include
++                layout="@layout/bottom_sheet"
++                android:id="@+id/listening_mode_fragment"
++                android:layout_width="320dp"
++                android:layout_height="wrap_content"
++                android:layout_marginTop="8dp"
++                app:layout_constraintTop_toBottomOf="@+id/fragment_devices"
++                />
++        </androidx.constraintlayout.widget.ConstraintLayout>
+ 
+-</androidx.coordinatorlayout.widget.CoordinatorLayout>
++    </androidx.coordinatorlayout.widget.CoordinatorLayout>
++
++
++</androidx.constraintlayout.widget.ConstraintLayout>
++
++
+Index: app/src/main/res/layout/fragment_device.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><androidx.constraintlayout.widget.ConstraintLayout\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    android:id=\"@+id/fragment_devices\"\n    android:layout_width=\"320.0dip\"\n    android:layout_height=\"wrap_content\"\n    android:layout_centerHorizontal=\"true\"\n    android:layout_alignParentBottom=\"true\"\n    android:layout_marginBottom=\"10.0dip\"\n    android:animateLayoutChanges=\"true\"\n    android:background=\"@drawable/round_corners\"\n    android:focusable=\"true\"\n    android:clickable=\"true\">\n\n    <TextView\n        android:id=\"@+id/title_text\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_marginTop=\"8dp\"\n        android:layout_marginLeft=\"8dp\"\n        android:layout_marginStart=\"8dp\"\n        android:layout_marginRight=\"8dp\"\n        android:layout_marginEnd=\"8dp\"\n        android:padding=\"10dp\"\n        android:textAppearance=\"@style/TextAppearance.AppCompat.Large\"\n        app:layout_constraintTop_toTopOf=\"parent\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:fontFamily=\"sans-serif-thin\"/>\n\n\n    <androidx.constraintlayout.widget.ConstraintLayout\n        android:id=\"@+id/layout_devices\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_marginTop=\"8dp\"\n        android:layout_marginLeft=\"8dp\"\n        android:layout_marginStart=\"8dp\"\n        android:layout_marginRight=\"8dp\"\n        android:layout_marginEnd=\"8dp\"\n        android:animateLayoutChanges=\"true\"\n        app:layout_constraintTop_toBottomOf=\"@+id/title_text\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\">\n\n        <com.example.airdroid.airpodviews.AirpodPieceView\n            android:id=\"@+id/left_airpod_piece\"\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\"\n            android:layout_marginStart=\"8dp\"\n            android:layout_marginEnd=\"8dp\"\n            android:layout_marginBottom=\"28dp\"\n            app:layout_constraintBottom_toBottomOf=\"parent\"\n            app:layout_constraintStart_toStartOf=\"parent\"\n            app:layout_constraintEnd_toStartOf=\"@+id/case_airpod_piece\"/>\n\n        <com.example.airdroid.airpodviews.AirpodPieceView\n            android:id=\"@+id/case_airpod_piece\"\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\"\n            android:layout_marginTop=\"24dp\"\n            android:layout_marginStart=\"8dp\"\n            android:layout_marginEnd=\"8dp\"\n            android:layout_marginBottom=\"28dp\"\n            app:layout_constraintBottom_toBottomOf=\"parent\"\n            app:layout_constraintStart_toEndOf=\"@+id/left_airpod_piece\"\n            app:layout_constraintEnd_toStartOf=\"@+id/right_airpod_piece\"/>\n\n        <com.example.airdroid.airpodviews.AirpodPieceView\n            android:id=\"@+id/right_airpod_piece\"\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\"\n            android:layout_marginTop=\"24dp\"\n            android:layout_marginStart=\"8dp\"\n            android:layout_marginEnd=\"8dp\"\n            android:layout_marginBottom=\"28dp\"\n            app:layout_constraintBottom_toBottomOf=\"parent\"\n            app:layout_constraintStart_toEndOf=\"@id/case_airpod_piece\"\n            app:layout_constraintEnd_toEndOf=\"parent\"/>\n\n    </androidx.constraintlayout.widget.ConstraintLayout>\n\n    <androidx.appcompat.widget.AppCompatButton\n        android:id=\"@+id/btn_connect\"\n        android:layout_width=\"match_parent\"\n        android:layout_height=\"wrap_content\"\n        android:layout_marginTop=\"8dp\"\n        android:layout_marginBottom=\"8dp\"\n        android:textColor=\"#2196F3\"\n        android:text=\"@string/connect\"\n        android:background=\"?android:attr/selectableItemBackground\"\n        android:visibility=\"invisible\"\n        android:textAppearance=\"@style/TextAppearance.AppCompat.Medium\"\n        app:layout_constraintTop_toBottomOf=\"@+id/layout_devices\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintVertical_bias=\"0.39\"/>\n\n\n</androidx.constraintlayout.widget.ConstraintLayout>\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_device.xml	(revision f0dc8cadef0417a51df2be82a0411151aef1f087)
++++ app/src/main/res/layout/fragment_device.xml	(date 1564959615000)
+@@ -2,8 +2,8 @@
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:id="@+id/fragment_devices"
+-    android:layout_width="320.0dip"
+-    android:layout_height="wrap_content"
++    android:layout_width="320dp"
++    android:layout_height="320dp"
+     android:layout_centerHorizontal="true"
+     android:layout_alignParentBottom="true"
+     android:layout_marginBottom="10.0dip"

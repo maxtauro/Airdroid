@@ -1,5 +1,10 @@
 package com.example.airdroid
 
+import android.app.KeyguardManager
+import android.content.Context
+import android.content.Intent
+import android.util.Log
+
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
 const val EXTRA_DEVICE = "EXTRA_DEVICE"
 
@@ -14,4 +19,12 @@ val UUID_CHARACTERISTIC_BATTERY_LEVEL = String.format(UUID_MASK, "2a19")
 
 inline fun <R> R?.orElse(block: () -> R): R {
     return this ?: block()
+}
+
+fun Context?.startServiceIfDeviceUnlocked(intent: Intent) {
+    val keyguardManager = this?.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    if (!keyguardManager.isKeyguardLocked) {
+        this.startService(intent)
+        Log.d(this.javaClass.simpleName, "Started service with intent: $intent")
+    } else Log.d(this.javaClass.simpleName, "Device locked, did not start service with intent: $intent")
 }

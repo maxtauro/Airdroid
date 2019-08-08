@@ -5,12 +5,15 @@ import android.bluetooth.le.ScanResult
 import android.os.SystemClock
 import android.util.Log
 import com.example.airdroid.AirpodModel
+import com.example.airdroid.BuildConfig
 
 class AirpodLeScanCallback(
     private val recentBeacons: ArrayList<ScanResult>,
     private val broadcastUpdate: (AirpodModel) -> Unit
-) :
-    ScanCallback() {
+) : ScanCallback() {
+
+    private val ENABLE_SCAN_LOGGING
+    get() = BuildConfig.BUILD_TYPE == "debugScanLoggingEnabled" && false
 
     override fun onBatchScanResults(results: List<ScanResult>) {
         for (result in results) {
@@ -20,7 +23,7 @@ class AirpodLeScanCallback(
     }
 
     override fun onScanResult(unusedCallbackType: Int, result: ScanResult?) {
-        Log.d(TAG, "onScanResult with result : $result")
+        if (ENABLE_SCAN_LOGGING) Log.d(TAG, "onScanResult with result : $result")
         result?.let {
             val airpodResult = getAirpodModelForStrongestBeacon(result)
 

@@ -39,6 +39,7 @@
 
         <service android:name="com.example.airdroid.bluetooth.services.BluetoothConnectionService"/>
         <service android:name=".notification.NotificationService"/>
+        <service android:name=".bluetooth.services.UnlockService"/>
     </application>
 
 </manifest>

@@ -1,5 +1,7 @@
 package com.example.airdroid.bluetooth.receivers
 
+import android.bluetooth.BluetoothA2dp
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,6 +18,13 @@ import org.greenrobot.eventbus.EventBus
 class BluetoothConnectionReceiver : BroadcastReceiver() {
 
     private val eventBus = EventBus.getDefault()
+
+    private val isActivityInForegroud: Boolean
+        get() = mIsActivityRunning
+
+    private val isConnected: Boolean
+        get() = BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET) == 1 ||
+            BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET) == 2
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent == null) return
@@ -40,7 +49,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 "Device Disconnected, Name: ${disconnectedDevice.name}, Address: ${disconnectedDevice.address}"
             )
         }
-        if (isActivityInForegroud()) {
+        if (isActivityInForegroud) {
             eventBus.post(DisconnectedIntent)
         } else {
             context?.let { NotificationService.clearNotification(context) }
@@ -53,7 +62,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
             Log.d(TAG, "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}")
 
-            if (isActivityInForegroud()) {
+            if (isActivityInForegroud) {
                 eventBus.post(ConnectedIntent(connectedDevice.name))
             } else {
                 startMainActivity(context, connectedDevice)
@@ -61,9 +70,6 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun isActivityInForegroud(): Boolean {
-        return mIsActivityRunning
-    }
 
     private fun startMainActivity(context: Context?, connectedDevice: BluetoothDevice) {
         Intent(context, MainActivity::class.java).also { intent ->

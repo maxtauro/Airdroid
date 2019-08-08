@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.airdroid.EXTRA_DEVICE
 import com.example.airdroid.bluetooth.services.BluetoothConnectionService
+import com.example.airdroid.bluetooth.services.UnlockService
 import com.example.airdroid.mainfragment.presenter.ConnectedIntent
 import com.example.airdroid.mainfragment.presenter.DeviceStatusContract
 import com.example.airdroid.mainfragment.presenter.DeviceStatusIntent
@@ -24,6 +25,7 @@ import com.example.airdroid.notification.NotificationService
 import com.example.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_MODEL
 import com.example.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_NAME
 import com.example.airdroid.orElse
+import com.example.airdroid.startServiceIfDeviceUnlocked
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
@@ -95,6 +97,8 @@ class DeviceStatusFragment :
             connectionState == 1) {
             startNotificationService()
         }
+
+        context?.startService(Intent(context, UnlockService::class.java))
     }
 
     override fun actionIntents() = actionIntentsRelay
@@ -123,7 +127,7 @@ class DeviceStatusFragment :
 
     fun startBluetoothService() {
         Intent(activity, BluetoothConnectionService::class.java).also { intent ->
-            activity?.startService(intent)
+            activity?.startServiceIfDeviceUnlocked(intent)
         }
     }
 
@@ -131,14 +135,14 @@ class DeviceStatusFragment :
         Intent(activity, NotificationService::class.java).also { intent ->
             intent.putExtra(EXTRA_AIRPOD_MODEL, viewModel.airpods)
             intent.putExtra(EXTRA_AIRPOD_NAME, viewModel.deviceName)
-            activity?.startService(intent)
+            activity?.startServiceIfDeviceUnlocked(intent)
         }
     }
 
     private fun stopNotificationService(context: Context) = GlobalScope.launch(Dispatchers.Main) {
         NotificationService.clearNotification(context)
         Intent(activity, NotificationService::class.java).also { intent ->
-            activity?.stopService(intent)
+            activity?.startServiceIfDeviceUnlocked(intent)
         }
     }
 

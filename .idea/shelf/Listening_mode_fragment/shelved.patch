@@ -1,0 +1,145 @@
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<androidx.constraintlayout.widget.ConstraintLayout\n        xmlns:android=\"http://schemas.android.com/apk/res/android\"\n        xmlns:tools=\"http://schemas.android.com/tools\"\n        xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n        android:layout_width=\"fill_parent\"\n        android:layout_height=\"fill_parent\"\n        android:onClick=\"closeWindow\"\n        tools:context=\".MainActivity\">\n\n    <androidx.constraintlayout.widget.Guideline\n            android:layout_width=\"wrap_content\"\n            android:layout_height=\"wrap_content\"\n            android:id=\"@+id/guideline\"\n            app:layout_constraintGuide_percent=\"0.5\"\n            app:layout_constraintTop_toTopOf=\"parent\"\n            android:orientation=\"horizontal\"\n    />\n\n    <fragment\n        android:name=\"com.example.airdroid.mainfragment.DeviceStatusFragment\"\n        android:id=\"@+id/fragment_devices\"\n        android:layout_width=\"320dp\"\n        android:layout_height=\"320dp\"\n        android:layout_marginTop=\"8dp\"\n        android:layout_marginBottom=\"8dp\"\n        app:layout_constraintTop_toTopOf=\"@id/guideline\"\n        app:layout_constraintBottom_toBottomOf=\"parent\"\n        app:layout_constraintStart_toStartOf=\"parent\"\n        app:layout_constraintEnd_toEndOf=\"parent\"\n        app:layout_constraintHorizontal_bias=\"0.4\"/>\n\n\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(date 1564344533000)
++++ app/src/main/res/layout/activity_main.xml	(date 1564367212000)
+@@ -12,23 +12,34 @@
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:id="@+id/guideline"
+-            app:layout_constraintGuide_percent="0.5"
++            app:layout_constraintGuide_percent="0.4"
+             app:layout_constraintTop_toTopOf="parent"
+             android:orientation="horizontal"
+     />
+ 
+     <fragment
+-        android:name="com.example.airdroid.mainfragment.DeviceStatusFragment"
+         android:id="@+id/fragment_devices"
++        android:name="com.example.airdroid.mainfragment.DeviceStatusFragment"
+         android:layout_width="320dp"
+         android:layout_height="320dp"
+-        android:layout_marginTop="8dp"
+-        android:layout_marginBottom="8dp"
++        android:layout_marginBottom="2dp"
+         app:layout_constraintTop_toTopOf="@id/guideline"
++        app:layout_constraintBottom_toTopOf="@+id/fragment_listening_mode"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintHorizontal_bias="0.4"
++        app:layout_constraintVertical_bias="0.39"/>
++
++    <fragment
++        android:id="@+id/fragment_listening_mode"
++        android:name="com.example.airdroid.listeningmode.ListeningModeDialogFragment"
++        android:layout_width="320dp"
++        android:layout_height="wrap_content"
++        android:layout_marginBottom="6dp"
++        app:layout_constraintTop_toBottomOf="@+id/fragment_devices"
+         app:layout_constraintBottom_toBottomOf="parent"
+         app:layout_constraintStart_toStartOf="parent"
+-        app:layout_constraintEnd_toEndOf="parent"
+-        app:layout_constraintHorizontal_bias="0.4"/>
++        app:layout_constraintEnd_toEndOf="parent"/>
+ 
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\n\napply plugin: 'kotlin-android'\n\napply plugin: 'kotlin-android-extensions'\n\nandroid {\n    compileSdkVersion 28\n    defaultConfig {\n        applicationId \"com.example.airdroid\"\n        minSdkVersion 21\n        targetSdkVersion 28\n        versionCode 1\n        versionName \"1.0\"\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\n    }\n    buildTypes {\n        release {\n            minifyEnabled false\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\n        }\n    }\n}\n\ndependencies {\n    implementation fileTree(dir: 'libs', include: ['*.jar'])\n    implementation\"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version\"\n    implementation 'androidx.appcompat:appcompat:1.0.2'\n    implementation 'androidx.core:core-ktx:1.0.2'\n    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'\n\n    implementation \"com.android.support:support-compat:28.0.0\"\n    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'\n    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'\n\n    implementation 'org.greenrobot:eventbus:3.1.1'\n\n    implementation 'com.hannesdorfmann.mosby3:mvi:3.1.1'\n    implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'\n    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'\n\n    testImplementation 'junit:junit:4.12'\n    androidTestImplementation 'androidx.test:runner:1.2.0'\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'\n}\n\nandroidExtensions {\n    experimental = true\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(date 1564344533000)
++++ app/build.gradle	(date 1564363470000)
+@@ -29,6 +29,8 @@
+     implementation 'androidx.core:core-ktx:1.0.2'
+     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+ 
++    implementation 'com.google.android.material:material:1.0.0'
++
+     implementation "com.android.support:support-compat:28.0.0"
+     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
+     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'
+Index: app/src/main/res/layout/fragment_listening_mode.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_listening_mode.xml	(date 1564367271000)
++++ app/src/main/res/layout/fragment_listening_mode.xml	(date 1564367271000)
+@@ -0,0 +1,26 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout
++    xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    android:layout_centerHorizontal="true"
++    android:layout_alignParentBottom="true"
++    android:layout_marginBottom="10.0dip"
++    android:animateLayoutChanges="true"
++    android:background="@drawable/round_corners"
++    android:orientation="vertical"
++    android:focusable="true"
++    android:clickable="true">
++
++
++    <Button
++        android:layout_width="fill_parent"
++        android:layout_height="wrap_content"
++        android:layout_gravity="center_horizontal"
++
++        android:textColor="#2196F3"
++        android:text="Start Listening Mode"
++        android:background="?android:attr/selectableItemBackground"
++        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
++
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/airdroid/listeningmode/ListeningModeDialogFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/airdroid/listeningmode/ListeningModeDialogFragment.kt	(date 1564366429000)
++++ app/src/main/java/com/example/airdroid/listeningmode/ListeningModeDialogFragment.kt	(date 1564366429000)
+@@ -0,0 +1,15 @@
++package com.example.airdroid.listeningmode
++
++import android.os.Bundle
++import android.view.LayoutInflater
++import android.view.View
++import android.view.ViewGroup
++import androidx.fragment.app.Fragment
++import com.example.airdroid.R
++
++class ListeningModeDialogFragment : Fragment() {
++
++    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
++        return inflater.inflate(R.layout.fragment_listening_mode, container, false)!!
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/airdroid/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.airdroid\n\nimport android.app.Activity\nimport android.bluetooth.BluetoothAdapter\nimport android.content.Intent\nimport android.content.pm.PackageManager\nimport android.os.Bundle\nimport android.view.View\nimport android.widget.Toast\nimport androidx.appcompat.app.AppCompatActivity\nimport androidx.core.app.ActivityCompat\nimport androidx.core.content.ContextCompat\nimport com.example.airdroid.mainfragment.DeviceStatusFragment\n\nvar mIsActivityRunning = false\n\n//TODO rename\nclass MainActivity : AppCompatActivity() {\n\n    private lateinit var deviceStatusFragment: DeviceStatusFragment\n\n    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()\n\n    private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else\n    private val REQUEST_ENABLE_COARSE_LOCATION = 1001\n\n    private val isLocationPermissionEnabled\n        get() = ContextCompat.checkSelfPermission(\n            this,\n            android.Manifest.permission.ACCESS_FINE_LOCATION\n        ) == PackageManager.PERMISSION_GRANTED\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n        setContentView(R.layout.activity_main)\n        deviceStatusFragment = supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment\n    }\n\n    override fun onStart() {\n        super.onStart()\n\n        if (!isLocationPermissionEnabled) {\n            //TODO show explanatory dialog as to why we need this permission\n            ActivityCompat.requestPermissions(\n                this,\n                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),\n                REQUEST_ENABLE_COARSE_LOCATION\n            )\n        }\n\n        if (bluetoothAdapter == null) {\n            TODO(\"Handle bluetooth not supported\")\n        } else if (!bluetoothAdapter.isEnabled) {\n            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)\n            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)\n        } else if (bluetoothAdapter.isEnabled) {\n            deviceStatusFragment.startBluetoothService()\n        }\n    }\n\n    // TODO, find more elegant way to check this\n    override fun onResume() {\n        super.onResume()\n        mIsActivityRunning = true\n    }\n\n    override fun onPause() {\n        super.onPause()\n        mIsActivityRunning = false\n    }\n\n    override fun onStop() {\n        super.onStop()\n        finish()\n    }\n\n    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {\n        if (requestCode == REQUEST_ENABLE_BT) {\n            if (resultCode == Activity.RESULT_OK) {\n                Toast.makeText(this, \"Bluetooth has been enabled\", Toast.LENGTH_SHORT).show()\n                deviceStatusFragment.startBluetoothService()\n            } else if (resultCode == Activity.RESULT_CANCELED) {\n                Toast.makeText(this, \"Bluetooth is not enabled\", Toast.LENGTH_SHORT).show()\n            }\n        }\n    }\n\n    fun closeWindow(view: View) {\n        finish()\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/airdroid/MainActivity.kt	(date 1564344533000)
++++ app/src/main/java/com/example/airdroid/MainActivity.kt	(date 1564451682000)
+@@ -5,6 +5,7 @@
+ import android.content.Intent
+ import android.content.pm.PackageManager
+ import android.os.Bundle
++import android.view.MotionEvent
+ import android.view.View
+ import android.widget.Toast
+ import androidx.appcompat.app.AppCompatActivity
