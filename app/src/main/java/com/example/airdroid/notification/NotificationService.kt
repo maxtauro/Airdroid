@@ -3,6 +3,7 @@ package com.example.airdroid.notification
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.airdroid.AirpodModel
+import com.example.airdroid.MainActivity
 import com.example.airdroid.R
 import com.example.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.example.airdroid.mainfragment.presenter.RefreshIntent
@@ -22,7 +24,7 @@ class NotificationService : Service() {
 
     private val scannerUtil = BluetoothScannerUtil()
 
-    private val scanCallback = AirpodLeScanCallback(arrayListOf(), ::onScanResult)
+    private val scanCallback = AirpodLeScanCallback(::onScanResult)
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -103,10 +105,21 @@ class NotificationService : Service() {
     private fun renderNotification(airpodModel: AirpodModel) {
         if (airpodModel.isConnected) {
             this.airpodModel = airpodModel
+
+            notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
+
             largeNotificationView.render(airpodModel)
             smallNotificationView.render(airpodModel)
             notificationManager.notify(1, notificationBuilder.build())
         } else clearNotification(baseContext)
+    }
+
+    private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
+        return PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     companion object {
@@ -117,6 +130,7 @@ class NotificationService : Service() {
         private const val TAG = "NotificationService"
 
         fun clearNotification(context: Context) {
+            Log.d(TAG, "Clearing notification from: $context")
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancelAll()
         }

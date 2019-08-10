@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Bluetooth Not Supported")
             .setMessage("It appears that your device is does not support bluetooth")
             .setPositiveButton("Ok") { _, _ ->
-//                finish()
+                finish()
             }
             .show()
     }

@@ -7,8 +7,9 @@ import android.util.Log
 import com.example.airdroid.AirpodModel
 import com.example.airdroid.BuildConfig
 
-class AirpodLeScanCallback(
-    private val recentBeacons: ArrayList<ScanResult>,
+val recentBeacons = arrayListOf<ScanResult>()
+
+class AirpodLeScanCallback constructor(
     private val broadcastUpdate: (AirpodModel) -> Unit
 ) : ScanCallback() {
 
@@ -23,7 +24,7 @@ class AirpodLeScanCallback(
     }
 
     override fun onScanResult(unusedCallbackType: Int, result: ScanResult?) {
-        if (ENABLE_SCAN_LOGGING) Log.d(TAG, "onScanResult with result : $result")
+        if (true) Log.d(TAG, "onScanResult with result : $result")
         result?.let {
             val airpodResult = getAirpodModelForStrongestBeacon(result)
 

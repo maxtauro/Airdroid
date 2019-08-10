@@ -19,7 +19,7 @@ class DeviceStatusPresenter : DeviceStatusContract.Presenter,
     private val reducer: DeviceFragmentReducer = DeviceFragmentReducer()
 
     private val scannerUtil = BluetoothScannerUtil()
-    private val scanCallback = AirpodLeScanCallback(arrayListOf(), ::broadcastScanResult)
+    private val scanCallback = AirpodLeScanCallback(::broadcastScanResult)
 
     private val eventBus = EventBus.getDefault()
     private val intentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
