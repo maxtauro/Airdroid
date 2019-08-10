@@ -27,6 +27,12 @@ class UnlockReceiver : BroadcastReceiver() {
                 context?.startService(it)
             }
         }
+        else if (context != null) {
+            NotificationService.clearNotification(context)
+            Intent(context, NotificationService::class.java).also {
+                context.stopService(it)
+            }
+        }
     }
 
     companion object {

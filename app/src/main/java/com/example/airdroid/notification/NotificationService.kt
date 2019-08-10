@@ -52,6 +52,9 @@ class NotificationService : Service() {
 
         notificationBuilder.setShowWhen(false)
         notificationBuilder.setOngoing(true)
+
+        // TODO, set the click event
+        // TODO, change the icon based on if 1 or 2 airpods connected
         notificationBuilder.setSmallIcon(R.mipmap.notification_icon)
 
         notificationBuilder.setCustomContentView(smallNotificationView)

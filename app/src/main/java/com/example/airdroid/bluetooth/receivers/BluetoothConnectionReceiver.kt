@@ -52,7 +52,12 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         if (isActivityInForegroud) {
             eventBus.post(DisconnectedIntent)
         } else {
-            context?.let { NotificationService.clearNotification(context) }
+            context?.let {
+                NotificationService.clearNotification(context)
+                Intent(context, NotificationService::class.java).also {
+                    context.stopService(it)
+                }
+            }
         }
     }
 
@@ -69,7 +74,6 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             }
         }
     }
-
 
     private fun startMainActivity(context: Context?, connectedDevice: BluetoothDevice) {
         Intent(context, MainActivity::class.java).also { intent ->

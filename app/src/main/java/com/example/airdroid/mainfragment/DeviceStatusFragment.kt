@@ -142,7 +142,7 @@ class DeviceStatusFragment :
     private fun stopNotificationService(context: Context) = GlobalScope.launch(Dispatchers.Main) {
         NotificationService.clearNotification(context)
         Intent(activity, NotificationService::class.java).also { intent ->
-            activity?.startServiceIfDeviceUnlocked(intent)
+            activity?.stopService(intent)
         }
     }
 
