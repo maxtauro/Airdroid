@@ -56,11 +56,11 @@ class AirpodLeScanCallback constructor(
         var strongestBeacon: ScanResult? = null
         var i = 0
 
+        val currentTime = SystemClock.elapsedRealtimeNanos()
+
         while (i < recentBeacons.size) {
-            if (SystemClock.elapsedRealtimeNanos() - recentBeacons[i].timestampNanos > RECENT_BEACONS_MAX_T_NS) {
-                recentBeacons.removeAt(i--)
-                i++
-                continue
+            if (currentTime - recentBeacons[i].timestampNanos > RECENT_BEACONS_MAX_T_NS) {
+                recentBeacons.removeAt(i)
             }
             if (strongestBeacon == null || strongestBeacon.rssi < recentBeacons[i].rssi) strongestBeacon =
                 recentBeacons[i]
@@ -83,6 +83,6 @@ class AirpodLeScanCallback constructor(
     companion object {
 
         private const val TAG = "AirpodLEScanCallback"
-        private const val RECENT_BEACONS_MAX_T_NS = 10000000000L //10s
+        private const val RECENT_BEACONS_MAX_T_NS: Long = 10000000000L //10s
     }
 }

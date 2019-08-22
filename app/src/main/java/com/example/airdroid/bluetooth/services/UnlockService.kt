@@ -19,6 +19,8 @@ class UnlockService : Service() {
 
     private val unlockReceiver = UnlockReceiver()
 
+    private var shouldUnregister = false
+
     private val userPresentIntentFilter = IntentFilter(ACTION_USER_PRESENT)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -29,13 +31,17 @@ class UnlockService : Service() {
         }
 
         registerReceiver(unlockReceiver, userPresentIntentFilter)
+        shouldUnregister = true
         Log.d(TAG, "Service Started")
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(unlockReceiver)
+        if (shouldUnregister) {
+            unregisterReceiver(unlockReceiver)
+            shouldUnregister = false
+        }
         Log.d(TAG, "Service stopped")
 
     }

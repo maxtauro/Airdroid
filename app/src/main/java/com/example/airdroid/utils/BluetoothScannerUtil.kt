@@ -17,6 +17,9 @@ class BluetoothScannerUtil {
 
     // TODO make set private
     var isScanning:Boolean = false
+    private set(isScanning: Boolean) {
+        field = isScanning
+    }
 
     fun startScan(scanCallback: ScanCallback) {
         Log.d(TAG, "Starting bluetooth scan")
