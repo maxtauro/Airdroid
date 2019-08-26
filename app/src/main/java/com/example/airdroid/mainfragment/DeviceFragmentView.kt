@@ -25,7 +25,6 @@ class DeviceFragmentView(
     }
 
     fun render(viewModel: DeviceViewModel) {
-
         titleText.text =
             if (viewModel.airpods.isConnected || viewModel.isInitialScan) {
                 viewModel.deviceName

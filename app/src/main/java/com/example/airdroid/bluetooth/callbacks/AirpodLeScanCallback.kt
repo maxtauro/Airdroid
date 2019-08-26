@@ -4,6 +4,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.os.SystemClock
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.example.airdroid.AirpodModel
 import com.example.airdroid.BuildConfig
 
@@ -52,7 +53,8 @@ class AirpodLeScanCallback constructor(
         return null
     }
 
-    private fun getStrongestBeacon(result: ScanResult): ScanResult? {
+    @VisibleForTesting
+    internal fun getStrongestBeacon(result: ScanResult): ScanResult? {
         var strongestBeacon: ScanResult? = null
         var i = 0
 
