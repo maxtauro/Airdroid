@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
+import android.util.Log
 import com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver
 
 /** Service class for bluetooth connection/disconnection **/
@@ -31,10 +32,18 @@ class BluetoothConnectionService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(bluetoothReceiver)
+        try {
+            unregisterReceiver(bluetoothReceiver)
+        } catch (e: IllegalArgumentException) {
+            Log.d(TAG, e.message)
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    companion object {
+        private const val TAG = "BluetoothConnectionService"
     }
 }
