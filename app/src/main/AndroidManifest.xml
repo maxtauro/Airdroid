@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.airdroid">
+    package="com.maxtauro.airdroid">
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Transparent">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.maxtauro.airdroid.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.example.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"  android:exported="true">
+        <receiver android:name="com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
@@ -37,9 +37,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.example.airdroid.bluetooth.services.BluetoothConnectionService"/>
-        <service android:name=".notification.NotificationService"/>
-        <service android:name=".bluetooth.services.UnlockService"/>
+        <service android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService"/>
+        <service android:name="com.maxtauro.airdroid.notification.NotificationService"/>
+        <service android:name="com.maxtauro.airdroid.bluetooth.services.UnlockService"/>
     </application>
 
 </manifest>
