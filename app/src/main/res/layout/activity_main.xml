@@ -18,7 +18,7 @@
         />
 
     <fragment
-        android:name="com.example.airdroid.mainfragment.DeviceStatusFragment"
+        android:name="com.maxtauro.airdroid.mainfragment.DeviceStatusFragment"
         android:id="@+id/fragment_devices"
         android:layout_width="320dp"
         android:layout_height="320dp"
