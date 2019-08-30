@@ -7,10 +7,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
 
 var mIsActivityRunning = false
@@ -35,17 +40,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val crashButton = Button(this)
-//        crashButton.text = "Crash!"
-//        crashButton.setOnClickListener {
-//            Crashlytics.getInstance().crash() // Force a crash
-//        }
-//
-//        addContentView(crashButton, ViewGroup.LayoutParams(
-//            ViewGroup.LayoutParams.MATCH_PARENT,
-//            ViewGroup.LayoutParams.WRAP_CONTENT))
+        setupAds()
 
-        deviceStatusFragment = supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
+        deviceStatusFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
     }
 
     override fun onStart() {
@@ -106,6 +104,28 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setupAds() {
+        MobileAds.initialize(this, getString(R.string.APP_AD_ID))
+
+        val adView = AdView(this)
+        adView.adSize = AdSize.BANNER
+        adView.adUnitId =
+            when {
+                BuildConfig.BUILD_TYPE == "release" || true -> getString(R.string.RELEASE_AD_UNIT_ID)
+                else -> TEST_AD_UNIT_ID
+            }
+
+        addContentView(
+            adView, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     fun closeWindow(view: View) {
