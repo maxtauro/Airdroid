@@ -14,6 +14,8 @@ const val ACTION_GATT_SERVICES_DISCOVERED = "com.maxtauro.bluetooth.le.ACTION_GA
 const val ACTION_DATA_AVAILABLE = "com.maxtauro.bluetooth.le.ACTION_DATA_AVAILABLE"
 const val EXTRA_DATA = "com.maxtauro.bluetooth.le.EXTRA_DATA"
 
+const val TEST_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+
 const val UUID_MASK = "0000%s-0000-1000-8000-00805f9b34fb"
 val UUID_CHARACTERISTIC_BATTERY_LEVEL = String.format(UUID_MASK, "2a19")
 
