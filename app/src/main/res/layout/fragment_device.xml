@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_devices"
     android:layout_width="320.0dip"
-    android:layout_height="wrap_content"
+    android:layout_height="320.0dip"
     android:layout_centerHorizontal="true"
     android:layout_alignParentBottom="true"
     android:layout_marginBottom="10.0dip"
@@ -30,72 +30,72 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_devices"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginEnd="8dp"
-        android:animateLayoutChanges="true"
-        app:layout_constraintTop_toBottomOf="@+id/title_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.maxtauro.airdroid.airpodviews.AirpodPieceView
-            android:id="@+id/left_airpod_piece"
+            android:id="@+id/layout_devices"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="8dp"
+            android:animateLayoutChanges="true"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/case_airpod_piece"/>
+            app:layout_constraintTop_toBottomOf="@+id/title_text">
 
         <com.maxtauro.airdroid.airpodviews.AirpodPieceView
-            android:id="@+id/case_airpod_piece"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/left_airpod_piece"
-            app:layout_constraintEnd_toStartOf="@+id/right_airpod_piece"/>
+                android:id="@+id/left_airpod_piece"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="28dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/case_airpod_piece"
+                app:layout_constraintStart_toStartOf="parent" />
 
         <com.maxtauro.airdroid.airpodviews.AirpodPieceView
-            android:id="@+id/right_airpod_piece"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="28dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/case_airpod_piece"
-            app:layout_constraintEnd_toEndOf="parent"/>
+                android:id="@+id/case_airpod_piece"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="28dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/right_airpod_piece"
+                app:layout_constraintStart_toEndOf="@+id/left_airpod_piece" />
+
+        <com.maxtauro.airdroid.airpodviews.AirpodPieceView
+                android:id="@+id/right_airpod_piece"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="28dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/case_airpod_piece" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_connect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:textColor="#2196F3"
-        android:text="@string/connect"
-        android:background="?android:attr/selectableItemBackground"
-        android:visibility="invisible"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintTop_toBottomOf="@+id/layout_devices"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.39"/>
+<!--    <androidx.appcompat.widget.AppCompatButton-->
+<!--        android:id="@+id/btn_connect"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginBottom="8dp"-->
+<!--        android:textColor="#2196F3"-->
+<!--        android:text="@string/connect"-->
+<!--        android:background="?android:attr/selectableItemBackground"-->
+<!--        android:visibility="invisible"-->
+<!--        android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/layout_devices"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.39"/>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
