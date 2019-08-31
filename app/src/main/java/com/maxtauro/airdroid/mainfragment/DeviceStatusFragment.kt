@@ -5,12 +5,14 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.EXTRA_DEVICE
@@ -34,8 +36,14 @@ class DeviceStatusFragment :
 
     private val subscriptions = CompositeDisposable()
 
+    private fun isLocationPermissionEnabled() =
+        context != null && ContextCompat.checkSelfPermission(
+            context!!,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
     private lateinit var view: DeviceFragmentView
-    private var viewModel = DeviceViewModel.EMPTY
+    private var viewModel = DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
 
     private val connectionState: Int?
         get() = BluetoothAdapter.getDefaultAdapter()?.getProfileConnectionState(BluetoothA2dp.HEADSET)
@@ -52,7 +60,11 @@ class DeviceStatusFragment :
         subscriptions.clear()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val view = DeviceFragmentView(inflater, container)
 
@@ -75,7 +87,9 @@ class DeviceStatusFragment :
                     activity?.intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let {
                         actionIntentsRelay.accept(UpdateNameIntent(it))
                     }.orElse {
-                        val deviceName = (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name ?: ""
+                        val deviceName =
+                            (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
+                                ?: ""
                         actionIntentsRelay.accept(ConnectedIntent(deviceName))
                     }
                 }
@@ -89,7 +103,8 @@ class DeviceStatusFragment :
         actionIntentsRelay.accept(StopScanIntent)
         if (viewModel.airpods.isConnected ||
             connectionState == 2 ||
-            connectionState == 1) {
+            connectionState == 1
+        ) {
             startNotificationService()
         }
 
@@ -98,7 +113,7 @@ class DeviceStatusFragment :
 
     override fun actionIntents() = actionIntentsRelay
 
-    override fun createPresenter() = DeviceStatusPresenter()
+    override fun createPresenter() = DeviceStatusPresenter(::isLocationPermissionEnabled)
 
     override fun render(viewModel: DeviceViewModel) {
         this.viewModel = viewModel

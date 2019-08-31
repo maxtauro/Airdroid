@@ -1,20 +1,18 @@
 package com.maxtauro.airdroid.mainfragment.viewmodel
 
-import com.maxtauro.airdroid.mainfragment.presenter.DeviceStatusIntent
-import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
-import com.maxtauro.airdroid.mainfragment.presenter.InitialScanIntent
-import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
-import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
+import com.maxtauro.airdroid.mainfragment.presenter.*
 
-class DeviceFragmentReducer {
+class DeviceFragmentReducer(
+    private val isLocationPermissionEnabled: () -> Boolean
+) {
 
     fun reduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent): DeviceViewModel {
         return when (intent) {
-            is RefreshIntent -> viewModel.copy(airpods = intent.updatedAirpods, isInitialScan = false)
-            is InitialScanIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = true)
-            is UpdateNameIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = false)
-            is DisconnectedIntent -> DeviceViewModel.EMPTY
-            else -> viewModel.copy(isInitialScan = false)
+            is RefreshIntent -> viewModel.copy(airpods = intent.updatedAirpods, isInitialScan = false, shouldShowPermissionsMessage = isLocationPermissionEnabled())
+            is InitialScanIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = true, shouldShowPermissionsMessage = isLocationPermissionEnabled())
+            is UpdateNameIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = false, shouldShowPermissionsMessage = isLocationPermissionEnabled())
+            is DisconnectedIntent -> DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
+            else -> viewModel.copy(isInitialScan = false,  shouldShowPermissionsMessage = isLocationPermissionEnabled())
         }
     }
 }

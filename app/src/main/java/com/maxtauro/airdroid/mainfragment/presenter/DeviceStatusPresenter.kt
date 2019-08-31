@@ -1,22 +1,22 @@
 package com.maxtauro.airdroid.mainfragment.presenter
 
+import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
+import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
-import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class DeviceStatusPresenter : DeviceStatusContract.Presenter,
+class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boolean) : DeviceStatusContract.Presenter,
     MviBasePresenter<DeviceStatusContract.View, DeviceViewModel>() {
 
-    private val reducer: DeviceFragmentReducer = DeviceFragmentReducer()
+    private val reducer: DeviceFragmentReducer = DeviceFragmentReducer(isLocationPermissionEnabled)
 
     private val scannerUtil = BluetoothScannerUtil()
     private val scanCallback = AirpodLeScanCallback(::broadcastScanResult)
@@ -34,7 +34,7 @@ class DeviceStatusPresenter : DeviceStatusContract.Presenter,
         )
             .observeOn(AndroidSchedulers.mainThread())
             .scan(
-                DeviceViewModel.EMPTY,
+                DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled()),
                 ::reduce
             )
             .distinctUntilChanged()

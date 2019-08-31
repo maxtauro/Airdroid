@@ -1,6 +1,7 @@
 package com.maxtauro.airdroid.mainfragment
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.maxtauro.airdroid.R
@@ -37,6 +38,8 @@ class DeviceFragmentView(
             viewModel.isInitialScan -> renderInitialScan(viewModel)
             else -> renderDisconnectedView(viewModel)
         }
+
+        renderLocationPermissionMessage(viewModel.shouldShowPermissionsMessage)
     }
 
     private fun renderInitialScan(viewModel: DeviceViewModel) {
@@ -63,5 +66,16 @@ class DeviceFragmentView(
         leftPieceView.renderDisconnected(viewModel.airpods.leftAirpod)
         casePieceView.renderDisconnected(viewModel.airpods.case)
         rightPieceView.renderDisconnected(viewModel.airpods.rightAirpod)
+    }
+
+    private fun renderLocationPermissionMessage(isLocationPermissionEnabled: Boolean) {
+        val locationPermissionTextView: TextView =
+            view.findViewById(R.id.location_permission_text_view)
+
+        if (isLocationPermissionEnabled) {
+            locationPermissionTextView.visibility = View.GONE
+        } else {
+            locationPermissionTextView.visibility = View.VISIBLE
+        }
     }
 }

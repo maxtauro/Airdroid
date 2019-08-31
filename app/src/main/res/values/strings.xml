@@ -13,4 +13,5 @@
     <string name="location_permission_explanation_message">In order for this app to work, Android requires location access</string>
     <string name="opening_preference">Automatically open app when AirPods are connected</string>
     <string name="show_notification_preference">Show Battery in Notification</string>
+    <string name="location_services_need_to_be_enabled_for_this_application_to_work">Location Services need to be enabled for this application to work</string>
 </resources>
