@@ -3,6 +3,7 @@ package com.maxtauro.airdroid
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -21,7 +22,6 @@ import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
 
 var mIsActivityRunning = false
 
-//TODO rename
 class MainActivity : AppCompatActivity() {
 
     private lateinit var deviceStatusFragment: DeviceStatusFragment
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         settingsButton = findViewById(R.id.settings_btn)
         settingsButton.setOnClickListener {
-            PreferenceDialog().show(supportFragmentManager, "blah")
+            PreferenceDialog().show(supportFragmentManager, "PreferenceDialog")
         }
     }
 
@@ -58,12 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         if (!isLocationPermissionEnabled) {
-            //TODO show explanatory dialog as to why we need this permission
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_ENABLE_COARSE_LOCATION
-            )
+            showLocationPermissionDialog()
         }
 
         if (bluetoothAdapter == null) {
@@ -74,17 +69,6 @@ class MainActivity : AppCompatActivity() {
         } else if (bluetoothAdapter.isEnabled) {
             deviceStatusFragment.startBluetoothService()
         }
-    }
-
-    private fun showBluetoothNotSupportedAlertDialog() {
-        AlertDialog
-            .Builder(this)
-            .setTitle("Bluetooth Not Supported")
-            .setMessage("It appears that your device is does not support bluetooth")
-            .setPositiveButton("Ok") { _, _ ->
-                finish()
-            }
-            .show()
     }
 
     // TODO, find more elegant way to check this
@@ -115,6 +99,19 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_ENABLE_COARSE_LOCATION) {
+            if (grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED) {
+                showLocationPermissionDialog()
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     private fun setupAds() {
         MobileAds.initialize(this, getString(R.string.APP_AD_ID))
 
@@ -133,8 +130,50 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        val adRequest = AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
+        val adRequest =
+            AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
         adView.loadAd(adRequest)
+    }
+
+
+    private fun showBluetoothNotSupportedAlertDialog() {
+        AlertDialog
+            .Builder(this)
+            .setTitle(getString(R.string.bluetooth_not_supported))
+            .setMessage(getString(R.string.device_does_not_support_bluetooth))
+            .setPositiveButton(getString(R.string.positive_btn_label)) { _, _ ->
+                finish()
+            }
+            .show()
+    }
+
+    private fun showLocationPermissionDialog() {
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) return
+
+        AlertDialog.Builder(this)
+            .setMessage(getString(R.string.location_permission_explanation_message))
+            .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
+                requestLocationPermission()
+            }
+            .setNegativeButton(getString(R.string.deny_btn_label)) { _: DialogInterface, _: Int ->
+                finish()
+            }
+            .setCancelable(false)
+            .create()
+            .show()
+    }
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+            REQUEST_ENABLE_COARSE_LOCATION
+        )
     }
 
     fun closeWindow(view: View) {
