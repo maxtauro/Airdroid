@@ -11,23 +11,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.hannesdorfmann.mosby3.mvi.MviFragment
+import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.EXTRA_DEVICE
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
 import com.maxtauro.airdroid.bluetooth.services.UnlockService
-import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
-import com.maxtauro.airdroid.mainfragment.presenter.DeviceStatusContract
-import com.maxtauro.airdroid.mainfragment.presenter.DeviceStatusIntent
-import com.maxtauro.airdroid.mainfragment.presenter.DeviceStatusPresenter
-import com.maxtauro.airdroid.mainfragment.presenter.StopScanIntent
-import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
+import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_MODEL
 import com.maxtauro.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_NAME
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
-import com.hannesdorfmann.mosby3.mvi.MviFragment
-import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -98,7 +93,7 @@ class DeviceStatusFragment :
             startNotificationService()
         }
 
-        context?.startService(Intent(context, UnlockService::class.java))
+        context?.startServiceIfDeviceUnlocked(Intent(context, UnlockService::class.java))
     }
 
     override fun actionIntents() = actionIntentsRelay
