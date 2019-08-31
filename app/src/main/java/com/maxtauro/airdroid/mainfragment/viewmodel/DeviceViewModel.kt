@@ -8,11 +8,20 @@ import kotlinx.android.parcel.Parcelize
 data class DeviceViewModel(
     val airpods: AirpodModel,
     val deviceName: String = "",
-    val isInitialScan: Boolean = false
+    val isInitialScan: Boolean = false,
+    val shouldShowPermissionsMessage: Boolean = false
 ) : Parcelable {
 
+
     companion object {
-        val EMPTY = DeviceViewModel(AirpodModel.EMPTY)
+        @JvmStatic
+        fun createEmptyViewModel(shouldShowPermissionsMessage: Boolean = false): DeviceViewModel {
+            return DeviceViewModel(
+                airpods = AirpodModel.EMPTY,
+                shouldShowPermissionsMessage = shouldShowPermissionsMessage
+            )
+        }
+
     }
 
 }

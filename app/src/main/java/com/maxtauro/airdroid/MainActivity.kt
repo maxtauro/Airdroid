@@ -19,6 +19,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
+import com.maxtauro.airdroid.mainfragment.presenter.ReRenderIntent
 
 var mIsActivityRunning = false
 
@@ -105,9 +106,15 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         if (requestCode == REQUEST_ENABLE_COARSE_LOCATION) {
-            if (grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED &&
+                !ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
                 showLocationPermissionDialog()
             }
+            deviceStatusFragment.actionIntents().accept(ReRenderIntent)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -149,11 +156,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLocationPermissionDialog() {
 
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        ) return
+//        if (!ActivityCompat.shouldShowRequestPermissionRationale(
+//                this,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION
+//            )
+//        ) return
 
         AlertDialog.Builder(this)
             .setMessage(getString(R.string.location_permission_explanation_message))
