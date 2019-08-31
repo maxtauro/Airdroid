@@ -6,4 +6,6 @@
     <string name="charge_text">%1$d\%</string>
     <string name="no_airpods_connected">No AirPods Connected</string>
     <string name="listening_mode_btn_label">Start Listening Mode</string>
+    <string name="opening_preference">Automatically open app when AirPods are connected</string>
+    <string name="show_notification_preference">Show Battery in Notification</string>
 </resources>
