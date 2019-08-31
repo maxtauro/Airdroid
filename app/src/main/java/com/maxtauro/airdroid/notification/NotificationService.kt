@@ -3,13 +3,12 @@ package com.maxtauro.airdroid.notification
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.maxtauro.airdroid.AirpodModel
-import com.maxtauro.airdroid.MainActivity
-import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
 import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
@@ -21,6 +20,10 @@ class NotificationService : Service() {
     private val scannerUtil = BluetoothScannerUtil()
 
     private val scanCallback = AirpodLeScanCallback(::onScanResult)
+
+    private lateinit var preferences: SharedPreferences
+
+    private var isNotificationEnabled = true
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -35,6 +38,11 @@ class NotificationService : Service() {
         super.onCreate()
 
         bindViews()
+
+        preferences = baseContext?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME ,Context.MODE_PRIVATE)
+            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+
+        isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
 
         notificationManager = baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationBuilder = NotificationCompat.Builder(baseContext, TAG)
@@ -65,15 +73,17 @@ class NotificationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "Starting NotificationService")
+        if (isNotificationEnabled) {
+            Log.d(TAG, "Starting NotificationService")
 
-        intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let { airpodName = it }
-        (intent?.getParcelableExtra(EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
-            airpodModel = it
-            renderNotification(it)
+            intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let { airpodName = it }
+            (intent?.getParcelableExtra(EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
+                airpodModel = it
+                renderNotification(it)
+            }
+
+            scannerUtil.startScan(scanCallback)
         }
-
-        scannerUtil.startScan(scanCallback)
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -99,7 +109,7 @@ class NotificationService : Service() {
     }
 
     private fun renderNotification(airpodModel: AirpodModel) {
-        if (airpodModel.isConnected) {
+        if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
 
             notificationBuilder.setContentIntent(buildContentIntent(airpodModel))

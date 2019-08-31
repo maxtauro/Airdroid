@@ -16,6 +16,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
 
 var mIsActivityRunning = false
@@ -24,6 +25,8 @@ var mIsActivityRunning = false
 class MainActivity : AppCompatActivity() {
 
     private lateinit var deviceStatusFragment: DeviceStatusFragment
+
+    lateinit var settingsButton: FloatingActionButton
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
@@ -44,6 +47,11 @@ class MainActivity : AppCompatActivity() {
 
         deviceStatusFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
+
+        settingsButton = findViewById(R.id.settings_btn)
+        settingsButton.setOnClickListener {
+            PreferenceDialog().show(supportFragmentManager, "blah")
+        }
     }
 
     override fun onStart() {
@@ -104,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
             }
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun setupAds() {
@@ -124,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        val adRequest = AdRequest.Builder().build()
+        val adRequest = AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
         adView.loadAd(adRequest)
     }
 

@@ -15,8 +15,10 @@ class BluetoothScannerUtil {
     private val scanSettings = ScanSettings.Builder().setScanMode(2).setReportDelay(2).build()
     private val scanFilters = getScanFilters()
 
-    // TODO make set private
-    var isScanning:Boolean = false
+    var isScanning: Boolean = false
+        private set(isScanning) {
+            field = isScanning
+        }
 
     fun startScan(scanCallback: ScanCallback) {
         if (isScanning) return

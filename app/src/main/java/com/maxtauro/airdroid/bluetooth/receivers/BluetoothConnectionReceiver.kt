@@ -7,10 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.crashlytics.android.Crashlytics
-import com.maxtauro.airdroid.EXTRA_DEVICE
-import com.maxtauro.airdroid.MainActivity
-import com.maxtauro.airdroid.mIsActivityRunning
+import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
 import com.maxtauro.airdroid.notification.NotificationService
@@ -25,14 +22,12 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
     private val isConnected: Boolean
         get() = BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET) == 1 ||
-            BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET) == 2
+                BluetoothAdapter.getDefaultAdapter().getProfileConnectionState(BluetoothA2dp.HEADSET) == 2
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent == null) return
 
-        val action = intent.action
-
-        when (action) {
+        when (intent.action) {
             BluetoothDevice.ACTION_ACL_CONNECTED -> handleBluetoothConnected(intent, context)
             BluetoothDevice.ACTION_ACL_DISCONNECTED -> handleBluetoothDisconnected(intent, context)
             Intent.ACTION_BOOT_COMPLETED,
@@ -65,14 +60,31 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     private fun handleBluetoothConnected(intent: Intent, context: Context?) {
         val connectedDevice = intent.extras[BluetoothDevice.EXTRA_DEVICE] as? BluetoothDevice
         connectedDevice?.let {
-
-            Log.d(TAG, "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}")
+            Log.d(
+                TAG,
+                "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}"
+            )
 
             if (isActivityInForegroud) {
                 eventBus.post(ConnectedIntent(connectedDevice.name))
             } else {
-                startMainActivity(context, connectedDevice)
+                val preferences =
+                    context?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE)
+                        ?: throw IllegalStateException("Preferences haven't been initialized yet")
+
+                val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)
+                val isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
+
+                if (isOpenAppEnabled) startMainActivity(context, connectedDevice)
+                else if (isNotificationEnabled) startNotificationService(context, connectedDevice)
             }
+        }
+    }
+
+    private fun startNotificationService(context: Context, connectedDevice: BluetoothDevice) {
+        Intent(context, NotificationService::class.java).also { intent ->
+            intent.putExtra(NotificationService.EXTRA_AIRPOD_NAME, connectedDevice.name)
+            context.startServiceIfDeviceUnlocked(intent)
         }
     }
 
