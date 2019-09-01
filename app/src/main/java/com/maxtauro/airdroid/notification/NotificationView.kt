@@ -20,7 +20,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     // we will use the same model for both, if they start getting different we will separate them out
     fun render(airpods: AirpodModel) {
         if (airpods.isConnected) renderConnected(airpods)
-        else renderDisconnected()
+        else throw IllegalStateException("Trying to Render notification with no AirPod Connected.  $airpods")
     }
 
     private fun renderConnected(airpods: AirpodModel) {
@@ -63,10 +63,6 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
                 R.id.right_airpod_piece_charge_text
             )
         } else setViewVisibility(R.id.right_airpod_piece, View.GONE)
-    }
-
-    private fun renderDisconnected() {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun renderChargeImg(
