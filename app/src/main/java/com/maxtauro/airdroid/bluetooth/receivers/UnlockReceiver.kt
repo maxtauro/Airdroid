@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 import com.maxtauro.airdroid.mIsActivityRunning
 import com.maxtauro.airdroid.notification.NotificationService
+import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
 
 class UnlockReceiver : BroadcastReceiver() {
 
@@ -24,7 +25,7 @@ class UnlockReceiver : BroadcastReceiver() {
 
         if (isConnected && !isActivityInForegroud) {
             Intent(context, NotificationService::class.java).also {
-                context?.startService(it)
+                context?.startServiceIfDeviceUnlocked(it)
             }
         }
         else if (context != null) {

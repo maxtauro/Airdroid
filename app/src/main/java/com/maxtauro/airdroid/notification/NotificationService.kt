@@ -60,9 +60,6 @@ class NotificationService : Service() {
         notificationBuilder.setShowWhen(false)
         notificationBuilder.setOngoing(true)
 
-        // TODO, change the icon based on if 1 or 2 airpods connected
-        notificationBuilder.setSmallIcon(R.mipmap.notification_icon)
-
         notificationBuilder.setCustomContentView(smallNotificationView)
         notificationBuilder.setCustomBigContentView(largeNotificationView)
     }
@@ -112,6 +109,14 @@ class NotificationService : Service() {
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
 
+            if (airpodModel.leftAirpod.isConnected && !airpodModel.rightAirpod.isConnected) {
+                notificationBuilder.setSmallIcon(R.mipmap.left_airpod_notification_icon)
+            } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
+                notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
+            } else {
+                notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
+            }
+
             notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
 
             largeNotificationView.render(airpodModel)
@@ -129,7 +134,6 @@ class NotificationService : Service() {
     }
 
     companion object {
-
         const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
         const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
 

@@ -4,6 +4,7 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
 const val EXTRA_DEVICE = "EXTRA_DEVICE"
@@ -23,5 +24,9 @@ fun Context?.startServiceIfDeviceUnlocked(intent: Intent) {
     if (!keyguardManager.isKeyguardLocked) {
         this.startService(intent)
         Log.d(this.javaClass.simpleName, "Started service with intent: $intent")
-    } else Log.d(this.javaClass.simpleName, "Device locked, did not start service with intent: $intent")
+    } else {
+        val msg = "Device locked, did not start service with intent: $intent"
+        Crashlytics.logException(IllegalStateException(msg))
+        Log.d(this.javaClass.simpleName, msg)
+    }
 }
