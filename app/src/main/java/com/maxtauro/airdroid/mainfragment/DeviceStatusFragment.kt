@@ -94,7 +94,7 @@ class DeviceStatusFragment :
                     }
                 }
             },
-            1000
+            200
         )
     }
 

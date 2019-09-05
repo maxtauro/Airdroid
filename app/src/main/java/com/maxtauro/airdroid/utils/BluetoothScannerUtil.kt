@@ -12,16 +12,15 @@ class BluetoothScannerUtil {
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private val scanner = bluetoothAdapter?.bluetoothLeScanner
-    private val scanSettings = ScanSettings.Builder().setScanMode(2).setReportDelay(2).build()
     private val scanFilters = getScanFilters()
 
     var isScanning: Boolean = false
-        private set(isScanning) {
-            field = isScanning
-        }
+        private set
 
-    fun startScan(scanCallback: ScanCallback) {
+    fun startScan(scanCallback: ScanCallback, scanMode: Int) {
         if (isScanning) return
+
+        val scanSettings = ScanSettings.Builder().setScanMode(scanMode).setReportDelay(2).build()
 
         Log.d(TAG, "Starting bluetooth scan")
         scanner?.startScan(scanFilters, scanSettings, scanCallback)

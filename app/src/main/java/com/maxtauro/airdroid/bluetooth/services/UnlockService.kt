@@ -17,6 +17,7 @@ class UnlockService : Service() {
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     private val unlockReceiver = UnlockReceiver()
+    private var isReceiverRegistered = false
 
     private val userPresentIntentFilter = IntentFilter(ACTION_USER_PRESENT)
 
@@ -28,13 +29,17 @@ class UnlockService : Service() {
         }
 
         registerReceiver(unlockReceiver, userPresentIntentFilter)
+        isReceiverRegistered = true
         Log.d(TAG, "Service Started")
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(unlockReceiver)
+        if (isReceiverRegistered) {
+            unregisterReceiver(unlockReceiver)
+            isReceiverRegistered = false
+        }
         Log.d(TAG, "Service stopped")
 
     }

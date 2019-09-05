@@ -14,7 +14,7 @@ data class AirpodModel(
 ) : Parcelable {
 
     val isConnected
-        get() = leftAirpod.isConnected || rightAirpod.isConnected || case.isConnected
+        get() = leftAirpod.isConnected || rightAirpod.isConnected
 
     companion object {
         val EMPTY = AirpodModel(

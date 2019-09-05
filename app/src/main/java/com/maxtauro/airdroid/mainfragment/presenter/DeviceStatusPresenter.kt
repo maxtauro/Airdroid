@@ -1,9 +1,12 @@
 package com.maxtauro.airdroid.mainfragment.presenter
 
+import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
+import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_POWER
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
+import com.maxtauro.airdroid.mIsActivityRunning
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
@@ -13,7 +16,8 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boolean) : DeviceStatusContract.Presenter,
+class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boolean) :
+    DeviceStatusContract.Presenter,
     MviBasePresenter<DeviceStatusContract.View, DeviceViewModel>() {
 
     private val reducer: DeviceFragmentReducer = DeviceFragmentReducer(isLocationPermissionEnabled)
@@ -37,7 +41,6 @@ class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boole
                 DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled()),
                 ::reduce
             )
-            .distinctUntilChanged()
 
         subscribeViewState(viewModelObservable, DeviceStatusContract.View::render)
     }
@@ -56,10 +59,27 @@ class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boole
         when (intent) {
             is ConnectedIntent -> {
                 intentsRelay.accept(InitialScanIntent(intent.deviceName))
-                scannerUtil.startScan(scanCallback)
+                scannerUtil.startScan(
+                    scanCallback = scanCallback,
+                    scanMode = if (mIsActivityRunning) {
+                        SCAN_MODE_LOW_LATENCY
+                    } else {
+                        SCAN_MODE_LOW_POWER
+                    }
+                )
             }
             is UpdateNameIntent -> {
-                if (!scannerUtil.isScanning) scannerUtil.startScan(scanCallback)
+                scannerUtil.startScan(
+                    scanCallback = scanCallback,
+                    scanMode = if (mIsActivityRunning) {
+                        SCAN_MODE_LOW_LATENCY
+                    } else {
+                        SCAN_MODE_LOW_POWER
+                    }
+                )
+            }
+            is ScanForDeviceNameIntent -> {
+//                scannerUtil.scanForAirpodName(intent.context)
             }
             is DisconnectedIntent,
             is StopScanIntent -> {

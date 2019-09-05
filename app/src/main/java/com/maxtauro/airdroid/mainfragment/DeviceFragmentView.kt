@@ -26,12 +26,7 @@ class DeviceFragmentView(
     }
 
     fun render(viewModel: DeviceViewModel) {
-        titleText.text =
-            if (viewModel.airpods.isConnected || viewModel.isInitialScan) {
-                viewModel.deviceName
-            } else {
-                view.context.getString(R.string.no_airpods_connected)
-            }
+        renderDeviceName(viewModel)
 
         when {
             viewModel.airpods.isConnected -> renderPieces(viewModel)
@@ -40,6 +35,15 @@ class DeviceFragmentView(
         }
 
         renderLocationPermissionMessage(viewModel.shouldShowPermissionsMessage)
+    }
+
+    private fun renderDeviceName(viewModel: DeviceViewModel) {
+        titleText.text =
+            if (viewModel.airpods.isConnected || viewModel.isInitialScan) {
+                viewModel.deviceName
+            } else {
+                view.context.getString(R.string.no_airpods_connected)
+            }
     }
 
     private fun renderInitialScan(viewModel: DeviceViewModel) {
