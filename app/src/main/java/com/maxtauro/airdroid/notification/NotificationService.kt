@@ -1,6 +1,7 @@
 package com.maxtauro.airdroid.notification
 
 import android.app.*
+import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -79,7 +80,13 @@ class NotificationService : Service() {
                 renderNotification(it)
             }
 
-            scannerUtil.startScan(scanCallback)
+            scannerUtil.startScan(
+                scanCallback = scanCallback,
+                scanMode = if (mIsActivityRunning) {
+                    ScanSettings.SCAN_MODE_LOW_LATENCY
+                } else {
+                    ScanSettings.SCAN_MODE_LOW_POWER
+                })
         }
 
         return super.onStartCommand(intent, flags, startId)

@@ -155,13 +155,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLocationPermissionDialog() {
-
-//        if (!ActivityCompat.shouldShowRequestPermissionRationale(
-//                this,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION
-//            )
-//        ) return
-
         AlertDialog.Builder(this)
             .setMessage(getString(R.string.location_permission_explanation_message))
             .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
