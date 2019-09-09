@@ -45,9 +45,14 @@ class BluetoothScannerUtil {
     fun stopScan() {
         scanner?.stopScan(object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
+                scanner.flushPendingScanResults(object : ScanCallback() {
+                    override fun onScanResult(callbackType: Int, result: ScanResult) {}
+                })
+
+
+                Log.d(TAG, "Scan Stopped")
             }
         })
-
         isScanning = false
     }
 

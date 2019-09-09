@@ -1,5 +1,6 @@
 package com.maxtauro.airdroid.bluetooth.receivers
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -10,9 +11,11 @@ import android.util.Log
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
-import com.maxtauro.airdroid.notification.NotificationService
+import com.maxtauro.airdroid.utils.NotificationJobSchedulerUtil
+import com.maxtauro.airdroid.utils.NotificationUtil
 import org.greenrobot.eventbus.EventBus
 
+@SuppressLint("LongLogTag")
 class BluetoothConnectionReceiver : BroadcastReceiver() {
 
     private val eventBus = EventBus.getDefault()
@@ -49,10 +52,8 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             eventBus.post(DisconnectedIntent)
         } else {
             context?.let {
-                NotificationService.clearNotification(context)
-                Intent(context, NotificationService::class.java).also {
-                    context.stopService(it)
-                }
+                cancelNotificationJob(it)
+                NotificationUtil.clearNotification(it)
             }
         }
     }
@@ -75,17 +76,24 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)
                 val isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
 
-                if (isOpenAppEnabled) startMainActivity(context, connectedDevice)
-                else if (isNotificationEnabled) startNotificationService(context, connectedDevice)
+                if (isOpenAppEnabled && context.isDeviceUnlocked()) startMainActivity(
+                    context,
+                    connectedDevice
+                )
+                else if (isNotificationEnabled) scheduleNotificationJob(context, connectedDevice)
             }
         }
     }
 
-    private fun startNotificationService(context: Context, connectedDevice: BluetoothDevice) {
-        Intent(context, NotificationService::class.java).also { intent ->
-            intent.putExtra(NotificationService.EXTRA_AIRPOD_NAME, connectedDevice.name)
-            context.startServiceIfDeviceUnlocked(intent)
-        }
+    private fun scheduleNotificationJob(context: Context, connectedDevice: BluetoothDevice) {
+        NotificationJobSchedulerUtil.scheduleJob(
+            context = context,
+            deviceName = connectedDevice.name
+        )
+    }
+
+    private fun cancelNotificationJob(context: Context) {
+        NotificationJobSchedulerUtil.cancelJob(context)
     }
 
     private fun startMainActivity(context: Context?, connectedDevice: BluetoothDevice) {

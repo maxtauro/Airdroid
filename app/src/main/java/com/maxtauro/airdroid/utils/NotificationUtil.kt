@@ -1,30 +1,24 @@
-package com.maxtauro.airdroid.notification
+package com.maxtauro.airdroid.utils
 
-import android.app.*
-import android.bluetooth.le.ScanSettings
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
-import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
-import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
-import com.maxtauro.airdroid.utils.BluetoothScannerUtil
-import org.greenrobot.eventbus.EventBus
+import com.maxtauro.airdroid.notification.NotificationView
 
-class NotificationService : Service() {
-
-    private val scannerUtil = BluetoothScannerUtil()
-
-    private val scanCallback = AirpodLeScanCallback(::onScanResult)
+class NotificationUtil(
+    private val context: Context,
+    packageName: String
+) {
 
     private lateinit var preferences: SharedPreferences
-
-    private var isNotificationEnabled = true
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var notificationBuilder: NotificationCompat.Builder
@@ -35,18 +29,23 @@ class NotificationService : Service() {
     private lateinit var airpodName: String
     private lateinit var airpodModel: AirpodModel
 
-    override fun onCreate() {
-        super.onCreate()
+    val isNotificationEnabled: Boolean
+        get() = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
 
-        bindViews()
+    init {
+        bindViews(packageName)
+        initializeNotificationUtil()
+    }
 
-        preferences = baseContext?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME ,Context.MODE_PRIVATE)
+    private fun initializeNotificationUtil() {
+        preferences = context.getSharedPreferences(
+            SHARED_PREFERENCE_FILE_NAME, Context.MODE_PRIVATE
+        )
             ?: throw IllegalStateException("Preferences haven't been initialized yet")
 
-        isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
-
-        notificationManager = baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationBuilder = NotificationCompat.Builder(baseContext, TAG)
+        notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationBuilder = NotificationCompat.Builder(context, TAG)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //on oreo and newer, create a notification channel
             val channel = NotificationChannel(TAG, TAG, NotificationManager.IMPORTANCE_DEFAULT)
@@ -65,54 +64,22 @@ class NotificationService : Service() {
         notificationBuilder.setCustomBigContentView(largeNotificationView)
     }
 
-    private fun bindViews() {
-        largeNotificationView = NotificationView(isLargeNotification = true, packageName = packageName)
-        smallNotificationView = NotificationView(isLargeNotification = false, packageName = packageName)
+    private fun bindViews(packageName: String) {
+        largeNotificationView =
+            NotificationView(isLargeNotification = true, packageName = packageName)
+        smallNotificationView =
+            NotificationView(isLargeNotification = false, packageName = packageName)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (isNotificationEnabled) {
-            Log.d(TAG, "Starting NotificationService")
-
-            intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let { airpodName = it }
-            (intent?.getParcelableExtra(EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
-                airpodModel = it
-                renderNotification(it)
-            }
-
-            scannerUtil.startScan(
-                scanCallback = scanCallback,
-                scanMode = if (mIsActivityRunning) {
-                    ScanSettings.SCAN_MODE_LOW_LATENCY
-                } else {
-                    ScanSettings.SCAN_MODE_LOW_POWER
-                })
-        }
-
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        // TODO find a way to do this without using event bus
-        if (::airpodModel.isInitialized) EventBus.getDefault().post(RefreshIntent(airpodModel))
-        if (::airpodName.isInitialized) EventBus.getDefault().post(UpdateNameIntent(airpodName))
-
-        scannerUtil.stopScan()
-    }
-
-    private fun onScanResult(airpodModel: AirpodModel) {
-        if (scannerUtil.isScanning) {
+    fun onScanResult(airpodModel: AirpodModel) {
+        Log.d(TAG, "onScanResult")
+        if (airpodModel.isConnected) {
             renderNotification(airpodModel)
-        }
+        } else clearNotification(context)
     }
 
     private fun renderNotification(airpodModel: AirpodModel) {
+
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
 
@@ -129,26 +96,28 @@ class NotificationService : Service() {
             largeNotificationView.render(airpodModel)
             smallNotificationView.render(airpodModel)
             notificationManager.notify(1, notificationBuilder.build())
-        } else clearNotification(baseContext)
+        }
     }
 
     private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
-        val intent = Intent(applicationContext, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
         return PendingIntent.getActivity(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
 
     companion object {
+
         const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
         const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
 
-        private const val TAG = "NotificationService"
+        private const val TAG = "NotificationUtil"
 
         fun clearNotification(context: Context) {
             Log.d(TAG, "Clearing notification from: $context")
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.cancelAll()
         }
     }
