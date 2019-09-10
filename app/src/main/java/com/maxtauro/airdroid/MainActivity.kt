@@ -8,13 +8,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -122,23 +120,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupAds() {
         MobileAds.initialize(this, getString(R.string.APP_AD_ID))
 
-        val adView = AdView(this)
-        adView.adSize = AdSize.BANNER
-        adView.adUnitId =
-            when {
-                BuildConfig.BUILD_TYPE == "release" || true -> getString(R.string.RELEASE_AD_UNIT_ID)
-                else -> TEST_AD_UNIT_ID
-            }
-
-        addContentView(
-            adView, ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
+        val adView: AdView = findViewById(R.id.adView)
 
         val adRequest =
-            AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
+            if (BuildConfig.BUILD_TYPE == "release") {
+                AdRequest.Builder().build()
+            } else {
+                AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
+            }
         adView.loadAd(adRequest)
     }
 
@@ -155,6 +144,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLocationPermissionDialog() {
+
         AlertDialog.Builder(this)
             .setMessage(getString(R.string.location_permission_explanation_message))
             .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
