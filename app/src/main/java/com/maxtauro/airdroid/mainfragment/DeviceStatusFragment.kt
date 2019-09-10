@@ -18,12 +18,12 @@ import com.maxtauro.airdroid.EXTRA_DEVICE
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
 import com.maxtauro.airdroid.notification.NotificationJobService
+import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
-import com.maxtauro.airdroid.utils.NotificationJobSchedulerUtil
-import com.maxtauro.airdroid.utils.NotificationUtil
-import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :

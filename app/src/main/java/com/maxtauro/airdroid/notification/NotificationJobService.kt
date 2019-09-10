@@ -10,10 +10,9 @@ import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
 import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
-import com.maxtauro.airdroid.utils.NotificationUtil
-import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
-import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import org.greenrobot.eventbus.EventBus
 
 
@@ -28,7 +27,8 @@ class NotificationJobService : JobService() {
     var airpodModel: AirpodModel? = null
 
     override fun onStartJob(params: JobParameters?): Boolean {
-        notificationUtil = NotificationUtil(baseContext, packageName)
+        notificationUtil =
+            NotificationUtil(baseContext, packageName)
 
         if (notificationUtil.isNotificationEnabled) {
             Log.d(TAG, "Starting job")

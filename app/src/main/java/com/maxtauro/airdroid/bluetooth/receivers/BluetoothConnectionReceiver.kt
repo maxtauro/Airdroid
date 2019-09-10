@@ -10,9 +10,9 @@ import android.util.Log
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
+import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
 import com.maxtauro.airdroid.notification.NotificationJobService
-import com.maxtauro.airdroid.utils.NotificationJobSchedulerUtil
-import com.maxtauro.airdroid.utils.NotificationUtil
+import com.maxtauro.airdroid.notification.NotificationUtil
 import org.greenrobot.eventbus.EventBus
 
 @SuppressLint("LongLogTag")

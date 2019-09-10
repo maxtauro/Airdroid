@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.utils
+package com.maxtauro.airdroid.notification
 
 import android.annotation.SuppressLint
 import android.app.job.JobInfo
@@ -10,9 +10,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import com.google.gson.Gson
 import com.maxtauro.airdroid.AirpodModel
-import com.maxtauro.airdroid.notification.NotificationJobService
-import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
-import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 
 @SuppressLint("LongLogTag")
 object NotificationJobSchedulerUtil {
@@ -31,7 +30,10 @@ object NotificationJobSchedulerUtil {
         val serviceComponent = ComponentName(context, NotificationJobService::class.java)
         val builder = JobInfo.Builder(JOB_ID, serviceComponent)
 
-        val bundle = bundleData(airpodModel, deviceName)
+        val bundle = bundleData(
+            airpodModel,
+            deviceName
+        )
         builder.setExtras(bundle)
 
         builder.setMinimumLatency((1 * 1000).toLong()) // wait at least
