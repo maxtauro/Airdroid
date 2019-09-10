@@ -5,9 +5,17 @@ import android.app.job.JobService
 import android.bluetooth.le.ScanSettings
 import android.content.Intent
 import android.util.Log
+import com.google.gson.Gson
+import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
+import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
+import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
 import com.maxtauro.airdroid.utils.NotificationUtil
+import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
+import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
+import org.greenrobot.eventbus.EventBus
+
 
 class NotificationJobService : JobService() {
 
@@ -16,19 +24,22 @@ class NotificationJobService : JobService() {
 
     private val scannerUtil = BluetoothScannerUtil()
 
+    var airpodName: String? = null
+    var airpodModel: AirpodModel? = null
+
     override fun onStartJob(params: JobParameters?): Boolean {
         notificationUtil = NotificationUtil(baseContext, packageName)
 
         if (notificationUtil.isNotificationEnabled) {
             Log.d(TAG, "Starting job")
 
-            scanCallback = AirpodLeScanCallback(notificationUtil::onScanResult)
+            scanCallback = AirpodLeScanCallback(::onScanResult)
 
-//            intent?.getStringExtra(NotificationService.EXTRA_AIRPOD_NAME)?.let { airpodName = it }
-//            (intent?.getParcelableExtra(NotificationService.EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
-//                airpodModel = it
-//                renderNotification(it)
-//            }
+            params?.extras?.getString(EXTRA_AIRPOD_NAME)?.let { airpodName = it }
+            params?.extras?.getString(EXTRA_AIRPOD_MODEL)?.let {
+                airpodModel = it.jsonToAirpodModel()
+                onScanResult(airpodModel!!)
+            }
 
             scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
 
@@ -43,6 +54,11 @@ class NotificationJobService : JobService() {
         Log.d(TAG, "onStopJob w/ params: $params")
         scannerUtil.stopScan()
         NotificationUtil.clearNotification(baseContext)
+        jobFinished(params, false)
+
+        airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
+        airpodName?.let { EventBus.getDefault().post(UpdateNameIntent(it)) }
+
         return true
     }
 
@@ -50,6 +66,16 @@ class NotificationJobService : JobService() {
         NotificationUtil.clearNotification(baseContext)
         stopSelf()
         super.onTaskRemoved(rootIntent)
+    }
+
+    private fun onScanResult(airpodModel: AirpodModel) {
+        Log.d(TAG, "onScanResult")
+        notificationUtil.onScanResult(airpodModel)
+    }
+
+    private fun String.jsonToAirpodModel(): AirpodModel {
+        val gson = Gson()
+        return gson.fromJson(this, AirpodModel::class.java)
     }
 
     companion object {

@@ -14,6 +14,7 @@ class AirpodLeScanCallback constructor(
     private val broadcastUpdate: (AirpodModel) -> Unit
 ) : ScanCallback() {
 
+
     override fun onBatchScanResults(results: List<ScanResult>) {
         for (result in results) {
             onScanResult(-1, result)
@@ -66,12 +67,9 @@ class AirpodLeScanCallback constructor(
         var strongestBeacon: ScanResult? = null
         var i = 0
 
+        filterOldBeacons()
+
         while (i < recentBeacons.size) {
-            if (SystemClock.elapsedRealtimeNanos() - recentBeacons[i].timestampNanos > RECENT_BEACONS_MAX_T_NS) {
-                recentBeacons.removeAt(i--)
-                i++
-                continue
-            }
             if (strongestBeacon == null || strongestBeacon.rssi < recentBeacons[i].rssi) {
                 strongestBeacon = recentBeacons[i]
             }
@@ -99,10 +97,25 @@ class AirpodLeScanCallback constructor(
         private const val TAG = "AirpodLEScanCallback"
         private const val RECENT_BEACONS_MAX_T_NS = 10000000000L //10s
 
+        private const val MIN_RSSI_RELAXED = -75
+        private const val MIN_RSSI_STRICT = -60
+
         // Minimum received signal strength indication that airpods can have to be considered ours
-        private const val MIN_RSSI = -75
+        private val MIN_RSSI: Int
+            get() {
+                filterOldBeacons()
+                return if (recentBeacons.size > 1) {
+                    MIN_RSSI_STRICT
+                } else {
+                    MIN_RSSI_RELAXED
+                }
+            }
 
         private val ENABLE_SCAN_LOGGING
             get() = BuildConfig.BUILD_TYPE == "debugScanLoggingEnabled"
+
+        private fun filterOldBeacons() {
+            recentBeacons.removeAll { SystemClock.elapsedRealtimeNanos() - it.timestampNanos > RECENT_BEACONS_MAX_T_NS }
+        }
     }
 }

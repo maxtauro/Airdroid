@@ -18,15 +18,13 @@ import com.maxtauro.airdroid.EXTRA_DEVICE
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.notification.NotificationJobService
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
 import com.maxtauro.airdroid.utils.NotificationJobSchedulerUtil
 import com.maxtauro.airdroid.utils.NotificationUtil
 import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class DeviceStatusFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
@@ -141,9 +139,12 @@ class DeviceStatusFragment :
         )
     }
 
-    private fun stopNotificationService(context: Context) = GlobalScope.launch(Dispatchers.Main) {
-        NotificationUtil.clearNotification(context)
+    private fun stopNotificationService(context: Context) {
         NotificationJobSchedulerUtil.cancelJob(context)
+        Intent(activity, NotificationJobService::class.java).also { intent ->
+            activity?.stopService(intent)
+        }
+        NotificationUtil.clearNotification(context)
     }
 
     companion object {

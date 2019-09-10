@@ -19,7 +19,7 @@ class PreferenceDialog : DialogFragment() {
     private var isOpenAppEnabled = true
     private var isNotificationEnabled = true
 
-    var preferences: SharedPreferences? = null
+    private var preferences: SharedPreferences? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         preferences = activity?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME, MODE_PRIVATE)

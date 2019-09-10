@@ -3,7 +3,6 @@ package com.maxtauro.airdroid.utils
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.util.Log
 
@@ -14,17 +13,30 @@ class BluetoothScannerUtil {
     private val scanner = bluetoothAdapter?.bluetoothLeScanner
     private val scanFilters = getScanFilters()
 
+    private lateinit var scanCallback: ScanCallback
+
     var isScanning: Boolean = false
         private set
 
     fun startScan(scanCallback: ScanCallback, scanMode: Int) {
         if (isScanning) return
 
+        this.scanCallback = scanCallback
         val scanSettings = ScanSettings.Builder().setScanMode(scanMode).setReportDelay(2).build()
 
         Log.d(TAG, "Starting bluetooth scan")
         scanner?.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
+    }
+
+    fun stopScan() {
+        if (!isScanning) return
+
+        check(::scanCallback.isInitialized) { "Trying to Stop scan that has no ScanCallback initialized" }
+
+        scanner?.flushPendingScanResults(scanCallback)
+        scanner?.stopScan(scanCallback)
+        isScanning = false
     }
 
     private fun getScanFilters(): List<ScanFilter> {
@@ -40,20 +52,6 @@ class BluetoothScannerUtil {
         val builder = ScanFilter.Builder()
         builder.setManufacturerData(76, manufacturerData, manufacturerDataMask)
         return listOf(builder.build())
-    }
-
-    fun stopScan() {
-        scanner?.stopScan(object : ScanCallback() {
-            override fun onScanResult(callbackType: Int, result: ScanResult) {
-                scanner.flushPendingScanResults(object : ScanCallback() {
-                    override fun onScanResult(callbackType: Int, result: ScanResult) {}
-                })
-
-
-                Log.d(TAG, "Scan Stopped")
-            }
-        })
-        isScanning = false
     }
 
     companion object {

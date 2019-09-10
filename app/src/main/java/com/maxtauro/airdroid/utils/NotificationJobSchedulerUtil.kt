@@ -26,7 +26,7 @@ object NotificationJobSchedulerUtil {
         airpodModel: AirpodModel? = null,
         deviceName: String? = null
     ) {
-        Log.d(TAG, "Attempting to schedule Notification Job")
+        Log.d(TAG, "Attempting to schedule Notification Job from $context")
 
         val serviceComponent = ComponentName(context, NotificationJobService::class.java)
         val builder = JobInfo.Builder(JOB_ID, serviceComponent)
