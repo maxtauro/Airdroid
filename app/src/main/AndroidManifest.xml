@@ -2,49 +2,51 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.maxtauro.airdroid">
 
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="true"/>
+            android:name="android.hardware.bluetooth_le"
+            android:required="true" />
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.Transparent">
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme.Transparent">
 
         <meta-data
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
-                android:value="@string/APP_AD_ID"/>
+                android:value="@string/APP_AD_ID" />
 
         <activity android:name="com.maxtauro.airdroid.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"  android:exported="true">
+        <receiver
+                android:name="com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"
+                android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_INSTALL" />
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
             </intent-filter>
         </receiver>
 
-        <service android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService"/>
-        <service android:name="com.maxtauro.airdroid.notification.NotificationService"/>
-        <service android:name="com.maxtauro.airdroid.bluetooth.services.UnlockService"/>
+        <service android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService" />
+        <service
+                android:name=".notification.NotificationJobService"
+                android:label="Word service"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

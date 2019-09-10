@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,18 +16,15 @@ import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.EXTRA_DEVICE
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
-import com.maxtauro.airdroid.bluetooth.services.UnlockService
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
-import com.maxtauro.airdroid.notification.NotificationService
-import com.maxtauro.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_MODEL
-import com.maxtauro.airdroid.notification.NotificationService.Companion.EXTRA_AIRPOD_NAME
+import com.maxtauro.airdroid.notification.NotificationJobService
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
+import com.maxtauro.airdroid.utils.NotificationJobSchedulerUtil
+import com.maxtauro.airdroid.utils.NotificationUtil
+import com.maxtauro.airdroid.utils.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class DeviceStatusFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
@@ -75,27 +71,23 @@ class DeviceStatusFragment :
     override fun onResume() {
         super.onResume()
 
-        // When ever the app comes into the foreground we clear the notification
+        // Whenever the app comes into the foreground we clear the notification
         context?.let { stopNotificationService(it) }
 
         // Here we check if a head set (ie airpods) is connected to our device
         // Unfortunately there is no way to check is some thing that airpods are connected
         // So we just start the scan if something might be connected
-        Handler().postDelayed(
-            {
-                if (connectionState == 2 || connectionState == 1) {
-                    activity?.intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let {
-                        actionIntentsRelay.accept(UpdateNameIntent(it))
-                    }.orElse {
-                        val deviceName =
-                            (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
-                                ?: ""
-                        actionIntentsRelay.accept(ConnectedIntent(deviceName))
-                    }
-                }
-            },
-            200
-        )
+        if (connectionState == 2 || connectionState == 1) {
+            activity?.intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let {
+                actionIntentsRelay.accept(UpdateNameIntent(it))
+            }.orElse {
+                val deviceName =
+                    (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
+                        ?: ""
+                actionIntentsRelay.accept(ConnectedIntent(deviceName))
+            }
+        }
+
     }
 
     override fun onPause() {
@@ -105,10 +97,8 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
-            startNotificationService()
+            context?.let { scheduleNotificationJob(it) }
         }
-
-        context?.startServiceIfDeviceUnlocked(Intent(context, UnlockService::class.java))
     }
 
     override fun actionIntents() = actionIntentsRelay
@@ -141,19 +131,20 @@ class DeviceStatusFragment :
         }
     }
 
-    private fun startNotificationService() {
-        Intent(activity, NotificationService::class.java).also { intent ->
-            intent.putExtra(EXTRA_AIRPOD_MODEL, viewModel.airpods)
-            intent.putExtra(EXTRA_AIRPOD_NAME, viewModel.deviceName)
-            activity?.startServiceIfDeviceUnlocked(intent)
-        }
+    private fun scheduleNotificationJob(context: Context) {
+        NotificationJobSchedulerUtil.scheduleJob(
+            context = context,
+            airpodModel = viewModel.airpods,
+            deviceName = viewModel.deviceName
+        )
     }
 
-    private fun stopNotificationService(context: Context) = GlobalScope.launch(Dispatchers.Main) {
-        NotificationService.clearNotification(context)
-        Intent(activity, NotificationService::class.java).also { intent ->
+    private fun stopNotificationService(context: Context) {
+        NotificationJobSchedulerUtil.cancelJob(context)
+        Intent(activity, NotificationJobService::class.java).also { intent ->
             activity?.stopService(intent)
         }
+        NotificationUtil.clearNotification(context)
     }
 
     companion object {
