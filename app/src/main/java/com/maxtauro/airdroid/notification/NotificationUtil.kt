@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.utils
+package com.maxtauro.airdroid.notification
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -10,8 +10,8 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.notification.NotificationView
 
 class NotificationUtil(
     private val context: Context,
@@ -45,10 +45,14 @@ class NotificationUtil(
 
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationBuilder = NotificationCompat.Builder(context, TAG)
+        notificationBuilder = NotificationCompat.Builder(context,
+            TAG
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //on oreo and newer, create a notification channel
-            val channel = NotificationChannel(TAG, TAG, NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                TAG,
+                TAG, NotificationManager.IMPORTANCE_DEFAULT)
             channel.enableVibration(false)
             channel.enableLights(false)
             channel.setSound(null, null)
@@ -57,6 +61,7 @@ class NotificationUtil(
             notificationManager.createNotificationChannel(channel)
         }
 
+        notificationBuilder.setVisibility(VISIBILITY_PUBLIC)
         notificationBuilder.setShowWhen(false)
         notificationBuilder.setOngoing(true)
 
@@ -75,7 +80,9 @@ class NotificationUtil(
         Log.d(TAG, "onScanResult")
         if (airpodModel.isConnected) {
             renderNotification(airpodModel)
-        } else clearNotification(context)
+        } else clearNotification(
+            context
+        )
     }
 
     private fun renderNotification(airpodModel: AirpodModel) {
