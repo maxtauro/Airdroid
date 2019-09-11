@@ -20,7 +20,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     // we will use the same model for both, if they start getting different we will separate them out
     fun render(airpods: AirpodModel) {
         if (airpods.isConnected) renderConnected(airpods)
-        else throw IllegalStateException("Trying to Render notification with no AirPod Connected.  $airpods")
+        else throw IllegalArgumentException("Trying to Render notification with no AirPod Connected.  $airpods")
     }
 
     private fun renderConnected(airpods: AirpodModel) {
@@ -31,6 +31,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     private fun renderLeftPiece(leftAirpod: AirpodPiece) {
         if (leftAirpod.isConnected) {
+            setViewVisibility(R.id.left_airpod_piece, View.VISIBLE)
             setImageViewResource(R.id.left_airpod_piece_img, R.drawable.left_pod)
             renderChargeImg(
                 leftAirpod.isCharging,
@@ -43,6 +44,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     private fun renderCase(case: AirpodPiece) {
         if (case.isConnected) {
+            setViewVisibility(R.id.case_airpod_piece, View.VISIBLE)
             setImageViewResource(R.id.case_airpod_piece_img, R.drawable.pod_case)
             renderChargeImg(
                 case.isCharging,
@@ -55,6 +57,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     private fun renderRightPiece(rightAirpod: AirpodPiece) {
         if (rightAirpod.isConnected) {
+            setViewVisibility(R.id.right_airpod_piece, View.VISIBLE)
             setImageViewResource(R.id.right_airpod_piece_img, R.drawable.right_pod)
             renderChargeImg(
                 rightAirpod.isCharging,

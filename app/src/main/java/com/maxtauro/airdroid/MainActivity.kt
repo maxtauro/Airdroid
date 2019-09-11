@@ -29,9 +29,6 @@ class MainActivity : AppCompatActivity() {
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
-    private val REQUEST_ENABLE_BT = 1000 //TODO move this somewhere else
-    private val REQUEST_ENABLE_COARSE_LOCATION = 1001
-
     private val isLocationPermissionEnabled
         get() = ContextCompat.checkSelfPermission(
             this,
@@ -83,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        mIsActivityRunning = false
         finish()
     }
 
@@ -168,5 +166,10 @@ class MainActivity : AppCompatActivity() {
 
     fun closeWindow(view: View) {
         finish()
+    }
+
+    companion object {
+        private const val REQUEST_ENABLE_BT = 1000
+        private const val REQUEST_ENABLE_COARSE_LOCATION = 1001
     }
 }
