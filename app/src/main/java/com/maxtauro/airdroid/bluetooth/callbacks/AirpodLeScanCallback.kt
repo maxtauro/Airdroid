@@ -42,7 +42,7 @@ class AirpodLeScanCallback constructor(
 
             val strongestBeaconResult: ScanResult? = getStrongestBeacon(result)
 
-            if (strongestBeaconResult == null) println("Strongest Beacon is null :(")
+            if (strongestBeaconResult == null) Log.d(TAG, "Strongest Beacon is null")
 
             if ((it.size != 27 || strongestBeaconResult == null) && recentBeacons.isNotEmpty()) {
                 return null
