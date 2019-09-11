@@ -25,7 +25,7 @@ android {
             buildConfigField "String", "BUILD_VARIANT", "\"release\""
             minifyEnabled true
             resValue "string" , "RELEASE_AD_UNIT_ID" ,  "\"$RELEASE_AD_UNIT_ID\""
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
 
         debugScanLoggingEnabled {
