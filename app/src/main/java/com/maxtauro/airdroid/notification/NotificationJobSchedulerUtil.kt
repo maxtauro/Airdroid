@@ -19,7 +19,7 @@ object NotificationJobSchedulerUtil {
     private const val TAG = "NotificationJobSchedulerUtil"
     private const val JOB_ID = 1001
 
-    // schedule the start of the service every 30 seconds
+    // schedule the service so that we try to start every 2s
     fun scheduleJob(
         context: Context,
         airpodModel: AirpodModel? = null,
@@ -36,8 +36,8 @@ object NotificationJobSchedulerUtil {
         )
         builder.setExtras(bundle)
 
-        builder.setMinimumLatency((1 * 1000).toLong()) // wait at least
-        builder.setOverrideDeadline((3 * 1000).toLong()) // maximum delay
+        builder.setMinimumLatency(0L) // wait at least
+        builder.setOverrideDeadline(2000L) // maximum delay
         val jobScheduler = getSystemService(context, JobScheduler::class.java)
         jobScheduler?.schedule(builder.build())
 

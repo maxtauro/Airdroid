@@ -108,7 +108,11 @@ class AirpodLeScanCallback constructor(
                 // If there are multiple airpods nearby, we make the min rssi strict
                 // this will slow down the time until we get a strongest beacon but
                 // will ensure that the user isn't getting invalid data
-                return if (recentBeacons.distinctBy { it.device.address }.size > 1) {
+                return if (recentBeacons
+                        .distinctBy { it.device.address }
+                        .filter { it.rssi > MIN_RSSI_RELAXED }
+                        .size > 1
+                ) {
                     MIN_RSSI_STRICT
                 } else {
                     MIN_RSSI_RELAXED

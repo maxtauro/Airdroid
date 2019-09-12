@@ -116,6 +116,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupAds() {
+        // I know it'd be very easy to build my app and remove the ad
+        // please don't remove it, it's a super unintrusive ad that gives
+        // me a very very small amount of revenue for an app that
+        // I've worked hard to give away for free
         MobileAds.initialize(this, getString(R.string.APP_AD_ID))
 
         val adView: AdView = findViewById(R.id.adView)

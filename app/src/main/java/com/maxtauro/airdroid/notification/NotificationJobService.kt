@@ -53,8 +53,8 @@ class NotificationJobService : JobService() {
     override fun onStopJob(params: JobParameters?): Boolean {
         Log.d(TAG, "onStopJob w/ params: $params")
         scannerUtil.stopScan()
-        NotificationUtil.clearNotification(baseContext)
         jobFinished(params, false)
+        NotificationUtil.clearNotification(baseContext)
 
         airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
         airpodName?.let { EventBus.getDefault().post(UpdateNameIntent(it)) }
@@ -63,6 +63,8 @@ class NotificationJobService : JobService() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        scannerUtil.stopScan()
+        NotificationJobSchedulerUtil.cancelJob(baseContext)
         NotificationUtil.clearNotification(baseContext)
         stopSelf()
         super.onTaskRemoved(rootIntent)
