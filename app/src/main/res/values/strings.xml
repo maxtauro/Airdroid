@@ -14,4 +14,6 @@
     <string name="opening_preference">Automatically open app when AirPods are connected</string>
     <string name="show_notification_preference">Show Battery in Notification</string>
     <string name="location_services_need_to_be_enabled_for_this_application_to_work">Location Services need to be enabled for this application to work</string>
+    <string name="notification_channel_name">AirPod Status</string>
+    <string name="display_over_other_apps"><![CDATA[In the following screen, please go to Advanced > Display over other apps and enable "Allow display over other apps"]]></string>
 </resources>

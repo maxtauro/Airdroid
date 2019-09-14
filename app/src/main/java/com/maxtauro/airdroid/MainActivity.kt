@@ -3,10 +3,14 @@ package com.maxtauro.airdroid
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +30,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deviceStatusFragment: DeviceStatusFragment
 
     lateinit var settingsButton: FloatingActionButton
+    lateinit var  preferences: SharedPreferences
+
+    private val shouldShowSystemAlertWindowDialog: Boolean
+        get() = preferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
@@ -35,11 +43,24 @@ class MainActivity : AppCompatActivity() {
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
+    private val isSystemAlertWindowPermissionGranted
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(this)
+        } else {
+            true
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setupAds()
+
+        preferences = getSharedPreferences(
+            SHARED_PREFERENCE_FILE_NAME,
+            Context.MODE_PRIVATE
+        )
+            ?: throw IllegalStateException("Preferences haven't been initialized yet")
 
         deviceStatusFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
@@ -55,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         if (!isLocationPermissionEnabled) {
             showLocationPermissionDialog()
-        }
+        } else requestSystemAlertWindowPermission()
 
         if (bluetoothAdapter == null) {
             showBluetoothNotSupportedAlertDialog()
@@ -109,7 +130,8 @@ class MainActivity : AppCompatActivity() {
                 )
             ) {
                 showLocationPermissionDialog()
-            }
+            } else requestSystemAlertWindowPermission()
+
             deviceStatusFragment.actionIntents().accept(ReRenderIntent)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -146,7 +168,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLocationPermissionDialog() {
-
         AlertDialog.Builder(this)
             .setMessage(getString(R.string.location_permission_explanation_message))
             .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
@@ -168,6 +189,17 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private fun requestSystemAlertWindowPermission() {
+        if (!isSystemAlertWindowPermissionGranted &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+            shouldShowSystemAlertWindowDialog
+        ) {
+            showSystemAlertWindowDialog()
+            preferences.edit().putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, false)
+                .apply()
+        }
+    }
+
     fun closeWindow(view: View) {
         finish()
     }
@@ -175,5 +207,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_ENABLE_BT = 1000
         private const val REQUEST_ENABLE_COARSE_LOCATION = 1001
+        private const val REQUEST_ENABLE_SYSTEM_ALERT_WINDOW = 1002
     }
 }

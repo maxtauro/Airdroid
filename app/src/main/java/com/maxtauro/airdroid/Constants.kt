@@ -1,8 +1,12 @@
 package com.maxtauro.airdroid
 
+import android.app.AlertDialog
 import android.app.KeyguardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 
@@ -15,6 +19,9 @@ const val SHARED_PREFERENCE_FILE_NAME = "AirDroid.SHARED_PREFERENCE_FILE_NAME"
 
 const val NOTIFICATION_PREF_KEY = "9999"
 const val OPEN_APP_PREF_KEY = "9998"
+const val SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY = "9997"
+
+
 inline fun <R> R?.orElse(block: () -> R): R {
     return this ?: block()
 }
@@ -35,4 +42,20 @@ fun Context?.startServiceIfDeviceUnlocked(intent: Intent) {
         Crashlytics.logException(IllegalStateException(msg))
         Log.d(this?.javaClass?.simpleName, msg)
     }
+}
+
+fun Context.showSystemAlertWindowDialog(onCancel: () -> Unit = {}) {
+    AlertDialog.Builder(this)
+        .setMessage(getString(R.string.display_over_other_apps))
+        .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
+            startActivity(
+                Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:$packageName")
+                )
+            )
+        }
+        .setOnCancelListener { onCancel() }
+        .create()
+        .show()
 }

@@ -5,7 +5,9 @@ import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Switch
@@ -20,6 +22,13 @@ class PreferenceDialog : DialogFragment() {
     private var isNotificationEnabled = true
 
     private var preferences: SharedPreferences? = null
+
+    private val isSystemAlertWindowPermissionGranted
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Settings.canDrawOverlays(context)
+        } else {
+            true
+        }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         preferences = activity?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME, MODE_PRIVATE)
@@ -41,7 +50,7 @@ class PreferenceDialog : DialogFragment() {
         preferences?.let {
             val editor = preferences!!.edit()
 
-            editor.putBoolean(OPEN_APP_PREF_KEY, isOpenAppEnabled)
+            editor.putBoolean(OPEN_APP_PREF_KEY, isOpenAppEnabled && isSystemAlertWindowPermissionGranted)
             editor.putBoolean(NOTIFICATION_PREF_KEY, isNotificationEnabled)
 
             editor.apply()
@@ -57,12 +66,21 @@ class PreferenceDialog : DialogFragment() {
 
         openAppSwitch.setOnCheckedChangeListener { _, isChecked ->
             isOpenAppEnabled = isChecked
+
+            if (isChecked &&
+                !isSystemAlertWindowPermissionGranted &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+            ) {
+                context?.showSystemAlertWindowDialog {
+                    openAppSwitch.isChecked = isOpenAppEnabled && isSystemAlertWindowPermissionGranted
+                }
+            }
         }
         showNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             isNotificationEnabled = isChecked
         }
 
-        openAppSwitch.isChecked = isOpenAppEnabled
+        openAppSwitch.isChecked = isOpenAppEnabled && isSystemAlertWindowPermissionGranted
         showNotificationSwitch.isChecked = isNotificationEnabled
 
         return view

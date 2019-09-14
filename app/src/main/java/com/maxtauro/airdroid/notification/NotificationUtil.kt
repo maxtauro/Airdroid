@@ -45,14 +45,17 @@ class NotificationUtil(
 
         notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationBuilder = NotificationCompat.Builder(context,
+        notificationBuilder = NotificationCompat.Builder(
+            context,
             TAG
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //on oreo and newer, create a notification channel
             val channel = NotificationChannel(
                 TAG,
-                TAG, NotificationManager.IMPORTANCE_DEFAULT)
+                context.getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             channel.enableVibration(false)
             channel.enableLights(false)
             channel.setSound(null, null)

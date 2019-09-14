@@ -3,7 +3,6 @@ package com.maxtauro.airdroid.notification
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.bluetooth.le.ScanSettings
-import android.content.Intent
 import android.util.Log
 import com.google.gson.Gson
 import com.maxtauro.airdroid.AirpodModel
@@ -54,7 +53,6 @@ class NotificationJobService : JobService() {
         Log.d(TAG, "onStopJob w/ params: $params")
         scannerUtil.stopScan()
         jobFinished(params, false)
-        NotificationUtil.clearNotification(baseContext)
 
         airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
         airpodName?.let { EventBus.getDefault().post(UpdateNameIntent(it)) }
@@ -62,17 +60,10 @@ class NotificationJobService : JobService() {
         return true
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        scannerUtil.stopScan()
-        NotificationJobSchedulerUtil.cancelJob(baseContext)
-        NotificationUtil.clearNotification(baseContext)
-        stopSelf()
-        super.onTaskRemoved(rootIntent)
-    }
-
     private fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult")
         notificationUtil.onScanResult(airpodModel)
+        stopSelf()
     }
 
     private fun String.jsonToAirpodModel(): AirpodModel {

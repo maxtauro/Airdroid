@@ -40,6 +40,7 @@ class AirpodPieceView @JvmOverloads constructor(
 
     fun renderDisconnected(airpodPiece: AirpodPiece) {
         airpodPieceImg.setImageResource(getImgResId(airpodPiece.whichPiece, isConnected = false))
+        airpodPieceImg.visibility = View.VISIBLE
 
         airpodPieceProgressBar.visibility = View.INVISIBLE
         airpodPieceChargeImg.visibility = View.INVISIBLE
