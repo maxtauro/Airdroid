@@ -24,6 +24,7 @@ import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
+import com.maxtauro.airdroid.utils.RssiUpdateSchedulerUtil
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
@@ -97,6 +98,7 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
+            context?.let { scheduleRssiUpdateJob(it) }
             context?.let { scheduleNotificationJob(it) }
         }
     }
@@ -137,6 +139,10 @@ class DeviceStatusFragment :
             airpodModel = viewModel.airpods,
             deviceName = viewModel.deviceName
         )
+    }
+
+    private fun scheduleRssiUpdateJob(context: Context) {
+        RssiUpdateSchedulerUtil.scheduleJob(context)
     }
 
     private fun stopNotificationService(context: Context) {

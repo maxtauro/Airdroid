@@ -4,13 +4,13 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirpodModel(
+data class AirpodModel constructor(
     val leftAirpod: AirpodPiece,
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
     val lastConnected: Long = System.currentTimeMillis(),
-    val macAddress: String = ""
-
+    val macAddress: String = "",
+    val rssi: Int? = null
 ) : Parcelable {
 
     val isConnected
@@ -24,15 +24,21 @@ data class AirpodModel(
         )
 
         // TODO figure out how to parse 5% increments from the manufacturer data
-        fun create(manufacturerSpecificData: ByteArray, address: String): AirpodModel {
+        fun create(manufacturerSpecificData: ByteArray, address: String, rssi: Int): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
-                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[12].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(
+                    decodedHexResult[12].toString(),
+                    16
+                )
                 else Integer.parseInt(decodedHexResult[13].toString(), 16)) * 10
 
             val rightChargeLevel =
-                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[13].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(
+                    decodedHexResult[13].toString(),
+                    16
+                )
                 else Integer.parseInt(decodedHexResult[12].toString(), 16)) * 10
 
             val caseChargeLevel = Integer.parseInt(decodedHexResult[15].toString(), 16) * 10
@@ -73,7 +79,8 @@ data class AirpodModel(
                     WhichPiece.CASE,
                     true
                 ),
-                macAddress = address
+                macAddress = address,
+                rssi = rssi
             )
         }
 
@@ -82,7 +89,8 @@ data class AirpodModel(
         }
 
         private fun ByteArray.toHexString() = joinToString("") {
-            Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0').toUpperCase()
+            Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0')
+                .toUpperCase()
         }
     }
 }

@@ -46,7 +46,7 @@ object NotificationJobSchedulerUtil {
 
     fun cancelJob(context: Context) {
         val jobScheduler = getSystemService(context, JobScheduler::class.java)
-        jobScheduler?.cancelAll()
+        jobScheduler?.cancel(JOB_ID)
 
         NotificationUtil.clearNotification(context)
         Log.d(TAG, "Notification Job Canceled")

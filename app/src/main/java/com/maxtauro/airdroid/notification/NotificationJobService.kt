@@ -63,7 +63,6 @@ class NotificationJobService : JobService() {
     private fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult")
         notificationUtil.onScanResult(airpodModel)
-        stopSelf()
     }
 
     private fun String.jsonToAirpodModel(): AirpodModel {

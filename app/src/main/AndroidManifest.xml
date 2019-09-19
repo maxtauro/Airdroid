@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
             android:name="android.hardware.bluetooth_le"
@@ -47,6 +47,9 @@
         <service
                 android:name=".notification.NotificationJobService"
                 android:label="Word service"
+                android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+                android:name=".bluetooth.services.RssiUpdateService"
                 android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 

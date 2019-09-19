@@ -13,6 +13,7 @@ import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
 import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
 import com.maxtauro.airdroid.notification.NotificationJobService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.utils.RssiUpdateSchedulerUtil
 import org.greenrobot.eventbus.EventBus
 
 @SuppressLint("LongLogTag")
@@ -40,6 +41,10 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 TAG,
                 "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}"
             )
+
+            mConnectedDevice = it
+
+            scheduleRssiUpdateJob(context)
 
             if (isActivityInForeground) {
                 eventBus.post(ConnectedIntent(connectedDevice.name))
@@ -70,7 +75,12 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 TAG,
                 "Device Disconnected, Name: ${disconnectedDevice.name}, Address: ${disconnectedDevice.address}"
             )
+
+            mConnectedDevice = null
         }
+
+        stopRssiUpdateService(context)
+
         if (isActivityInForeground) {
             eventBus.post(DisconnectedIntent)
         } else {
@@ -101,6 +111,15 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             context = context,
             deviceName = connectedDevice.name
         )
+    }
+
+    private fun scheduleRssiUpdateJob(context: Context) {
+        RssiUpdateSchedulerUtil.scheduleJob(context)
+    }
+
+
+    private fun stopRssiUpdateService(context: Context) {
+        RssiUpdateSchedulerUtil.cancelJob(context)
     }
 
     private fun startMainActivity(context: Context, connectedDevice: BluetoothDevice) {

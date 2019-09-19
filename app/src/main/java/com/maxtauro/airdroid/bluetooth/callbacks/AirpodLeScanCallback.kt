@@ -55,7 +55,8 @@ class AirpodLeScanCallback constructor(
 
             return AirpodModel.create(
                 manufacturerSpecificData,
-                resultToProcess.device.address
+                resultToProcess.device.address,
+                resultToProcess.rssi
             )
         }
 
