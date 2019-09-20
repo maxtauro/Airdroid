@@ -1,5 +1,6 @@
 package com.maxtauro.airdroid
 
+import android.os.Build
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
@@ -78,12 +79,42 @@ data class AirpodModel(
         }
 
         private fun isFlipped(str: String): Boolean {
-            return Integer.toString(Integer.parseInt("" + str[10], 16) + 0x10, 2)[3] == '0'
+            return (Integer.parseInt("" + str[10], 16) + 0x10).toString(2)[3] == '0'
         }
 
-        private fun ByteArray.toHexString() = joinToString("") {
-            Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0').toUpperCase()
-        }
+        private fun ByteArray.toHexString() =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) joinToString("") {
+                Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0').toUpperCase()
+            } else {
+                val hexChars = CharArray(this.size * 2)
+                for (j in this.indices) {
+                    val v = this[j].toInt() and 0xFF // Here is the conversion
+                    hexChars[j * 2] = hexCharset[v.ushr(4)]
+                    hexChars[j * 2 + 1] = hexCharset[v and 0x0F]
+                }
+                String(hexChars)
+            }
+
+
+        private val hexCharset = charArrayOf(
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F'
+        )
+
     }
 }
 

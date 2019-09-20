@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
 
     private val isSystemAlertWindowPermissionGranted
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Settings.canDrawOverlays(this)
         } else {
             true
