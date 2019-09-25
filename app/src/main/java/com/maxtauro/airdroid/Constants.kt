@@ -2,6 +2,8 @@ package com.maxtauro.airdroid
 
 import android.app.AlertDialog
 import android.app.KeyguardManager
+import android.bluetooth.BluetoothA2dp
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -59,3 +61,10 @@ fun Context.showSystemAlertWindowDialog(onCancel: () -> Unit = {}) {
         .create()
         .show()
 }
+
+val isHeadsetConnected: Boolean
+    get() {
+        val connectionState = BluetoothAdapter.getDefaultAdapter()
+            ?.getProfileConnectionState(BluetoothA2dp.HEADSET)
+        return (connectionState == 2 || connectionState == 1)
+    }
