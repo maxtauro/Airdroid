@@ -43,7 +43,13 @@ class PreferenceDialog : DialogFragment() {
             .setPositiveButton("Save") { _: DialogInterface, i: Int ->
                 dismiss()
             }
-        return builder.create()
+
+        val dialog = builder.create()
+
+        // TODO will implement this once the flickering background bug is fixed
+//        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation //style id
+
+        return dialog
     }
 
     override fun onDismiss(dialog: DialogInterface) {

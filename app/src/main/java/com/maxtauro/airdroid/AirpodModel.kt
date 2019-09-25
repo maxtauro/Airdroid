@@ -17,6 +17,17 @@ data class AirpodModel(
     val isConnected
         get() = leftAirpod.isConnected || rightAirpod.isConnected
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as AirpodModel
+
+        return leftAirpod == other.leftAirpod &&
+                rightAirpod == other.rightAirpod &&
+                case == other.case
+    }
+
     companion object {
         val EMPTY = AirpodModel(
             AirpodPiece.LEFT_EMPTY,
@@ -29,11 +40,17 @@ data class AirpodModel(
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
-                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[12].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(
+                    decodedHexResult[12].toString(),
+                    16
+                )
                 else Integer.parseInt(decodedHexResult[13].toString(), 16)) * 10
 
             val rightChargeLevel =
-                (if (isFlipped(decodedHexResult)) Integer.parseInt(decodedHexResult[13].toString(), 16)
+                (if (isFlipped(decodedHexResult)) Integer.parseInt(
+                    decodedHexResult[13].toString(),
+                    16
+                )
                 else Integer.parseInt(decodedHexResult[12].toString(), 16)) * 10
 
             val caseChargeLevel = Integer.parseInt(decodedHexResult[15].toString(), 16) * 10
@@ -84,7 +101,8 @@ data class AirpodModel(
 
         private fun ByteArray.toHexString() =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) joinToString("") {
-                Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0').toUpperCase()
+                Integer.toUnsignedString(java.lang.Byte.toUnsignedInt(it), 16).padStart(2, '0')
+                    .toUpperCase()
             } else {
                 val hexChars = CharArray(this.size * 2)
                 for (j in this.indices) {
