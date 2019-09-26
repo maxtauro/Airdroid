@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
+import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
 import com.maxtauro.airdroid.mainfragment.presenter.UpdateNameIntent
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
@@ -54,8 +55,10 @@ class NotificationJobService : JobService() {
         scannerUtil.stopScan()
         jobFinished(params, false)
 
-        airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
-        airpodName?.let { EventBus.getDefault().post(UpdateNameIntent(it)) }
+         if (isHeadsetConnected) {
+             airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
+             airpodName?.let { EventBus.getDefault().post(UpdateNameIntent(it)) }
+         }
 
         return true
     }

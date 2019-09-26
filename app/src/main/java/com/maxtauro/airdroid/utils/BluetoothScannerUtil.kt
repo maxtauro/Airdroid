@@ -5,6 +5,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 
 class BluetoothScannerUtil {
 
@@ -32,6 +33,18 @@ class BluetoothScannerUtil {
     fun stopScan() {
         if (!isScanning) return
 
+        if (!bluetoothAdapter.isBluetoothAvailable()) {
+            try {
+                scanner?.stopScan(scanCallback)
+            } catch (e: IllegalStateException) {
+                val msg = e.message + " Thrown after failing to stop scan"
+                Crashlytics.logException(IllegalStateException(msg))
+            }
+
+            isScanning = false
+            return
+        }
+
         check(::scanCallback.isInitialized) { "Trying to Stop scan that has no ScanCallback initialized" }
 
         scanner?.flushPendingScanResults(scanCallback)
@@ -56,5 +69,9 @@ class BluetoothScannerUtil {
 
     companion object {
         private const val TAG = "BluetoothScannerUtil"
+
+        private fun BluetoothAdapter?.isBluetoothAvailable() =
+            this != null && this.isEnabled && this.state == BluetoothAdapter.STATE_ON
+
     }
 }

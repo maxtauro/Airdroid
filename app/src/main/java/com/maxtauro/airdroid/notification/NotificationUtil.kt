@@ -4,6 +4,8 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.bluetooth.BluetoothA2dp
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -27,6 +29,14 @@ class NotificationUtil(
     private lateinit var smallNotificationView: NotificationView
 
     private lateinit var airpodName: String
+
+    private val isHeadsetConnected: Boolean
+        get() {
+            val connectionState = BluetoothAdapter.getDefaultAdapter()
+                ?.getProfileConnectionState(BluetoothA2dp.HEADSET)
+            return (connectionState == 2 || connectionState == 1)
+        }
+
     private lateinit var airpodModel: AirpodModel
 
     val isNotificationEnabled: Boolean
@@ -81,7 +91,7 @@ class NotificationUtil(
 
     fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult")
-        if (airpodModel.isConnected) {
+        if (airpodModel.isConnected && isHeadsetConnected) {
             renderNotification(airpodModel)
         } else clearNotification(
             context
@@ -89,6 +99,7 @@ class NotificationUtil(
     }
 
     private fun renderNotification(airpodModel: AirpodModel) {
+        if (this::airpodModel.isInitialized && airpodModel == this.airpodModel) return
 
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel

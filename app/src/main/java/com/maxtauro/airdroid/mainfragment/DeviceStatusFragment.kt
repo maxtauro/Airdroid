@@ -86,6 +86,11 @@ class DeviceStatusFragment :
                         ?: ""
                 actionIntentsRelay.accept(ConnectedIntent(deviceName))
             }
+        } else {
+            // When we resume the activity and nothing is connected, we need to
+            // explicitly post the DisconnectedIntent or else the previous viewModel will just
+            // be rendered again (since Mosby persists the viewModel).
+            actionIntentsRelay.accept(DisconnectedIntent)
         }
 
     }
@@ -93,9 +98,8 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
         actionIntentsRelay.accept(StopScanIntent)
-        if (viewModel.airpods.isConnected ||
-            connectionState == 2 ||
-            connectionState == 1
+        if (viewModel.airpods.isConnected &&
+            (connectionState == 2 || connectionState == 1)
         ) {
             context?.let { scheduleNotificationJob(it) }
         }
