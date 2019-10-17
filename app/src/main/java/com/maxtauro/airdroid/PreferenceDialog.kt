@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment
 
 class PreferenceDialog : DialogFragment() {
 
-    private lateinit var onUiModeChanged: () -> Unit
+    lateinit var onUiModeChanged: () -> Unit
 
     private lateinit var openAppSwitch: Switch
     private lateinit var showNotificationSwitch: Switch

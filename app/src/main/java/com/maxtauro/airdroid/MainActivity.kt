@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deviceStatusFragment: DeviceStatusFragment
 
     lateinit var settingsButton: FloatingActionButton
-    lateinit var  preferences: SharedPreferences
+    lateinit var preferences: SharedPreferences
 
     private val shouldShowSystemAlertWindowDialog: Boolean
         get() = preferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
@@ -68,7 +68,16 @@ class MainActivity : AppCompatActivity() {
 
         settingsButton = findViewById(R.id.settings_btn)
         settingsButton.setOnClickListener {
-            PreferenceDialog.newInstance(::refreshUiMode).show(supportFragmentManager, "PreferenceDialog")
+            PreferenceDialog.newInstance(::refreshUiMode)
+                .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
+        }
+
+        rebindDialog()
+    }
+
+    private fun rebindDialog() {
+        (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
+            this.onUiModeChanged = this@MainActivity::refreshUiMode
         }
     }
 
@@ -200,7 +209,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshUiMode() {
-        val isDarkModeBySettingsEnabled  =
+        val isDarkModeBySettingsEnabled =
             preferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
 
         val isDarkModeByToggleEnabled =
@@ -221,6 +230,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val PREFERENCE_DIALOG_TAG = "PreferenceDialog.TAG"
+
         private const val REQUEST_ENABLE_BT = 1000
         private const val REQUEST_ENABLE_COARSE_LOCATION = 1001
         private const val REQUEST_ENABLE_SYSTEM_ALERT_WINDOW = 1002
