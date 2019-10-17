@@ -14,6 +14,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdRequest
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         settingsButton = findViewById(R.id.settings_btn)
         settingsButton.setOnClickListener {
-            PreferenceDialog().show(supportFragmentManager, "PreferenceDialog")
+            PreferenceDialog.newInstance(::refreshUiMode).show(supportFragmentManager, "PreferenceDialog")
         }
     }
 
@@ -102,7 +103,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         mIsActivityRunning = false
-        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -155,7 +155,6 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
     }
 
-
     private fun showBluetoothNotSupportedAlertDialog() {
         AlertDialog
             .Builder(this)
@@ -198,6 +197,23 @@ class MainActivity : AppCompatActivity() {
             preferences.edit().putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, false)
                 .apply()
         }
+    }
+
+    private fun refreshUiMode() {
+        val isDarkModeBySettingsEnabled  =
+            preferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
+
+        val isDarkModeByToggleEnabled =
+            preferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
+
+        val defaultNightMode =
+            when {
+                isDarkModeBySettingsEnabled -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
+                else -> AppCompatDelegate.MODE_NIGHT_NO
+            }
+
+        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
     }
 
     fun closeWindow(view: View) {

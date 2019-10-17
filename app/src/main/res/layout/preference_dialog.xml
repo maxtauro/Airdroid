@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        style="@style/Theme.MaterialComponents.Dialog.Alert"
+        style="@style/Theme.AppCompat.DayNight.Dialog.Alert"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -23,6 +23,27 @@
             android:checked="true"
             android:padding="16dp"
             android:text="@string/show_notification_preference"
+            android:theme="@style/PreferenceDialogSwitchStyle" />
+
+    <Switch
+            android:id="@+id/dark_mode_by_device_settings_preference_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="true"
+            android:padding="16dp"
+            android:text="@string/enable_dark_mode_device_settings"
+            android:theme="@style/PreferenceDialogSwitchStyle" />
+
+    <Switch
+            android:id="@+id/dark_mode_preference_switch"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="true"
+            android:padding="16dp"
+            android:text="@string/enable_dark_mode"
             android:theme="@style/PreferenceDialogSwitchStyle" />
 
 </LinearLayout>

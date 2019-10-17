@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:windowIsTranslucent">false</item>
@@ -10,7 +10,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.Transparent" parent="@style/Theme.AppCompat.Light.Dialog">
+    <style name="AppTheme.Transparent" parent="@style/Theme.AppCompat.DayNight.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -22,7 +22,7 @@
         <item name="android:colorAccent">@color/bestBlue</item>
     </style>
 
-    <style name="PreferenceDialogSwitchStyle" parent="Theme.AppCompat.Light">
+    <style name="PreferenceDialogSwitchStyle" parent="Theme.AppCompat.DayNight">
         <!-- active thumb & track color (30% transparency) -->
         <item name="colorControlActivated">@color/bestBlue</item>
 

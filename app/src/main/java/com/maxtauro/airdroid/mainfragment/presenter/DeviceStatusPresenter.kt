@@ -16,11 +16,11 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boolean) :
+class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
     DeviceStatusContract.Presenter,
     MviBasePresenter<DeviceStatusContract.View, DeviceViewModel>() {
 
-    private val reducer: DeviceFragmentReducer = DeviceFragmentReducer(isLocationPermissionEnabled)
+    private var reducer: DeviceFragmentReducer = DeviceFragmentReducer(isLocationPermissionEnabled)
 
     private val scannerUtil = BluetoothScannerUtil()
     private val scanCallback = AirpodLeScanCallback(::broadcastScanResult)
@@ -43,6 +43,11 @@ class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boole
             )
 
         subscribeViewState(viewModelObservable, DeviceStatusContract.View::render)
+    }
+
+    override fun attachView(view: DeviceStatusContract.View) {
+        super.attachView(view)
+        reducer = DeviceFragmentReducer(view::isLocationPermissionEnabled)
     }
 
     override fun detachView() {
@@ -77,9 +82,6 @@ class DeviceStatusPresenter(private val isLocationPermissionEnabled: () -> Boole
                         SCAN_MODE_LOW_POWER
                     }
                 )
-            }
-            is ScanForDeviceNameIntent -> {
-//                scannerUtil.scanForAirpodName(intent.context)
             }
             is DisconnectedIntent,
             is StopScanIntent -> {

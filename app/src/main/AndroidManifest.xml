@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <uses-feature
             android:name="android.hardware.bluetooth_le"
@@ -25,7 +25,8 @@
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/APP_AD_ID" />
 
-        <activity android:name="com.maxtauro.airdroid.MainActivity">
+        <activity
+                android:name="com.maxtauro.airdroid.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

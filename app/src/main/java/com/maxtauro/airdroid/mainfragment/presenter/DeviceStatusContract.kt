@@ -1,8 +1,8 @@
 package com.maxtauro.airdroid.mainfragment.presenter
 
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.hannesdorfmann.mosby3.mvi.MviPresenter
 import com.hannesdorfmann.mosby3.mvp.MvpView
+import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import io.reactivex.Observable
 
 interface DeviceStatusContract {
@@ -12,6 +12,8 @@ interface DeviceStatusContract {
         fun actionIntents(): Observable<DeviceStatusIntent>
 
         fun render(viewModel: DeviceViewModel)
+
+        fun isLocationPermissionEnabled(): Boolean
     }
 
     interface Presenter : MviPresenter<View, DeviceViewModel>

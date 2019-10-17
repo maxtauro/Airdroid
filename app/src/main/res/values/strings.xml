@@ -16,4 +16,6 @@
     <string name="location_services_need_to_be_enabled_for_this_application_to_work">Location Services need to be enabled for this application to work</string>
     <string name="notification_channel_name">AirPod Status</string>
     <string name="display_over_other_apps"><![CDATA[In the following screen, please go to Advanced > Display over other apps and enable "Allow display over other apps"]]></string>
+    <string name="enable_dark_mode_device_settings">** NEW: Toggle Dark Mode by Device settings **</string>
+    <string name="enable_dark_mode">Enable Dark Mode</string>
 </resources>

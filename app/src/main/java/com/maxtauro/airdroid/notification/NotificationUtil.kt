@@ -99,7 +99,10 @@ class NotificationUtil(
     }
 
     private fun renderNotification(airpodModel: AirpodModel) {
-        if (this::airpodModel.isInitialized && airpodModel == this.airpodModel) return
+        if (this::airpodModel.isInitialized && airpodModel == this.airpodModel) {
+            Log.d(TAG, "Duplicate model, will not post new model")
+            return
+        }
 
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
