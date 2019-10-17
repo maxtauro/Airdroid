@@ -35,7 +35,6 @@ data class AirpodModel(
             AirpodPiece.CASE_EMPTY
         )
 
-        // TODO figure out how to parse 5% increments from the manufacturer data
         fun create(manufacturerSpecificData: ByteArray, address: String): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 

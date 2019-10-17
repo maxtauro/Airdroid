@@ -8,11 +8,28 @@ class DeviceFragmentReducer(
 
     fun reduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent): DeviceViewModel {
         return when (intent) {
-            is RefreshIntent -> viewModel.copy(airpods = intent.updatedAirpods, isInitialScan = false, shouldShowPermissionsMessage = isLocationPermissionEnabled())
-            is InitialScanIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = true, shouldShowPermissionsMessage = isLocationPermissionEnabled())
-            is UpdateNameIntent -> viewModel.copy(deviceName = intent.deviceName, isInitialScan = false, shouldShowPermissionsMessage = isLocationPermissionEnabled())
-            is DisconnectedIntent -> DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
-            else -> viewModel.copy(isInitialScan = false,  shouldShowPermissionsMessage = isLocationPermissionEnabled())
+            is RefreshIntent -> viewModel.copy(
+                airpods = intent.updatedAirpods,
+                isInitialScan = false,
+                shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+            )
+            is InitialScanIntent -> viewModel.copy(
+                deviceName = intent.deviceName,
+                isInitialScan = true,
+                shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+            )
+            is UpdateNameIntent -> viewModel.copy(
+                deviceName = intent.deviceName,
+                isInitialScan = false,
+                shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+            )
+            is DisconnectedIntent -> DeviceViewModel.createEmptyViewModel(
+                isLocationPermissionEnabled()
+            )
+            else -> viewModel.copy(
+                isInitialScan = false,
+                shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+            )
         }
     }
 }

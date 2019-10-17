@@ -32,12 +32,6 @@ class DeviceStatusFragment :
 
     private val subscriptions = CompositeDisposable()
 
-    private fun isLocationPermissionEnabled() =
-        context != null && ContextCompat.checkSelfPermission(
-            context!!,
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
     private lateinit var view: DeviceFragmentView
     private var viewModel = DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
 
@@ -98,8 +92,9 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
         actionIntentsRelay.accept(StopScanIntent)
-        if (viewModel.airpods.isConnected &&
-            (connectionState == 2 || connectionState == 1)
+        if (viewModel.airpods.isConnected ||
+            connectionState == 2 ||
+            connectionState == 1
         ) {
             context?.let { scheduleNotificationJob(it) }
         }
@@ -124,10 +119,11 @@ class DeviceStatusFragment :
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(EXTRA_AIRPOD_NAME, viewModel.deviceName)
-        super.onSaveInstanceState(outState)
-    }
+    override fun isLocationPermissionEnabled() =
+        context != null && ContextCompat.checkSelfPermission(
+            context!!,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
     fun startBluetoothService() {
         Intent(activity, BluetoothConnectionService::class.java).also { intent ->

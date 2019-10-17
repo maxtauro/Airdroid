@@ -14,6 +14,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdRequest
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deviceStatusFragment: DeviceStatusFragment
 
     lateinit var settingsButton: FloatingActionButton
-    lateinit var  preferences: SharedPreferences
+    lateinit var preferences: SharedPreferences
 
     private val shouldShowSystemAlertWindowDialog: Boolean
         get() = preferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
@@ -67,7 +68,16 @@ class MainActivity : AppCompatActivity() {
 
         settingsButton = findViewById(R.id.settings_btn)
         settingsButton.setOnClickListener {
-            PreferenceDialog().show(supportFragmentManager, "PreferenceDialog")
+            PreferenceDialog.newInstance(::refreshUiMode)
+                .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
+        }
+
+        rebindDialog()
+    }
+
+    private fun rebindDialog() {
+        (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
+            this.onUiModeChanged = this@MainActivity::refreshUiMode
         }
     }
 
@@ -102,7 +112,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         mIsActivityRunning = false
-        finish()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -155,14 +164,13 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
     }
 
-
     private fun showBluetoothNotSupportedAlertDialog() {
         AlertDialog
             .Builder(this)
             .setTitle(getString(R.string.bluetooth_not_supported))
             .setMessage(getString(R.string.device_does_not_support_bluetooth))
             .setPositiveButton(getString(R.string.positive_btn_label)) { _, _ ->
-                finish()
+                if (BuildConfig.BUILD_TYPE == "release") finish()
             }
             .show()
     }
@@ -200,11 +208,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun refreshUiMode() {
+        val isDarkModeBySettingsEnabled =
+            preferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
+
+        val isDarkModeByToggleEnabled =
+            preferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
+
+        val defaultNightMode =
+            when {
+                isDarkModeBySettingsEnabled -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    } else {
+                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                    }
+                }
+                isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
+                else -> AppCompatDelegate.MODE_NIGHT_NO
+            }
+
+        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
     fun closeWindow(view: View) {
         finish()
     }
 
     companion object {
+        private const val PREFERENCE_DIALOG_TAG = "PreferenceDialog.TAG"
+
         private const val REQUEST_ENABLE_BT = 1000
         private const val REQUEST_ENABLE_COARSE_LOCATION = 1001
         private const val REQUEST_ENABLE_SYSTEM_ALERT_WINDOW = 1002

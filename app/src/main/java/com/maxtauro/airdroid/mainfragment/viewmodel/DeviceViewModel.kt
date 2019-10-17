@@ -9,7 +9,7 @@ data class DeviceViewModel(
     val airpods: AirpodModel,
     val deviceName: String = "",
     val isInitialScan: Boolean = false,
-    val shouldShowPermissionsMessage: Boolean = false
+    val shouldNotShowPermissionsMessage: Boolean = false
 ) : Parcelable {
 
 
@@ -18,7 +18,7 @@ data class DeviceViewModel(
         fun createEmptyViewModel(shouldShowPermissionsMessage: Boolean = false): DeviceViewModel {
             return DeviceViewModel(
                 airpods = AirpodModel.EMPTY,
-                shouldShowPermissionsMessage = shouldShowPermissionsMessage
+                shouldNotShowPermissionsMessage = shouldShowPermissionsMessage
             )
         }
 

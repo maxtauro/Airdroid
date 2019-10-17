@@ -34,7 +34,7 @@ class DeviceFragmentView(
             else -> renderDisconnectedView(viewModel)
         }
 
-        renderLocationPermissionMessage(viewModel.shouldShowPermissionsMessage)
+        renderLocationPermissionMessage(viewModel.shouldNotShowPermissionsMessage)
     }
 
     private fun renderDeviceName(viewModel: DeviceViewModel) {
