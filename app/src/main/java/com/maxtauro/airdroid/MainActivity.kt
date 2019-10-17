@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             .setTitle(getString(R.string.bluetooth_not_supported))
             .setMessage(getString(R.string.device_does_not_support_bluetooth))
             .setPositiveButton(getString(R.string.positive_btn_label)) { _, _ ->
-                finish()
+                if (BuildConfig.BUILD_TYPE == "release") finish()
             }
             .show()
     }
@@ -217,7 +217,13 @@ class MainActivity : AppCompatActivity() {
 
         val defaultNightMode =
             when {
-                isDarkModeBySettingsEnabled -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                isDarkModeBySettingsEnabled -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    } else {
+                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                    }
+                }
                 isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
                 else -> AppCompatDelegate.MODE_NIGHT_NO
             }
