@@ -1,5 +1,6 @@
 package com.maxtauro.airdroid.mainfragment.viewmodel
 
+import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 
 class DeviceFragmentReducer(
@@ -19,7 +20,7 @@ class DeviceFragmentReducer(
                 shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
             )
             is UpdateNameIntent -> viewModel.copy(
-                deviceName = intent.deviceName,
+                deviceName = mConnectedDevice?.name ?: intent.deviceName,
                 isInitialScan = false,
                 shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
             )

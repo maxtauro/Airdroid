@@ -51,6 +51,8 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                     "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}"
                 )
 
+                mConnectedDevice = connectedDevice
+
                 if (isActivityInForeground) {
                     eventBus.post(ConnectedIntent(connectedDevice.name))
                 } else {
@@ -88,6 +90,8 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                     TAG,
                     "Device Disconnected, Name: ${disconnectedDevice.name}, Address: ${disconnectedDevice.address}"
                 )
+
+                mConnectedDevice = null
             }
             if (isActivityInForeground) {
                 eventBus.post(DisconnectedIntent)

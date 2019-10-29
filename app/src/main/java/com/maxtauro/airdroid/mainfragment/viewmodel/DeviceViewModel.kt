@@ -2,6 +2,7 @@ package com.maxtauro.airdroid.mainfragment.viewmodel
 
 import android.os.Parcelable
 import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.mConnectedDevice
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -16,10 +17,20 @@ data class DeviceViewModel(
     companion object {
         @JvmStatic
         fun createEmptyViewModel(shouldShowPermissionsMessage: Boolean = false): DeviceViewModel {
-            return DeviceViewModel(
-                airpods = AirpodModel.EMPTY,
-                shouldNotShowPermissionsMessage = shouldShowPermissionsMessage
-            )
+            val connectedDevice = mConnectedDevice
+
+            return if (connectedDevice != null) {
+                DeviceViewModel(
+                    airpods = AirpodModel.EMPTY,
+                    deviceName = connectedDevice.name,
+                    shouldNotShowPermissionsMessage = shouldShowPermissionsMessage
+                )
+            } else {
+                DeviceViewModel(
+                    airpods = AirpodModel.EMPTY,
+                    shouldNotShowPermissionsMessage = shouldShowPermissionsMessage
+                )
+            }
         }
 
     }

@@ -16,12 +16,12 @@ import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.EXTRA_DEVICE
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
+import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
 import com.maxtauro.airdroid.notification.NotificationJobService
 import com.maxtauro.airdroid.notification.NotificationUtil
-import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
 import io.reactivex.disposables.CompositeDisposable
@@ -72,14 +72,15 @@ class DeviceStatusFragment :
         // Unfortunately there is no way to check is some thing that airpods are connected
         // So we just start the scan if something might be connected
         if (connectionState == 2 || connectionState == 1) {
-            activity?.intent?.getStringExtra(EXTRA_AIRPOD_NAME)?.let {
-                actionIntentsRelay.accept(UpdateNameIntent(it))
+            mConnectedDevice?.let {
+                actionIntentsRelay.accept(UpdateNameIntent(it.name))
             }.orElse {
                 val deviceName =
                     (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
                         ?: ""
                 actionIntentsRelay.accept(ConnectedIntent(deviceName))
             }
+
         } else {
             // When we resume the activity and nothing is connected, we need to
             // explicitly post the DisconnectedIntent or else the previous viewModel will just
