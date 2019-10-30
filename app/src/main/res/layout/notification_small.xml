@@ -10,8 +10,9 @@
     <LinearLayout
             android:id="@+id/left_airpod_piece"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:animateLayoutChanges="true"
             android:orientation="horizontal">
 
@@ -50,8 +51,9 @@
     <LinearLayout
             android:id="@+id/case_airpod_piece"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:animateLayoutChanges="true"
             android:orientation="horizontal">
 
@@ -89,8 +91,9 @@
     <LinearLayout
             android:id="@+id/right_airpod_piece"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
             android:animateLayoutChanges="true"
             android:orientation="horizontal">
 

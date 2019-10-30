@@ -10,6 +10,7 @@ data class AirpodModel(
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
     val lastConnected: Long = System.currentTimeMillis(),
+    val rssi: Int = -1,
     val macAddress: String = ""
 
 ) : Parcelable {
@@ -35,7 +36,7 @@ data class AirpodModel(
             AirpodPiece.CASE_EMPTY
         )
 
-        fun create(manufacturerSpecificData: ByteArray, address: String): AirpodModel {
+        fun create(manufacturerSpecificData: ByteArray, address: String, rssi: Int): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
@@ -90,7 +91,8 @@ data class AirpodModel(
                     WhichPiece.CASE,
                     true
                 ),
-                macAddress = address
+                macAddress = address,
+                rssi = rssi
             )
         }
 

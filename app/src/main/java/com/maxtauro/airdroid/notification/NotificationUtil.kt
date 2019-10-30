@@ -69,17 +69,20 @@ class NotificationUtil(
             channel.enableVibration(false)
             channel.enableLights(false)
             channel.setSound(null, null)
-            channel.setShowBadge(true)
+            channel.setShowBadge(false)
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             notificationManager.createNotificationChannel(channel)
         }
 
         notificationBuilder.setVisibility(VISIBILITY_PUBLIC)
-        notificationBuilder.setShowWhen(false)
+
+        notificationBuilder.setShowWhen(true)
         notificationBuilder.setOngoing(true)
+        notificationBuilder.setUsesChronometer(true)
 
         notificationBuilder.setCustomContentView(smallNotificationView)
         notificationBuilder.setCustomBigContentView(largeNotificationView)
+        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
     }
 
     private fun bindViews(packageName: String) {
@@ -119,6 +122,7 @@ class NotificationUtil(
 
             largeNotificationView.render(airpodModel)
             smallNotificationView.render(airpodModel)
+            notificationBuilder.setWhen(airpodModel.lastConnected)
             notificationManager.notify(1, notificationBuilder.build())
         }
     }

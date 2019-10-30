@@ -8,12 +8,12 @@ import androidx.annotation.VisibleForTesting
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.BuildConfig
 
-val recentBeacons = arrayListOf<ScanResult>()
 
 class AirpodLeScanCallback constructor(
     private val broadcastUpdate: (AirpodModel) -> Unit
 ) : ScanCallback() {
 
+    private var scanStartTime: Long? = null
 
     override fun onBatchScanResults(results: List<ScanResult>) {
         for (result in results) {
@@ -23,21 +23,47 @@ class AirpodLeScanCallback constructor(
     }
 
     override fun onScanResult(unusedCallbackType: Int, result: ScanResult?) {
+
         if (ENABLE_SCAN_LOGGING) Log.d(TAG, "onScanResult with result : $result")
         result?.let {
+            if (scanStartTime == null) scanStartTime = result.timestampNanos
+
+            if (result.timestampNanos - scanStartTime!! <= INITIAL_MAX_T_NS && result.rssi > MIN_RSSI_CANDIDATE) {
+                initialBeacons.add(result.device.address)
+            }
+
             val airpodResult = getAirpodModelForStrongestBeacon(result)
 
             airpodResult?.let {
-                Log.d(TAG, "Strongest Beacon: ${airpodResult.macAddress}")
+                Log.d(
+                    TAG,
+                    "Strongest Beacon: ${airpodResult.macAddress} with RSSI: ${airpodResult.rssi}"
+                )
                 broadcastUpdate(it)
             }
         }
+    }
+
+    fun resetStartTime() {
+        scanStartTime = null
+        initialBeacons.clear()
+        Log.d(TAG, "Le Scan callback reset")
     }
 
     private fun getAirpodModelForStrongestBeacon(result: ScanResult): AirpodModel? {
         val resultData = result.scanRecord?.getManufacturerSpecificData(76)
 
         resultData?.let {
+
+            // If this isn't one of the beacons seen in the first 30s its definitely not our beacon
+            if (!initialBeacons.contains(result.device.address)) {
+                Log.d(TAG, "Rudimentary Filtering, not our model")
+                return null
+            } else if (result.rssi < MIN_RSSI_CANDIDATE) {
+                initialBeacons.remove(result.device.address)
+                return null
+            }
+
             recentBeacons.add(result)
 
             val strongestBeaconResult: ScanResult? = getStrongestBeacon(result)
@@ -55,7 +81,8 @@ class AirpodLeScanCallback constructor(
 
             return AirpodModel.create(
                 manufacturerSpecificData,
-                resultToProcess.device.address
+                resultToProcess.device.address,
+                resultToProcess.rssi
             )
         }
 
@@ -64,6 +91,7 @@ class AirpodLeScanCallback constructor(
 
     @VisibleForTesting
     internal fun getStrongestBeacon(result: ScanResult): ScanResult? {
+
         var strongestBeacon: ScanResult? = null
         var i = 0
 
@@ -94,11 +122,18 @@ class AirpodLeScanCallback constructor(
 
     companion object {
 
+        private val recentBeacons = arrayListOf<ScanResult>()
+        private val initialBeacons = HashSet<String>()
+
         private const val TAG = "AirpodLEScanCallback"
         private const val RECENT_BEACONS_MAX_T_NS = 10000000000L //10s
+        private const val INITIAL_MAX_T_NS = 30000000000L //30s
 
         private const val MIN_RSSI_RELAXED = -75
         private const val MIN_RSSI_STRICT = -60
+
+        // If we see a beacon with rssi weaker than this, we ignore it permanantly
+        private const val MIN_RSSI_CANDIDATE = -80
 
         // Minimum received signal strength indication that airpods can have to be considered ours
         private val MIN_RSSI: Int
