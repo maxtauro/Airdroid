@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.codemybrainsout.ratingdialog.RatingDialog
+import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -235,7 +236,11 @@ class MainActivity : AppCompatActivity() {
             .title("How was your experience with us?")
             .positiveButtonText("Maybe Later")
             .negativeButtonText("Never")
-            .onRatingBarFormSumbit { }.build()
+            .onRatingBarFormSumbit {
+                // TODO send an email instead
+                val msg = "User feedback: $it"
+                Crashlytics.logException(IllegalStateException(msg))
+            }.build()
 
         ratingDialog.show()
     }
