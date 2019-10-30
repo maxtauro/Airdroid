@@ -66,6 +66,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-ads:18.2.0'
 
+    implementation 'com.codemybrainsout.rating:ratingdialog:1.0.8'
+
     testImplementation 'junit:junit:4.12'
     testImplementation "io.mockk:mockk:1.9.3"
 

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.codemybrainsout.ratingdialog.RatingDialog
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setupRatingDialog()
         setupAds()
 
         preferences = getSharedPreferences(
@@ -73,12 +75,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         rebindDialog()
-    }
-
-    private fun rebindDialog() {
-        (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
-            this.onUiModeChanged = this@MainActivity::refreshUiMode
-        }
     }
 
     override fun onStart() {
@@ -229,6 +225,25 @@ class MainActivity : AppCompatActivity() {
             }
 
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    private fun setupRatingDialog() {
+
+        val ratingDialog = RatingDialog.Builder(this)
+            .session(10)
+            .threshold(3f)
+            .title("How was your experience with us?")
+            .positiveButtonText("Maybe Later")
+            .negativeButtonText("Never")
+            .onRatingBarFormSumbit { }.build()
+
+        ratingDialog.show()
+    }
+
+    private fun rebindDialog() {
+        (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
+            this.onUiModeChanged = this@MainActivity::refreshUiMode
+        }
     }
 
     fun closeWindow(view: View) {
