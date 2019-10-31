@@ -26,10 +26,17 @@ class AirpodLeScanCallback constructor(
 
         if (ENABLE_SCAN_LOGGING) Log.d(TAG, "onScanResult with result : $result")
         result?.let {
-            if (scanStartTime == null) scanStartTime = result.timestampNanos
+            if (scanStartTime == null || candidateBeacons.isEmpty()) scanStartTime =
+                result.timestampNanos
 
-            if (result.timestampNanos - scanStartTime!! <= INITIAL_MAX_T_NS && result.rssi > MIN_RSSI_CANDIDATE) {
-                initialBeacons.add(result.device.address)
+            Log.d(TAG, "Candidates: ${candidateBeacons.keys}")
+
+            if ((result.timestampNanos - scanStartTime!! <= INITIAL_MAX_T_NS && result.rssi > MIN_RSSI_CANDIDATE) ||
+                candidateBeacons.containsKey(result.device.address) ||
+                candidateBeacons.isEmpty() ||
+                result.rssi >= -55
+            ) {
+                candidateBeacons[result.device.address] = result.timestampNanos
             }
 
             val airpodResult = getAirpodModelForStrongestBeacon(result)
@@ -46,7 +53,7 @@ class AirpodLeScanCallback constructor(
 
     fun resetStartTime() {
         scanStartTime = null
-        initialBeacons.clear()
+        candidateBeacons.clear()
         Log.d(TAG, "Le Scan callback reset")
     }
 
@@ -55,12 +62,15 @@ class AirpodLeScanCallback constructor(
 
         resultData?.let {
 
-            // If this isn't one of the beacons seen in the first 30s its definitely not our beacon
-            if (!initialBeacons.contains(result.device.address)) {
-                Log.d(TAG, "Rudimentary Filtering, not our model")
+            // If this isn't one of the beacons seen in the first 10s it's definitely not our beacon
+            if (!candidateBeacons.contains(result.device.address)) {
+                Log.d(
+                    TAG,
+                    "Rudimentary Filtering, ${result.device.address} is not a valid candidate"
+                )
                 return null
             } else if (result.rssi < MIN_RSSI_CANDIDATE) {
-                initialBeacons.remove(result.device.address)
+                candidateBeacons.remove(result.device.address)
                 return null
             }
 
@@ -123,11 +133,12 @@ class AirpodLeScanCallback constructor(
     companion object {
 
         private val recentBeacons = arrayListOf<ScanResult>()
-        private val initialBeacons = HashSet<String>()
+        private var candidateBeacons = HashMap<String, Long>()
 
         private const val TAG = "AirpodLEScanCallback"
         private const val RECENT_BEACONS_MAX_T_NS = 10000000000L //10s
-        private const val INITIAL_MAX_T_NS = 30000000000L //30s
+        private const val RECENT_BEACONS_CANDIDATE_T_NS = 10000000000L //10s
+        private const val INITIAL_MAX_T_NS = 10000000000L //10s
 
         private const val MIN_RSSI_RELAXED = -75
         private const val MIN_RSSI_STRICT = -60
@@ -159,6 +170,14 @@ class AirpodLeScanCallback constructor(
 
         private fun filterOldBeacons() {
             recentBeacons.removeAll { SystemClock.elapsedRealtimeNanos() - it.timestampNanos > RECENT_BEACONS_MAX_T_NS }
+
+            // if a beacon has not been seen in the past 5s it is no longer a candidate
+            candidateBeacons.keys.forEach {
+                if (SystemClock.elapsedRealtimeNanos() - candidateBeacons[it]!! > RECENT_BEACONS_CANDIDATE_T_NS) {
+                    candidateBeacons.remove(it)
+                }
+            }
+
         }
     }
 }
