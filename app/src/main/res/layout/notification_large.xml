@@ -38,7 +38,17 @@
                     android:id="@+id/left_airpod_piece_charge_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/left_airpod_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
 
     </LinearLayout>
 
@@ -73,7 +83,17 @@
                     android:id="@+id/case_airpod_piece_charge_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/case_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
 
     </LinearLayout>
 
@@ -108,7 +128,17 @@
                     android:id="@+id/right_airpod_piece_charge_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/right_airpod_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
 
     </LinearLayout>
 

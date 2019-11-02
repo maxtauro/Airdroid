@@ -46,6 +46,15 @@
                     android:textSize="12sp" />
         </LinearLayout>
 
+        <ProgressBar
+                android:id="@+id/left_airpod_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -86,6 +95,16 @@
                     android:layout_weight=".5"
                     android:textSize="12sp" />
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/case_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -127,6 +146,16 @@
                     android:textSize="12sp" />
 
         </LinearLayout>
+
+        <ProgressBar
+                android:id="@+id/right_airpod_progress_bar"
+                style="@android:style/Widget.Material.ProgressBar.Small.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:indeterminateTint="@android:color/holo_blue_bright"
+                android:visibility="gone" />
+
     </LinearLayout>
 
 </LinearLayout>

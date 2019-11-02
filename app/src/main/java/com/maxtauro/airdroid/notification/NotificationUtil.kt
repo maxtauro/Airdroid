@@ -130,23 +130,26 @@ class NotificationUtil(
 
         largeNotificationView.render(airpodModel)
         smallNotificationView.render(airpodModel)
-        notificationBuilder.setWhen(airpodModel.lastConnected)
+        notificationBuilder.setWhen(System.currentTimeMillis())
 
         return notificationBuilder.build()
     }
 
     private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
-        val intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
+
         return PendingIntent.getActivity(
-            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT
         )
     }
 
     companion object {
 
-        const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
-        const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
+        const val EXTRA_AIRPOD_MODEL = "NotificationUtil.EXTRA_AIRPOD_MODEL"
+        const val EXTRA_AIRPOD_NAME = "NotificationUtil.EXTRA_AIRPOD_NAME"
 
         const val NOTIFICATION_ID = 1812
 

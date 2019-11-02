@@ -5,7 +5,6 @@ import android.bluetooth.le.ScanSettings
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.google.gson.Gson
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.isHeadsetConnected
@@ -62,8 +61,8 @@ class NotificationService: Service() {
     }
 
     private fun initializeNotification(intent: Intent?) {
-        intent?.extras?.getString(NotificationUtil.EXTRA_AIRPOD_MODEL)?.let {
-            airpodModel = it.jsonToAirpodModel()
+        intent?.extras?.getParcelable<AirpodModel>(NotificationUtil.EXTRA_AIRPOD_MODEL)?.let {
+            airpodModel = it
         }.orElse {
             airpodModel = AirpodModel.EMPTY
         }
@@ -80,11 +79,6 @@ class NotificationService: Service() {
     private fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult, notification service")
         notificationUtil.onScanResult(airpodModel)
-    }
-
-    private fun String.jsonToAirpodModel(): AirpodModel {
-        val gson = Gson()
-        return gson.fromJson(this, AirpodModel::class.java)
     }
 
     companion object {
