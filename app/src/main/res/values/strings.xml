@@ -18,4 +18,7 @@
     <string name="display_over_other_apps"><![CDATA[In the following screen, please go to Advanced > Display over other apps and enable "Allow display over other apps"]]></string>
     <string name="enable_dark_mode_device_settings">** NEW: Toggle Dark Mode by Device settings **</string>
     <string name="enable_dark_mode">Enable Dark Mode</string>
+    <string name="rating_dialog_title">What would you rate AirDroid?</string>
+    <string name="rating_positive_button_text">Maybe Later</string>
+    <string name="rating_negative_button_text">"on't Ask Again</string>
 </resources>

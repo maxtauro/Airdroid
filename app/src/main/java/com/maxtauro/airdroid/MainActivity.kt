@@ -231,11 +231,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupRatingDialog() {
 
         val ratingDialog = RatingDialog.Builder(this)
-            .session(10)
+            .session(20)
             .threshold(3f)
-            .title("How was your experience with us?")
-            .positiveButtonText("Maybe Later")
-            .negativeButtonText("Never")
+            .title(getString(R.string.rating_dialog_title))
+            .positiveButtonText(getString(R.string.rating_positive_button_text))
+            .negativeButtonText(getString(R.string.rating_negative_button_text))
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"
