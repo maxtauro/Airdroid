@@ -24,7 +24,6 @@ class NotificationService: Service() {
     var airpodModel: AirpodModel? = null
 
     override fun onCreate() {
-        Log.d(TAG, "onCreate NotificationService")
         notificationUtil =
             NotificationUtil(baseContext, packageName)
 
@@ -37,16 +36,8 @@ class NotificationService: Service() {
         if (notificationUtil.isNotificationEnabled) {
             Log.d(TAG, "Starting Notification Service")
 
-            scanCallback = AirpodLeScanCallback(::onScanResult)
-
-            intent?.extras?.getString(NotificationUtil.EXTRA_AIRPOD_MODEL)?.let {
-                airpodModel = it.jsonToAirpodModel()
-            }.orElse {
-                airpodModel = AirpodModel.EMPTY
-            }
-
-            onScanResult(airpodModel!!)
-            scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
+            initializeScanner()
+            initializeNotification(intent)
 
             return START_STICKY
         }
@@ -68,6 +59,22 @@ class NotificationService: Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun initializeNotification(intent: Intent?) {
+        intent?.extras?.getString(NotificationUtil.EXTRA_AIRPOD_MODEL)?.let {
+            airpodModel = it.jsonToAirpodModel()
+        }.orElse {
+            airpodModel = AirpodModel.EMPTY
+        }
+
+        onScanResult(airpodModel!!)
+    }
+
+    private fun initializeScanner() {
+        scanCallback = AirpodLeScanCallback(::onScanResult)
+        scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
+
     }
 
     private fun onScanResult(airpodModel: AirpodModel) {
