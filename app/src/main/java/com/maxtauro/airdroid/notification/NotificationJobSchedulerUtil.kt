@@ -13,6 +13,7 @@ import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
 
+@Deprecated("See {@link #NotificationService}")
 @SuppressLint("LongLogTag")
 object NotificationJobSchedulerUtil {
 

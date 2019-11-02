@@ -28,7 +28,8 @@ class NotificationUtil(
     private lateinit var largeNotificationView: NotificationView
     private lateinit var smallNotificationView: NotificationView
 
-    private lateinit var airpodName: String
+    var currentNotification: Notification? = null
+        private set
 
     private val isHeadsetConnected: Boolean
         get() {
@@ -83,6 +84,8 @@ class NotificationUtil(
         notificationBuilder.setCustomContentView(smallNotificationView)
         notificationBuilder.setCustomBigContentView(largeNotificationView)
         notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        currentNotification = buildNotification(AirpodModel.EMPTY)
     }
 
     private fun bindViews(packageName: String) {
@@ -109,22 +112,27 @@ class NotificationUtil(
 
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
-
-            if (airpodModel.leftAirpod.isConnected && !airpodModel.rightAirpod.isConnected) {
-                notificationBuilder.setSmallIcon(R.mipmap.left_airpod_notification_icon)
-            } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
-                notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
-            } else {
-                notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
-            }
-
-            notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
-
-            largeNotificationView.render(airpodModel)
-            smallNotificationView.render(airpodModel)
-            notificationBuilder.setWhen(airpodModel.lastConnected)
-            notificationManager.notify(1, notificationBuilder.build())
+            currentNotification = buildNotification(airpodModel)
+            notificationManager.notify(NOTIFICATION_ID, currentNotification)
         }
+    }
+
+    private fun buildNotification(airpodModel: AirpodModel): Notification {
+        if (airpodModel.leftAirpod.isConnected && !airpodModel.rightAirpod.isConnected) {
+            notificationBuilder.setSmallIcon(R.mipmap.left_airpod_notification_icon)
+        } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
+            notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
+        } else {
+            notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
+        }
+
+        notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
+
+        largeNotificationView.render(airpodModel)
+        smallNotificationView.render(airpodModel)
+        notificationBuilder.setWhen(airpodModel.lastConnected)
+
+        return notificationBuilder.build()
     }
 
     private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
@@ -139,6 +147,8 @@ class NotificationUtil(
 
         const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
         const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
+
+        const val NOTIFICATION_ID = 1812
 
         private const val TAG = "NotificationUtil"
 

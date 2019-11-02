@@ -20,7 +20,11 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     // we will use the same model for both, if they start getting different we will separate them out
     fun render(airpods: AirpodModel) {
         if (airpods.isConnected) renderConnected(airpods)
-        else throw IllegalArgumentException("Trying to Render notification with no AirPod Connected.  $airpods")
+        else renderDisconnected(airpods)
+    }
+
+    private fun renderDisconnected(airpods: AirpodModel) {
+        // TODO render with a progress bar
     }
 
     private fun renderConnected(airpods: AirpodModel) {

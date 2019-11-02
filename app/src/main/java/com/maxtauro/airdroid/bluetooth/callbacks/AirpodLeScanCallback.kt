@@ -172,10 +172,16 @@ class AirpodLeScanCallback constructor(
             recentBeacons.removeAll { SystemClock.elapsedRealtimeNanos() - it.timestampNanos > RECENT_BEACONS_MAX_T_NS }
 
             // if a beacon has not been seen in the past 5s it is no longer a candidate
+            val expiredBeacons = mutableListOf<String>()
+
             candidateBeacons.keys.forEach {
                 if (SystemClock.elapsedRealtimeNanos() - candidateBeacons[it]!! > RECENT_BEACONS_CANDIDATE_T_NS) {
-                    candidateBeacons.remove(it)
+                    expiredBeacons.add(it)
                 }
+            }
+
+            expiredBeacons.forEach {
+                candidateBeacons.remove(it)
             }
 
         }

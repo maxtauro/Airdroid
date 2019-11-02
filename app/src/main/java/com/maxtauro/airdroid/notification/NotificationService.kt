@@ -1,72 +1,78 @@
 package com.maxtauro.airdroid.notification
 
-import android.app.job.JobParameters
-import android.app.job.JobService
+import android.app.Service
 import android.bluetooth.le.ScanSettings
+import android.content.Intent
+import android.os.IBinder
 import android.util.Log
 import com.google.gson.Gson
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
-import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
-import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_NAME
+import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
 import org.greenrobot.eventbus.EventBus
 
-@Deprecated("Deprecated for now in favour of  {@link #NotificationService()}," +
-        "users seem to want up to date info over battery life, once school is done, " +
-        "I'll use this class and introduce a Low Power mode. ")
-class NotificationJobService : JobService() {
+class NotificationService: Service() {
 
     private lateinit var notificationUtil: NotificationUtil
     private lateinit var scanCallback: AirpodLeScanCallback
 
     private val scannerUtil = BluetoothScannerUtil()
 
-    var airpodName: String? = null
     var airpodModel: AirpodModel? = null
 
-    override fun onStartJob(params: JobParameters?): Boolean {
+    override fun onCreate() {
+        Log.d(TAG, "onCreate NotificationService")
         notificationUtil =
             NotificationUtil(baseContext, packageName)
 
+        startForeground(NotificationUtil.NOTIFICATION_ID, notificationUtil.currentNotification)
+
+        super.onCreate()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (notificationUtil.isNotificationEnabled) {
-            Log.d(TAG, "Starting job")
+            Log.d(TAG, "Starting Notification Service")
 
             scanCallback = AirpodLeScanCallback(::onScanResult)
 
-            params?.extras?.getString(EXTRA_AIRPOD_NAME)?.let { airpodName = it }
-            params?.extras?.getString(EXTRA_AIRPOD_MODEL)?.let {
+            intent?.extras?.getString(NotificationUtil.EXTRA_AIRPOD_MODEL)?.let {
                 airpodModel = it.jsonToAirpodModel()
-                onScanResult(airpodModel!!)
+            }.orElse {
+                airpodModel = AirpodModel.EMPTY
             }
 
+            onScanResult(airpodModel!!)
             scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
 
-            return true
+            return START_STICKY
         }
 
         NotificationUtil.clearNotification(baseContext)
-        return false
+        return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onStopJob(params: JobParameters?): Boolean {
-        Log.d(TAG, "onStopJob w/ params: $params")
+    override fun onDestroy() {
+        Log.d(TAG, "Notification Service Stopped")
         scannerUtil.stopScan()
-        jobFinished(params, false)
 
         if (isHeadsetConnected) {
             airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
         }
 
-        return true
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
     private fun onScanResult(airpodModel: AirpodModel) {
-        Log.d(TAG, "onScanResult")
+        Log.d(TAG, "onScanResult, notification service")
         notificationUtil.onScanResult(airpodModel)
-        stopSelf()
     }
 
     private fun String.jsonToAirpodModel(): AirpodModel {
@@ -75,6 +81,6 @@ class NotificationJobService : JobService() {
     }
 
     companion object {
-        private const val TAG = "NotificationJobService"
+        private const val TAG = "NotificationService"
     }
 }

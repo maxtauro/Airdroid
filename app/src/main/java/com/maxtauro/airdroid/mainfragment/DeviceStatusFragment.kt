@@ -15,12 +15,12 @@ import androidx.core.content.ContextCompat
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.EXTRA_DEVICE
+import com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
 import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
-import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
-import com.maxtauro.airdroid.notification.NotificationJobService
+import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
@@ -97,7 +97,7 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
-            context?.let { scheduleNotificationJob(it) }
+            context?.let { startNotificationService(it) }
         }
     }
 
@@ -132,17 +132,15 @@ class DeviceStatusFragment :
         }
     }
 
-    private fun scheduleNotificationJob(context: Context) {
-        NotificationJobSchedulerUtil.scheduleJob(
-            context = context,
-            airpodModel = viewModel.airpods,
-            deviceName = viewModel.deviceName
-        )
+    private fun startNotificationService(context: Context) {
+        Intent(context, NotificationService::class.java).also { intent ->
+            intent.putExtra(BluetoothConnectionReceiver.EXTRA_AIRPOD_MODEL, viewModel.airpods)
+            context.startService(intent)
+        }
     }
 
     private fun stopNotificationService(context: Context) {
-        NotificationJobSchedulerUtil.cancelJob(context)
-        Intent(activity, NotificationJobService::class.java).also { intent ->
+        Intent(activity, NotificationService::class.java).also { intent ->
             activity?.stopService(intent)
         }
         NotificationUtil.clearNotification(context)
