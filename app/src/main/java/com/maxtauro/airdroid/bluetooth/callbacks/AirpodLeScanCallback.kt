@@ -4,7 +4,6 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.os.SystemClock
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.BuildConfig
 import kotlin.math.absoluteValue
@@ -31,30 +30,14 @@ class AirpodLeScanCallback constructor(
             if (scanStartTime == null || currentAirpodModel == null) scanStartTime =
                 result.timestampNanos
 
-            result.toAirpodModel().also { airpodModel ->
-                if (airpodModel.rssi > -40) {
-                    Log.d(
-                        TAG,
-                        "Found Airpods with very strong connection: ${result.device.address}, ${result.rssi}"
-                    )
-                    candidateAirpodBeacons.clear()
-                    candidateAirpodBeacons[airpodModel.macAddress] = airpodModel.lastConnected
-                } else if (airpodModel.isValidCandidate()) {
-                    candidateAirpodBeacons[airpodModel.macAddress] = airpodModel.lastConnected
-                }
-            }
-
-            Log.d(TAG, "Candidates: ${candidateAirpodBeacons.keys}")
-
-            findMostLikelyAirpodModel(result)?.let {
-                Log.d(
-                    TAG,
-                    "Strongest Beacon: ${it.macAddress} with RSSI: ${it.rssi}"
-                )
-                broadcastUpdate(it)
-                currentAirpodModel = it
-            }
+            updateCandidateMap(result)
+            findMostLikelyAirpodModel(result)?.let { publishCurrentAirpodModel(it) }
         }
+    }
+
+    override fun onScanFailed(errorCode: Int) {
+        Log.e(TAG, "Scan failed with error code: $errorCode")
+        super.onScanFailed(errorCode)
     }
 
     fun resetStartTime() {
@@ -74,19 +57,14 @@ class AirpodLeScanCallback constructor(
                     TAG,
                     "Rudimentary Filtering, ${result.device.address} ${result.rssi} is not a valid candidate"
                 )
-                return null
             } else if (result.rssi <= MIN_RSSI_CANDIDATE) {
                 candidateAirpodBeacons.remove(result.device.address)
                 return null
             }
 
-            recentBeacons.add(result)
-
             val strongestBeaconResult: ScanResult? = getStrongestBeacon(result)
 
-            if (strongestBeaconResult == null) Log.d(TAG, "Strongest Beacon is null")
-
-            if ((it.size != 27 || strongestBeaconResult == null) && recentBeacons.isNotEmpty()) {
+            if (it.size != 27 || strongestBeaconResult == null) {
                 return null
             }
 
@@ -97,9 +75,8 @@ class AirpodLeScanCallback constructor(
         return null
     }
 
-    @VisibleForTesting
-    internal fun getStrongestBeacon(result: ScanResult): ScanResult? {
-
+    private fun getStrongestBeacon(result: ScanResult): ScanResult? {
+        // We look for the strongest beacon in the last 10s and return the most current result for that beacon
         var strongestBeacon: ScanResult? = null
         var i = 0
 
@@ -123,9 +100,36 @@ class AirpodLeScanCallback constructor(
         return strongestBeacon
     }
 
-    override fun onScanFailed(errorCode: Int) {
-        Log.e(TAG, "Scan failed with error code: $errorCode")
-        super.onScanFailed(errorCode)
+    private fun publishCurrentAirpodModel(it: AirpodModel) {
+        Log.d(
+            TAG,
+            "Strongest Beacon: ${it.macAddress} with RSSI: ${it.rssi}"
+        )
+        broadcastUpdate(it)
+        currentAirpodModel = it
+    }
+
+    private fun updateCandidateMap(result: ScanResult) {
+        result.toAirpodModel().also { airpodModel ->
+
+            // If we see an AirPod with a  very very strong rssi, we know it is ours so we
+            // clear all other potential candidates
+            if (airpodModel.rssi > -40) {
+                Log.d(
+                    TAG,
+                    "Found Airpods with very strong connection: ${result.device.address}, ${result.rssi}"
+                )
+                candidateAirpodBeacons.clear()
+                recentBeacons.clear()
+                candidateAirpodBeacons[airpodModel.macAddress] = airpodModel.lastConnected
+
+            } else if (airpodModel.isValidCandidate()) {
+                recentBeacons.add(result)
+                candidateAirpodBeacons[airpodModel.macAddress] = airpodModel.lastConnected
+            }
+
+            Log.d(TAG, "Candidates: ${candidateAirpodBeacons.keys}")
+        }
     }
 
     private fun ScanResult.toAirpodModel(): AirpodModel {
@@ -243,7 +247,7 @@ class AirpodLeScanCallback constructor(
 
             recentBeacons.removeAll {
                 SystemClock.elapsedRealtimeNanos() - it.timestampNanos > RECENT_BEACONS_MAX_T_NS ||
-                !candidateAirpodBeacons.containsKey(it.device.address)
+                        !candidateAirpodBeacons.containsKey(it.device.address)
             }
 
         }
