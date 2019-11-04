@@ -34,6 +34,9 @@ data class AirpodModel(
         return macAddress.toInt()
     }
 
+    override fun toString() =
+        "$leftAirpod \n  $case  \n + $rightAirpod \n lastConnected=$lastConnected, rssi=$rssi, macAddress=$macAddress"
+
     companion object {
         val EMPTY = AirpodModel(
             AirpodPiece.LEFT_EMPTY,

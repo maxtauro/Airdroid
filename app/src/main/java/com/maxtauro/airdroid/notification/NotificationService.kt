@@ -71,7 +71,8 @@ class NotificationService: Service() {
     }
 
     private fun initializeScanner() {
-        scanCallback = AirpodLeScanCallback(::onScanResult)
+        scanCallback = AirpodLeScanCallback(::onScanResult, airpodModel)
+
         scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
 
     }
