@@ -2,4 +2,4 @@
 
 An Android app, written in Kotlin that lets users see the battery levels of their connected AirPods
 
-[![Get it on Google Play](https://github.com/steverichey/google-play-badge-svg/blob/master/img/en_get.svg){:height="50%" width="50%"}](https://play.google.com/store/apps/details?id=com.maxtauro.airdroid)
+[![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.maxtauro.airdroid)
