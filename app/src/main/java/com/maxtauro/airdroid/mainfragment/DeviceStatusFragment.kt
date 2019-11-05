@@ -14,16 +14,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
-import com.maxtauro.airdroid.EXTRA_DEVICE
+import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
-import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
-import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
-import com.maxtauro.airdroid.notification.NotificationJobService
+import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
-import com.maxtauro.airdroid.orElse
-import com.maxtauro.airdroid.startServiceIfDeviceUnlocked
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
@@ -65,6 +61,10 @@ class DeviceStatusFragment :
     override fun onResume() {
         super.onResume()
 
+        Intent(context, BluetoothConnectionService::class.java).also { intent ->
+            context?.startServiceIfDeviceUnlocked(intent)
+        }
+
         // Whenever the app comes into the foreground we clear the notification
         context?.let { stopNotificationService(it) }
 
@@ -79,6 +79,10 @@ class DeviceStatusFragment :
                     (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
                         ?: ""
                 actionIntentsRelay.accept(ConnectedIntent(deviceName))
+            }
+
+            (activity?.intent?.extras?.get(NotificationUtil.EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
+                actionIntentsRelay.accept(RefreshIntent(it))
             }
 
         } else {
@@ -97,7 +101,11 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
-            context?.let { scheduleNotificationJob(it) }
+            context?.let { startNotificationService(it) }
+        }
+
+        Intent(context, BluetoothConnectionService::class.java).also { intent ->
+            context?.stopService(intent)
         }
     }
 
@@ -132,17 +140,15 @@ class DeviceStatusFragment :
         }
     }
 
-    private fun scheduleNotificationJob(context: Context) {
-        NotificationJobSchedulerUtil.scheduleJob(
-            context = context,
-            airpodModel = viewModel.airpods,
-            deviceName = viewModel.deviceName
-        )
+    private fun startNotificationService(context: Context) {
+        Intent(context, NotificationService::class.java).also { intent ->
+            intent.putExtra(NotificationUtil.EXTRA_AIRPOD_MODEL, viewModel.airpods)
+            context.startService(intent)
+        }
     }
 
     private fun stopNotificationService(context: Context) {
-        NotificationJobSchedulerUtil.cancelJob(context)
-        Intent(activity, NotificationJobService::class.java).also { intent ->
+        Intent(activity, NotificationService::class.java).also { intent ->
             activity?.stopService(intent)
         }
         NotificationUtil.clearNotification(context)

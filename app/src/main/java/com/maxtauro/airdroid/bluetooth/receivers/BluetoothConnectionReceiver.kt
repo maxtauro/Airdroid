@@ -12,8 +12,7 @@ import android.util.Log
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
-import com.maxtauro.airdroid.notification.NotificationJobSchedulerUtil
-import com.maxtauro.airdroid.notification.NotificationJobService
+import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import org.greenrobot.eventbus.EventBus
 
@@ -75,7 +74,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                             connectedDevice
                         )
                     } else if (isNotificationEnabled) {
-                        scheduleNotificationJob(context, connectedDevice)
+                        startNotificationService(context, connectedDevice)
                     }
                 }
             }
@@ -114,18 +113,22 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     }
 
     private fun stopNotificationService(context: Context) {
-        NotificationJobSchedulerUtil.cancelJob(context)
-        Intent(context, NotificationJobService::class.java).also { intent ->
+        Intent(context, NotificationService::class.java).also { intent ->
             context.stopService(intent)
         }
         NotificationUtil.clearNotification(context)
     }
 
-    private fun scheduleNotificationJob(context: Context, connectedDevice: BluetoothDevice) {
-        NotificationJobSchedulerUtil.scheduleJob(
-            context = context,
-            deviceName = connectedDevice.name
-        )
+    private fun startNotificationService(context: Context, connectedDevice: BluetoothDevice) {
+        Intent(context, NotificationService::class.java).also { intent ->
+            intent.putExtra(EXTRA_AIRPOD_NAME, connectedDevice.name)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+        }
     }
 
     private fun startMainActivity(context: Context, connectedDevice: BluetoothDevice) {
@@ -137,6 +140,10 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     }
 
     companion object {
+
+        const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
+        const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
+
         private const val TAG = "BluetoothConnectionReceiver"
     }
 }

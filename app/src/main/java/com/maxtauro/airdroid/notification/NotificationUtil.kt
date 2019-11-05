@@ -28,7 +28,8 @@ class NotificationUtil(
     private lateinit var largeNotificationView: NotificationView
     private lateinit var smallNotificationView: NotificationView
 
-    private lateinit var airpodName: String
+    var currentNotification: Notification? = null
+        private set
 
     private val isHeadsetConnected: Boolean
         get() {
@@ -69,17 +70,22 @@ class NotificationUtil(
             channel.enableVibration(false)
             channel.enableLights(false)
             channel.setSound(null, null)
-            channel.setShowBadge(true)
+            channel.setShowBadge(false)
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             notificationManager.createNotificationChannel(channel)
         }
 
         notificationBuilder.setVisibility(VISIBILITY_PUBLIC)
-        notificationBuilder.setShowWhen(false)
+
+        notificationBuilder.setShowWhen(true)
         notificationBuilder.setOngoing(true)
+//        notificationBuilder.setUsesChronometer(true)
 
         notificationBuilder.setCustomContentView(smallNotificationView)
         notificationBuilder.setCustomBigContentView(largeNotificationView)
+//        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
+        currentNotification = buildNotification(AirpodModel.EMPTY)
     }
 
     private fun bindViews(packageName: String) {
@@ -106,35 +112,46 @@ class NotificationUtil(
 
         if (airpodModel.isConnected && isNotificationEnabled) {
             this.airpodModel = airpodModel
-
-            if (airpodModel.leftAirpod.isConnected && !airpodModel.rightAirpod.isConnected) {
-                notificationBuilder.setSmallIcon(R.mipmap.left_airpod_notification_icon)
-            } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
-                notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
-            } else {
-                notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
-            }
-
-            notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
-
-            largeNotificationView.render(airpodModel)
-            smallNotificationView.render(airpodModel)
-            notificationManager.notify(1, notificationBuilder.build())
+            currentNotification = buildNotification(airpodModel)
+            notificationManager.notify(NOTIFICATION_ID, currentNotification)
         }
     }
 
+    private fun buildNotification(airpodModel: AirpodModel): Notification {
+        if (airpodModel.leftAirpod.isConnected && !airpodModel.rightAirpod.isConnected) {
+            notificationBuilder.setSmallIcon(R.mipmap.left_airpod_notification_icon)
+        } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
+            notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
+        } else {
+            notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
+        }
+
+        notificationBuilder.setContentIntent(buildContentIntent(airpodModel))
+
+        largeNotificationView.render(airpodModel)
+        smallNotificationView.render(airpodModel)
+        notificationBuilder.setWhen(System.currentTimeMillis())
+
+        return notificationBuilder.build()
+    }
+
     private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
-        val intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
+
         return PendingIntent.getActivity(
-            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+            context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT
         )
     }
 
     companion object {
 
-        const val EXTRA_AIRPOD_MODEL = "EXTRA_AIRPOD_MODEL"
-        const val EXTRA_AIRPOD_NAME = "EXTRA_AIRPOD_NAME"
+        const val EXTRA_AIRPOD_MODEL = "NotificationUtil.EXTRA_AIRPOD_MODEL"
+        const val EXTRA_AIRPOD_NAME = "NotificationUtil.EXTRA_AIRPOD_NAME"
+
+        const val NOTIFICATION_ID = 1812
 
         private const val TAG = "NotificationUtil"
 

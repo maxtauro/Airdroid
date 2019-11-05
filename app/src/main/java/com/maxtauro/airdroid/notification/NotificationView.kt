@@ -20,7 +20,13 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     // we will use the same model for both, if they start getting different we will separate them out
     fun render(airpods: AirpodModel) {
         if (airpods.isConnected) renderConnected(airpods)
-        else throw IllegalArgumentException("Trying to Render notification with no AirPod Connected.  $airpods")
+        else renderDisconnected()
+    }
+
+    private fun renderDisconnected() {
+        renderLoadingLeftPiece()
+        renderLoadingCasePiece()
+        renderLoadingRightPiece()
     }
 
     private fun renderConnected(airpods: AirpodModel) {
@@ -37,7 +43,8 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
                 leftAirpod.isCharging,
                 leftAirpod.chargeLevel,
                 R.id.left_airpod_piece_charge_img,
-                R.id.left_airpod_piece_charge_text
+                R.id.left_airpod_piece_charge_text,
+                R.id.left_airpod_progress_bar
             )
         } else setViewVisibility(R.id.left_airpod_piece, View.GONE)
     }
@@ -50,7 +57,8 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
                 case.isCharging,
                 case.chargeLevel,
                 R.id.case_airpod_piece_charge_img,
-                R.id.case_airpod_piece_charge_text
+                R.id.case_airpod_piece_charge_text,
+                R.id.case_progress_bar
             )
         } else setViewVisibility(R.id.case_airpod_piece, View.GONE)
     }
@@ -63,17 +71,64 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
                 rightAirpod.isCharging,
                 rightAirpod.chargeLevel,
                 R.id.right_airpod_piece_charge_img,
-                R.id.right_airpod_piece_charge_text
+                R.id.right_airpod_piece_charge_text,
+                R.id.right_airpod_progress_bar
             )
         } else setViewVisibility(R.id.right_airpod_piece, View.GONE)
+    }
+
+    private fun renderLoadingLeftPiece() {
+        setViewVisibility(R.id.left_airpod_piece, View.VISIBLE)
+        setImageViewResource(R.id.left_airpod_piece_img, R.drawable.left_pod_disconnected)
+        renderProgressBar(
+            R.id.left_airpod_progress_bar,
+            R.id.left_airpod_piece_charge_img,
+            R.id.left_airpod_piece_charge_text
+        )
+    }
+
+    private fun renderLoadingCasePiece() {
+        setViewVisibility(R.id.case_airpod_piece, View.VISIBLE)
+        setImageViewResource(R.id.case_airpod_piece_img, R.drawable.pod_case_disconnected)
+        renderProgressBar(
+            R.id.case_progress_bar,
+            R.id.case_airpod_piece_charge_img,
+            R.id.case_airpod_piece_charge_text
+        )
+    }
+
+    private fun renderLoadingRightPiece() {
+        setViewVisibility(R.id.right_airpod_piece, View.VISIBLE)
+        setImageViewResource(R.id.right_airpod_piece_img, R.drawable.right_pod_disconnected)
+        renderProgressBar(
+            R.id.right_airpod_progress_bar,
+            R.id.right_airpod_piece_charge_img,
+            R.id.right_airpod_piece_charge_text
+        )
+    }
+
+    private fun renderProgressBar(
+        progressBarId: Int,
+        chargingImgId: Int,
+        chargingTextId: Int
+    ) {
+        setViewVisibility(progressBarId, View.VISIBLE)
+        setViewVisibility(chargingImgId, View.GONE)
+        setViewVisibility(chargingTextId, View.GONE)
     }
 
     private fun renderChargeImg(
         isCharging: Boolean,
         chargeLevel: Int,
         chargingImgId: Int,
-        charginTextId: Int
+        chargingTextId: Int,
+        progressBarId: Int
     ) {
+
+        setViewVisibility(progressBarId, View.GONE)
+        setViewVisibility(chargingImgId, View.VISIBLE)
+        setViewVisibility(chargingTextId, View.VISIBLE)
+
         val resId: Int =
             if (isCharging) {
                 when (chargeLevel) {
@@ -98,7 +153,7 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
                 }
             }
         setImageViewResource(chargingImgId, resId)
-        setTextViewText(charginTextId, "$chargeLevel%")
+        setTextViewText(chargingTextId, "$chargeLevel%")
     }
 
     private enum class BatteryImgResId(val resId: Int) {

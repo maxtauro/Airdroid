@@ -8,8 +8,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.crashlytics.android.Crashlytics
 
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
@@ -48,13 +50,14 @@ fun Context?.startServiceIfDeviceUnlocked(intent: Intent) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.M)
 fun Context.showSystemAlertWindowDialog(onCancel: () -> Unit = {}) {
     AlertDialog.Builder(this)
         .setMessage(getString(R.string.display_over_other_apps))
         .setPositiveButton(getString(R.string.positive_btn_label)) { _: DialogInterface, _: Int ->
             startActivity(
                 Intent(
-                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:$packageName")
                 )
             )

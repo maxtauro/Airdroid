@@ -14,7 +14,9 @@ import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPO
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
 import org.greenrobot.eventbus.EventBus
 
-
+@Deprecated("Deprecated for now in favour of  {@link #NotificationService()}," +
+        "users seem to want up to date info over battery life, once school is done, " +
+        "I'll use this class and introduce a Low Power mode. ")
 class NotificationJobService : JobService() {
 
     private lateinit var notificationUtil: NotificationUtil
@@ -54,9 +56,9 @@ class NotificationJobService : JobService() {
         scannerUtil.stopScan()
         jobFinished(params, false)
 
-         if (isHeadsetConnected) {
-             airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
-         }
+        if (isHeadsetConnected) {
+            airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
+        }
 
         return true
     }

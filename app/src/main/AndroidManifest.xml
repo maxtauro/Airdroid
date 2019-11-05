@@ -25,8 +25,7 @@
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/APP_AD_ID" />
 
-        <activity
-                android:name="com.maxtauro.airdroid.MainActivity">
+        <activity android:name="com.maxtauro.airdroid.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,11 +43,17 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService" />
         <service
-                android:name=".notification.NotificationJobService"
-                android:label="Word service"
-                android:permission="android.permission.BIND_JOB_SERVICE" />
+                android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService"
+                android:enabled="true"
+                android:exported="true" />
+
+        <service android:name=".notification.NotificationService"
+                android:enabled="true"
+                android:exported="true"
+                />
+
+        <service android:name=".notification.NotificationJobService" />
     </application>
 
 </manifest>

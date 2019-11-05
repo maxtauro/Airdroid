@@ -95,6 +95,11 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
         intentsRelay.accept(intent)
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onIntentEvent(intent: ConnectedIntent) {
+        intentsRelay.accept(intent)
+    }
+
     private fun broadcastScanResult(airpodModel: AirpodModel) {
         if (scannerUtil.isScanning) {
             intentsRelay.accept(RefreshIntent(airpodModel))

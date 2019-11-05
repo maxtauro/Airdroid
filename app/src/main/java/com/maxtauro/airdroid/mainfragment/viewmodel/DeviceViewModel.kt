@@ -22,7 +22,7 @@ data class DeviceViewModel(
             return if (connectedDevice != null) {
                 DeviceViewModel(
                     airpods = AirpodModel.EMPTY,
-                    deviceName = connectedDevice.name,
+                    deviceName = connectedDevice.name ?: "",
                     shouldNotShowPermissionsMessage = shouldShowPermissionsMessage
                 )
             } else {

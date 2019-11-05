@@ -2,6 +2,7 @@ package com.maxtauro.airdroid
 
 import android.os.Build
 import android.os.Parcelable
+import android.os.SystemClock
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -9,7 +10,8 @@ data class AirpodModel(
     val leftAirpod: AirpodPiece,
     val rightAirpod: AirpodPiece,
     val case: AirpodPiece,
-    val lastConnected: Long = System.currentTimeMillis(),
+    val lastConnected: Long = SystemClock.elapsedRealtimeNanos(),
+    val rssi: Int = -1,
     val macAddress: String = ""
 
 ) : Parcelable {
@@ -28,6 +30,13 @@ data class AirpodModel(
                 case == other.case
     }
 
+    override fun hashCode(): Int {
+        return macAddress.toInt()
+    }
+
+    override fun toString() =
+        "$leftAirpod \n  $case  \n + $rightAirpod \n lastConnected=$lastConnected, rssi=$rssi, macAddress=$macAddress"
+
     companion object {
         val EMPTY = AirpodModel(
             AirpodPiece.LEFT_EMPTY,
@@ -35,7 +44,7 @@ data class AirpodModel(
             AirpodPiece.CASE_EMPTY
         )
 
-        fun create(manufacturerSpecificData: ByteArray, address: String): AirpodModel {
+        fun create(manufacturerSpecificData: ByteArray, address: String, rssi: Int): AirpodModel {
             val decodedHexResult = manufacturerSpecificData.toHexString()
 
             val leftChargeLevel =
@@ -90,7 +99,8 @@ data class AirpodModel(
                     WhichPiece.CASE,
                     true
                 ),
-                macAddress = address
+                macAddress = address,
+                rssi = rssi
             )
         }
 

@@ -1,11 +1,11 @@
 package com.maxtauro.airdroid.utils
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.util.Log
 import com.crashlytics.android.Crashlytics
+import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 
 class BluetoothScannerUtil {
 
@@ -14,12 +14,12 @@ class BluetoothScannerUtil {
     private val scanner = bluetoothAdapter?.bluetoothLeScanner
     private val scanFilters = getScanFilters()
 
-    private lateinit var scanCallback: ScanCallback
+    private lateinit var scanCallback: AirpodLeScanCallback
 
     var isScanning: Boolean = false
         private set
 
-    fun startScan(scanCallback: ScanCallback, scanMode: Int) {
+    fun startScan(scanCallback: AirpodLeScanCallback, scanMode: Int) {
         if (isScanning) return
 
         this.scanCallback = scanCallback
@@ -49,7 +49,10 @@ class BluetoothScannerUtil {
 
         scanner?.flushPendingScanResults(scanCallback)
         scanner?.stopScan(scanCallback)
+        scanCallback.resetStartTime()
         isScanning = false
+
+        Log.d(TAG, "Scan stopped")
     }
 
     private fun getScanFilters(): List<ScanFilter> {
