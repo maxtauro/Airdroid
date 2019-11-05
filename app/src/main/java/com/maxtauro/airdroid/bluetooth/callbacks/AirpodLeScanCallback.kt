@@ -59,6 +59,10 @@ class AirpodLeScanCallback constructor(
                 )
             } else if (result.rssi <= MIN_RSSI_CANDIDATE) {
                 candidateAirpodBeacons.remove(result.device.address)
+                recentBeacons.remove(result)
+
+                if (currentAirpodModel?.macAddress == result.device.address) currentAirpodModel = null
+
                 return null
             }
 
@@ -114,7 +118,7 @@ class AirpodLeScanCallback constructor(
 
             // If we see an AirPod with a  very very strong rssi, we know it is ours so we
             // clear all other potential candidates
-            if (airpodModel.rssi > -40) {
+            if (airpodModel.rssi > -45) {
                 Log.d(
                     TAG,
                     "Found Airpods with very strong connection: ${result.device.address}, ${result.rssi}"
