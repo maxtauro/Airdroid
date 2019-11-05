@@ -20,5 +20,5 @@
     <string name="enable_dark_mode">Enable Dark Mode</string>
     <string name="rating_dialog_title">What would you rate AirDroid?</string>
     <string name="rating_positive_button_text">Maybe Later</string>
-    <string name="rating_negative_button_text">"on't Ask Again</string>
+    <string name="rating_negative_button_text">Don\'t Ask Again</string>
 </resources>
