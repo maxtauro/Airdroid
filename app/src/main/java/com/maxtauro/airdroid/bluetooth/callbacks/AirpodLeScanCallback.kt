@@ -121,6 +121,7 @@ class AirpodLeScanCallback constructor(
                 )
                 candidateAirpodBeacons.clear()
                 recentBeacons.clear()
+                recentBeacons.add(result)
                 candidateAirpodBeacons[airpodModel.macAddress] = airpodModel.lastConnected
 
             } else if (airpodModel.isValidCandidate()) {
@@ -160,12 +161,15 @@ class AirpodLeScanCallback constructor(
         }
 
         return candidateAirpodBeacons.containsKey(macAddress) ||
-                rssi >= -55
+                rssi > -50
     }
 
     private fun AirpodModel.isSimilarToCurrentAirpodModel(): Boolean {
         currentAirpodModel?.let {
-            if (SystemClock.elapsedRealtimeNanos() - it.lastConnected > RECENT_BEACONS_MAX_T_NS) {
+            if (
+                SystemClock.elapsedRealtimeNanos() - it.lastConnected > CURRENT_EXPIRY_T_NS &&
+                !candidateAirpodBeacons.containsKey(it.macAddress)
+            ) {
                 Log.d(TAG, "Current airpod model expired ${currentAirpodModel?.macAddress}")
                 currentAirpodModel = null
             }
@@ -201,6 +205,7 @@ class AirpodLeScanCallback constructor(
         private const val TAG = "AirpodLEScanCallback"
         private const val RECENT_BEACONS_MAX_T_NS = 10000000000L //10s
         private const val RECENT_BEACONS_CANDIDATE_T_NS = 10000000000L //10s
+        private const val CURRENT_EXPIRY_T_NS = 20000000000L //20s
         private const val INITIAL_MAX_T_NS = 10000000000L //10s
 
         private const val MIN_RSSI_RELAXED = -70
