@@ -62,7 +62,7 @@ class DeviceStatusFragment :
         super.onResume()
 
         Intent(context, BluetoothConnectionService::class.java).also { intent ->
-            context?.startService(intent)
+            context?.startServiceIfDeviceUnlocked(intent)
         }
 
         // Whenever the app comes into the foreground we clear the notification
