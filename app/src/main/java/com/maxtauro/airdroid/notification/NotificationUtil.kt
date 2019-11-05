@@ -79,11 +79,11 @@ class NotificationUtil(
 
         notificationBuilder.setShowWhen(true)
         notificationBuilder.setOngoing(true)
-        notificationBuilder.setUsesChronometer(true)
+//        notificationBuilder.setUsesChronometer(true)
 
         notificationBuilder.setCustomContentView(smallNotificationView)
         notificationBuilder.setCustomBigContentView(largeNotificationView)
-        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+//        notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
 
         currentNotification = buildNotification(AirpodModel.EMPTY)
     }
