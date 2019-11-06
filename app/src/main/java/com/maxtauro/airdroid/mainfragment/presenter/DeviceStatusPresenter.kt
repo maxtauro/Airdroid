@@ -30,8 +30,6 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     override fun bindIntents() {
 
-        eventBus.register(this)
-
         val viewModelObservable = Observable.merge(
             intentsRelay,
             intent(DeviceStatusContract.View::actionIntents)
@@ -47,6 +45,7 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     override fun attachView(view: DeviceStatusContract.View) {
         super.attachView(view)
+        eventBus.register(this)
         reducer = DeviceFragmentReducer(view::isLocationPermissionEnabled)
     }
 
@@ -92,11 +91,6 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onIntentEvent(intent: DeviceStatusIntent) {
-        intentsRelay.accept(intent)
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onIntentEvent(intent: ConnectedIntent) {
         intentsRelay.accept(intent)
     }
 

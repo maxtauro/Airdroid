@@ -14,12 +14,14 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
-import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
+import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.EXTRA_DEVICE
+import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
@@ -61,10 +63,6 @@ class DeviceStatusFragment :
     override fun onResume() {
         super.onResume()
 
-        Intent(context, BluetoothConnectionService::class.java).also { intent ->
-            context?.startServiceIfDeviceUnlocked(intent)
-        }
-
         // Whenever the app comes into the foreground we clear the notification
         context?.let { stopNotificationService(it) }
 
@@ -104,9 +102,6 @@ class DeviceStatusFragment :
             context?.let { startNotificationService(it) }
         }
 
-        Intent(context, BluetoothConnectionService::class.java).also { intent ->
-            context?.stopService(intent)
-        }
     }
 
     override fun actionIntents() = actionIntentsRelay
@@ -134,10 +129,11 @@ class DeviceStatusFragment :
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
+    @Deprecated("we subscribe to the connection broadcasts by manifest now")
     fun startBluetoothService() {
-        Intent(activity, BluetoothConnectionService::class.java).also { intent ->
-            activity?.startServiceIfDeviceUnlocked(intent)
-        }
+//        Intent(activity, BluetoothConnectionService::class.java).also { intent ->
+//            activity?.startServiceIfDeviceUnlocked(intent)
+//        }
     }
 
     private fun startNotificationService(context: Context) {

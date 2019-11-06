@@ -53,6 +53,8 @@ class NotificationService: Service() {
             airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
         }
 
+        NotificationUtil.clearNotification(baseContext)
+
         super.onDestroy()
     }
 
