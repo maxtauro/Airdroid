@@ -2,6 +2,7 @@ package com.maxtauro.airdroid.bluetooth.receivers
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter.*
+import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -138,6 +139,9 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             context.startActivity(intent)
         }
     }
+
+    private fun BluetoothDevice.isConnectedDeviceHeadset() =
+        this.bluetoothClass.hasService(BluetoothClass.Service.RENDER)
 
     companion object {
 

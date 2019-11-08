@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,17 +15,21 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
-import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService
+import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.EXTRA_DEVICE
+import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
+
+    private var refreshingUiMode: Boolean = false
 
     private val subscriptions = CompositeDisposable()
 
@@ -61,9 +66,7 @@ class DeviceStatusFragment :
     override fun onResume() {
         super.onResume()
 
-        Intent(context, BluetoothConnectionService::class.java).also { intent ->
-            context?.startServiceIfDeviceUnlocked(intent)
-        }
+        refreshingUiMode = false
 
         // Whenever the app comes into the foreground we clear the notification
         context?.let { stopNotificationService(it) }
@@ -101,12 +104,15 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
-            context?.let { startNotificationService(it) }
+            if (!refreshingUiMode) {
+                context?.let { startNotificationService(it) }
+            }
         }
 
-        Intent(context, BluetoothConnectionService::class.java).also { intent ->
-            context?.stopService(intent)
-        }
+    }
+
+    fun onRefreshUiMode() {
+        refreshingUiMode = true
     }
 
     override fun actionIntents() = actionIntentsRelay
@@ -134,16 +140,22 @@ class DeviceStatusFragment :
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
+    @Deprecated("we subscribe to the connection broadcasts by manifest now")
     fun startBluetoothService() {
-        Intent(activity, BluetoothConnectionService::class.java).also { intent ->
-            activity?.startServiceIfDeviceUnlocked(intent)
-        }
+//        Intent(activity, BluetoothConnectionService::class.java).also { intent ->
+//            activity?.startServiceIfDeviceUnlocked(intent)
+//        }
     }
 
     private fun startNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(NotificationUtil.EXTRA_AIRPOD_MODEL, viewModel.airpods)
-            context.startService(intent)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         }
     }
 
