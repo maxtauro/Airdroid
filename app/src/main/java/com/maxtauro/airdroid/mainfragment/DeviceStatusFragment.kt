@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -27,6 +28,8 @@ import io.reactivex.disposables.CompositeDisposable
 class DeviceStatusFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
+
+    private var refreshingUiMode: Boolean = false
 
     private val subscriptions = CompositeDisposable()
 
@@ -62,6 +65,8 @@ class DeviceStatusFragment :
 
     override fun onResume() {
         super.onResume()
+
+        refreshingUiMode = false
 
         // Whenever the app comes into the foreground we clear the notification
         context?.let { stopNotificationService(it) }
@@ -99,9 +104,15 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
-            context?.let { startNotificationService(it) }
+            if (!refreshingUiMode) {
+                context?.let { startNotificationService(it) }
+            }
         }
 
+    }
+
+    fun onRefreshUiMode() {
+        refreshingUiMode = true
     }
 
     override fun actionIntents() = actionIntentsRelay
@@ -139,7 +150,12 @@ class DeviceStatusFragment :
     private fun startNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(NotificationUtil.EXTRA_AIRPOD_MODEL, viewModel.airpods)
-            context.startService(intent)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         }
     }
 

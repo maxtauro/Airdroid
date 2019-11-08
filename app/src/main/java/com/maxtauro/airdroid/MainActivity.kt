@@ -225,6 +225,7 @@ class MainActivity : AppCompatActivity() {
                 else -> AppCompatDelegate.MODE_NIGHT_NO
             }
 
+        deviceStatusFragment.onRefreshUiMode()
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
     }
 
