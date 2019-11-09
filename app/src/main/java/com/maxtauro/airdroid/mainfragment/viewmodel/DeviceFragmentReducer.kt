@@ -27,6 +27,18 @@ class DeviceFragmentReducer(
             is DisconnectedIntent -> DeviceViewModel.createEmptyViewModel(
                 isLocationPermissionEnabled()
             )
+            is ScanTimeoutIntent -> {
+                DeviceViewModel.createEmptyViewModel().copy(
+                    shouldShowTimeoutToast = true,
+                    shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+                )
+            }
+            is ScanTimeoutToastShownIntent -> {
+                viewModel.copy(
+                    shouldShowTimeoutToast = false,
+                    shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
+                )
+            }
             else -> viewModel.copy(
                 isInitialScan = false,
                 shouldNotShowPermissionsMessage = isLocationPermissionEnabled()

@@ -14,6 +14,9 @@ class AirpodLeScanCallback constructor(
 
     private val scanProcessor = LEScanProcessor(initialAirpodModel)
 
+    var hasFoundAirPods = false
+        private set
+
     override fun onBatchScanResults(results: List<ScanResult>) {
         for (result in results) {
             onScanResult(-1, result)
@@ -29,6 +32,7 @@ class AirpodLeScanCallback constructor(
         result?.scanRecord?.getManufacturerSpecificData(76)?.let { _ ->
             scanProcessor.processScanResult(result)
             scanProcessor.findMostLikelyCandidate()?.let {
+                hasFoundAirPods = true
                 publishCurrentAirpodModel(it)
             }
         }

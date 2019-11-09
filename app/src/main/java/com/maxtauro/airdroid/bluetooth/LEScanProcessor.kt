@@ -88,13 +88,16 @@ class LEScanProcessor(
     fun processScanResult(result: ScanResult) {
         result.toAirpodModel().let { airpodModel ->
 
+            Log.d(TAG, "Processing Beacon: ${result.device.address} with rssi: ${result.rssi}")
+
+            checkAndUpdateExpiredModel()
+
             if (scanStartTime == null || currentAirpodModel == null) {
                 scanStartTime = result.timestampNanos
                 Log.d(TAG, "Reset scan start time")
             }
 
             filterOldBeacons()
-            checkAndUpdateExpiredModel()
             updateCandidates(airpodModel)
         }
     }
@@ -151,10 +154,14 @@ class LEScanProcessor(
 
     private fun AirpodModel.isValidCandidate(): Boolean {
         if (this.rssi < MIN_RSSI_CANDIDATE) {
+            Log.d(TAG, "Candidate: ${this.macAddress} is to weak removing.")
             candidateAirpodBeacons.remove(this.macAddress)
             recentBeacons.removeAll { it.macAddress == this.macAddress }
 
-            // TODO, should we clear the model as well?
+            if (currentAirpodModel?.macAddress == this.macAddress) {
+                Log.d(TAG, "Clearing model as well")
+                currentAirpodModel = null
+            }
 
             return false
         }
@@ -206,6 +213,7 @@ class LEScanProcessor(
             ) {
                 Log.d(TAG, "Current airpod model expired ${currentAirpodModel?.macAddress}")
                 currentAirpodModel = null
+                scanStartTime = null
             }
         }
     }

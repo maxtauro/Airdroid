@@ -21,3 +21,7 @@ object ReRenderIntent : DeviceStatusIntent()
 
 object DisconnectedIntent : DeviceStatusIntent()
 
+object ScanTimeoutIntent : DeviceStatusIntent()
+
+object ScanTimeoutToastShownIntent : DeviceStatusIntent()
+
