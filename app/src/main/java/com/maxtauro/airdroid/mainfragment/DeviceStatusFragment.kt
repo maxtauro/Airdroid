@@ -75,8 +75,8 @@ class DeviceStatusFragment :
         // Unfortunately there is no way to check is some thing that airpods are connected
         // So we just start the scan if something might be connected
         if (connectionState == 2 || connectionState == 1) {
-            mConnectedDevice?.let {
-                actionIntentsRelay.accept(UpdateNameIntent(it.name))
+            mConnectedDevice?.name?.let {
+                actionIntentsRelay.accept(UpdateNameIntent(it))
             }.orElse {
                 val deviceName =
                     (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
@@ -99,6 +99,9 @@ class DeviceStatusFragment :
 
     override fun onPause() {
         super.onPause()
+
+        if (activity?.hasWindowFocus() != true) return
+
         actionIntentsRelay.accept(StopScanIntent)
         if (viewModel.airpods.isConnected ||
             connectionState == 2 ||

@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.bluetooth.receivers
+package com.maxtauro.airdroid.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter.*

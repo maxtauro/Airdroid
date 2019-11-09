@@ -1,11 +1,10 @@
-package com.maxtauro.airdroid.utils
+package com.maxtauro.airdroid.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.util.Log
 import com.crashlytics.android.Crashlytics
-import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 
 class BluetoothScannerUtil {
 
@@ -49,7 +48,6 @@ class BluetoothScannerUtil {
 
         scanner?.flushPendingScanResults(scanCallback)
         scanner?.stopScan(scanCallback)
-        scanCallback.resetStartTime()
         isScanning = false
 
         Log.d(TAG, "Scan stopped")
