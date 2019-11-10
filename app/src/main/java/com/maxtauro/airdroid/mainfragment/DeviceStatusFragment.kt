@@ -16,11 +16,14 @@ import androidx.core.content.ContextCompat
 import com.crashlytics.android.Crashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
-import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.EXTRA_DEVICE
+import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
@@ -64,13 +67,13 @@ class DeviceStatusFragment :
     override fun onResume() {
         super.onResume()
 
-        Crashlytics.logException(BreadcrumbException("$TAG.onResume"))
+        Crashlytics.log(Log.DEBUG, TAG, ".onResume")
 
         refreshingUiMode = false
 
         // Whenever the app comes into the foreground we clear the notification
         context?.let {
-            Crashlytics.logException(BreadcrumbException("$TAG stopping notification service from onResume"))
+            Crashlytics.log(Log.DEBUG, TAG, " stopping notification service from onResume")
             stopNotificationService(it)
         }
 
@@ -103,7 +106,7 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
 
-        Crashlytics.logException(BreadcrumbException("$TAG.onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}"))
+        Crashlytics.log(Log.DEBUG, TAG, ".onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}")
         if (activity?.hasWindowFocus() != true) return
 
         actionIntentsRelay.accept(StopScanIntent)
@@ -113,7 +116,7 @@ class DeviceStatusFragment :
         ) {
             if (!refreshingUiMode) {
                 context?.let {
-                    Crashlytics.logException(BreadcrumbException("$TAG starting notification service from onPause"))
+                    Crashlytics.log(Log.DEBUG, TAG, " starting notification service from onPause")
                     startNotificationService(it)
                 }
             }
@@ -170,7 +173,7 @@ class DeviceStatusFragment :
     }
 
     private fun stopNotificationService(context: Context) {
-        Crashlytics.logException(BreadcrumbException("$TAG stopping notification service"))
+        Crashlytics.log(Log.DEBUG, TAG, " stopping notification service")
 
         Intent(activity, NotificationService::class.java).also { intent ->
             activity?.stopService(intent)

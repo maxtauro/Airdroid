@@ -76,7 +76,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                             connectedDevice
                         )
                     } else if (isNotificationEnabled) {
-                        Crashlytics.logException(BreadcrumbException("$TAG starting notification service"))
+                        Crashlytics.log(Log.DEBUG, TAG, " starting notification service")
                         startNotificationService(context, connectedDevice)
                     }
                 }
@@ -98,7 +98,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             if (isActivityInForeground) {
                 eventBus.post(DisconnectedIntent)
             } else {
-                Crashlytics.logException(BreadcrumbException("$TAG Stopping notification service"))
+                Crashlytics.log(Log.DEBUG, TAG, " Stopping notification service")
                 stopNotificationService(context)
             }
         }
