@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
@@ -75,6 +76,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                             connectedDevice
                         )
                     } else if (isNotificationEnabled) {
+                        Crashlytics.logException(BreadcrumbException("$TAG starting notification service"))
                         startNotificationService(context, connectedDevice)
                     }
                 }
@@ -96,6 +98,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             if (isActivityInForeground) {
                 eventBus.post(DisconnectedIntent)
             } else {
+                Crashlytics.logException(BreadcrumbException("$TAG Stopping notification service"))
                 stopNotificationService(context)
             }
         }

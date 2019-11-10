@@ -5,7 +5,9 @@ import android.bluetooth.le.ScanSettings
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.BreadcrumbException
 import com.maxtauro.airdroid.bluetooth.AirpodLeScanCallback
 import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
 import com.maxtauro.airdroid.isHeadsetConnected
@@ -26,13 +28,16 @@ class NotificationService: Service() {
         notificationUtil =
             NotificationUtil(baseContext, packageName)
 
+        Crashlytics.logException(BreadcrumbException("$TAG.onCreate"))
         startForeground(NotificationUtil.NOTIFICATION_ID, notificationUtil.currentNotification)
+        Crashlytics.logException(BreadcrumbException("$TAG startForeground called"))
 
         super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (notificationUtil.isNotificationEnabled) {
+            Crashlytics.logException(BreadcrumbException("$TAG starting notification service"))
             Log.d(TAG, "Starting Notification Service")
 
             initializeScanner()
@@ -41,12 +46,14 @@ class NotificationService: Service() {
             return START_STICKY
         }
 
+        stopForeground(true)
         NotificationUtil.clearNotification(baseContext)
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         Log.d(TAG, "Notification Service Stopped")
+        Crashlytics.logException(BreadcrumbException("$TAG stopping notification service"))
         scannerUtil.stopScan()
 
         if (isHeadsetConnected) {
