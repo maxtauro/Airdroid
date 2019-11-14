@@ -31,6 +31,7 @@ import kotlin.math.absoluteValue
  *      - If our candidate list is empty and:
  *          - If our currentAirPodModel is null or
  *          - This beacon is "similar" to our currentAirPodModel (i.e. currentAirPodModel's beacon re-randomized its MAC
+ *      - If our currentAirPodModel is about to expire and this beacon is similar
  *      - If this a candidate with the same MAC address exists in the map, that entry is updated to reflect the current result
  *
  *  While we are filtering for candidates, we will filter our candidateMap and recentList to remove candidates if:
@@ -56,7 +57,7 @@ class LEScanProcessor(
 
     private val BEACON_EXPIRY_T_NS = 10000000000L //10s
     private val INITIAL_SCAN_PERIOD_T_NS = 5000000000L //5s
-    private val CURRENT_EXPIRY_T_NS = 15000000000L //15s
+    private val CURRENT_EXPIRY_T_NS = 20000000000L //20s
 
     private val MIN_RSSI_RELAXED = -65
     private val MIN_RSSI_STRICT = -60
@@ -74,13 +75,15 @@ class LEScanProcessor(
             // this will slow down the time until we get a strongest beacon but
             // will ensure that the user isn't getting invalid data
 
-            return if (recentBeacons
+            return if (currentAirpodModel != null || recentBeacons
                     .distinctMaxRssi()
                     .filter { it.rssi > MIN_RSSI_RELAXED }
                     .size > 1
             ) {
+                Log.d(TAG, "RSSI is Strict")
                 MIN_RSSI_STRICT
             } else {
+                Log.d(TAG, "RSSI is relaxed")
                 MIN_RSSI_RELAXED
             }
         }
@@ -105,7 +108,13 @@ class LEScanProcessor(
     fun findMostLikelyCandidate(): AirpodModel? {
         filterOldBeacons()
         val strongestBeacon = getStrongestBeacon()
-        currentAirpodModel = strongestBeacon
+
+        if (strongestBeacon != null) {
+            currentAirpodModel = strongestBeacon
+            Log.d(TAG, "Updated current AirPodModel to : ${currentAirpodModel!!.macAddress}")
+
+        }
+
 
         return strongestBeacon
     }
@@ -154,7 +163,7 @@ class LEScanProcessor(
 
     private fun AirpodModel.isValidCandidate(): Boolean {
         if (this.rssi < MIN_RSSI_CANDIDATE) {
-            Log.d(TAG, "Candidate: ${this.macAddress} is to weak removing.")
+            Log.d(TAG, "Candidate: ${this.macAddress} is too, weak removing.")
             candidateAirpodBeacons.remove(this.macAddress)
             recentBeacons.removeAll { it.macAddress == this.macAddress }
 
@@ -162,13 +171,20 @@ class LEScanProcessor(
                 Log.d(TAG, "Clearing model as well")
                 currentAirpodModel = null
             }
-
             return false
         }
 
         if (candidateAirpodBeacons.isEmpty() && (currentAirpodModel == null || this.isSimilarToCurrentAirpodModel())) {
+            Log.d(TAG, "candidates are empty, and this is similar to " +
+                    "${ if (currentAirpodModel != null) "currentAirPodModel" else null}, so we add to candidates")
             return true
-        } else if (candidateAirpodBeacons.containsKey(this.macAddress)) {
+        }
+        else if (currentAirpodModel.isAboutToExpire() && this.isSimilarToCurrentAirpodModel()) {
+            Log.d(TAG, "currentAirPodModel is about to expire && this beacon is similar to it")
+            return true
+        }
+        else if (candidateAirpodBeacons.containsKey(this.macAddress)) {
+
             return true
         }
 
@@ -216,6 +232,13 @@ class LEScanProcessor(
                 scanStartTime = null
             }
         }
+    }
+
+    private fun AirpodModel?.isAboutToExpire(): Boolean {
+        if (currentAirpodModel == null) return true
+
+        // If current model will expire in 5s
+        return SystemClock.elapsedRealtimeNanos() - this!!.lastConnected > CURRENT_EXPIRY_T_NS - 5000000000L
     }
 
     private fun AirpodModel.isSimilarToCurrentAirpodModel(): Boolean {
