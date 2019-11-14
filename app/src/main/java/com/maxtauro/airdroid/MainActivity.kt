@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity() {
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"
-                Crashlytics.logException(IllegalStateException(msg))
+                Crashlytics.logException(UserFeedbackException(msg))
             }.build()
 
         ratingDialog.show()
