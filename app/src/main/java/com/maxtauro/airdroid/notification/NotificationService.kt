@@ -7,11 +7,11 @@ import android.os.IBinder
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.AirpodModel
-import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
+import com.maxtauro.airdroid.bluetooth.AirpodLeScanCallback
+import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
 import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.orElse
-import com.maxtauro.airdroid.utils.BluetoothScannerUtil
 import org.greenrobot.eventbus.EventBus
 
 class NotificationService: Service() {
@@ -79,7 +79,8 @@ class NotificationService: Service() {
     }
 
     private fun initializeScanner() {
-        scanCallback = AirpodLeScanCallback(::onScanResult, airpodModel)
+        scanCallback =
+            AirpodLeScanCallback(::onScanResult, airpodModel)
 
         scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
 

@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.crashlytics.android.Crashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
@@ -142,6 +143,17 @@ class DeviceStatusFragment :
     override fun createPresenter() = DeviceStatusPresenter(::isLocationPermissionEnabled)
 
     override fun render(viewModel: DeviceViewModel) {
+
+        if (viewModel.shouldShowTimeoutToast) {
+            Toast.makeText(
+                this.context,
+                "Could not determine AirPod battery status",
+                Toast.LENGTH_LONG
+            ).show()
+
+            actionIntentsRelay.accept(ScanTimeoutToastShownIntent)
+        }
+
         this.viewModel = viewModel
         view.render(viewModel)
     }

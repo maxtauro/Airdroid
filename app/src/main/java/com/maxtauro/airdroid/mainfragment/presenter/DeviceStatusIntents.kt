@@ -20,3 +20,7 @@ object InitialConnectionIntent : DeviceStatusIntent()
 object InitialScanIntent : DeviceStatusIntent()
 
 object StartScanIntent : DeviceStatusIntent()
+object ScanTimeoutIntent : DeviceStatusIntent()
+
+object ScanTimeoutToastShownIntent : DeviceStatusIntent()
+

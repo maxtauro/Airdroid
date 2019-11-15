@@ -20,6 +20,17 @@ class DeviceFragmentReducer(
             is DisconnectedIntent -> DeviceViewModel.createEmptyViewModel(
                 isLocationPermissionEnabled()
             )
+            is ScanTimeoutIntent -> {
+                DeviceViewModel.createEmptyViewModel().copy(
+                    shouldShowTimeoutToast = true,
+                )
+            }
+            is ScanTimeoutToastShownIntent -> {
+                viewModel.copy(
+                    shouldShowTimeoutToast = false,
+                )
+            }
+
             else -> viewModel.reduceViewModel()
         }
     }
@@ -27,11 +38,13 @@ class DeviceFragmentReducer(
     private fun DeviceViewModel.reduceViewModel(
         airpods: AirpodModel? = null,
         deviceName: String? = mConnectedDevice?.name,
+        shouldShowTimeoutToast: Boolean = null,
         isInitialScan: Boolean = false
     ): DeviceViewModel {
         return this.copy(
             airpods = airpods ?: this.airpods,
             deviceName = deviceName ?: this.deviceName,
+            shouldShowTimeoutToast = shouldShowTimeoutToast ?: this.shouldShowTimeoutToast
             isInitialScan = isInitialScan,
             shouldNotShowPermissionsMessage = isLocationPermissionEnabled()
         )

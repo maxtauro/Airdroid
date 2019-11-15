@@ -10,6 +10,7 @@ data class DeviceViewModel(
     val airpods: AirpodModel,
     val deviceName: String = "",
     val isInitialScan: Boolean = false,
+    val shouldShowTimeoutToast: Boolean = false,
     val shouldNotShowPermissionsMessage: Boolean = false
 ) : Parcelable {
 
