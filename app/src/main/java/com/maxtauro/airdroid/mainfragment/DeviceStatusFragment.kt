@@ -69,8 +69,6 @@ class DeviceStatusFragment :
 
         Crashlytics.log(Log.DEBUG, TAG, ".onResume")
 
-        refreshingUiMode = false
-
         // Whenever the app comes into the foreground we clear the notification
         context?.let {
             Crashlytics.log(Log.DEBUG, TAG, " stopping notification service from onResume")
@@ -103,11 +101,8 @@ class DeviceStatusFragment :
 
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        Crashlytics.log(Log.DEBUG, TAG, ".onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}")
-        if (activity?.hasWindowFocus() != true) return
+    override fun onStop() {
+        super.onStop()
 
         actionIntentsRelay.accept(StopScanIntent)
         if (viewModel.airpods.isConnected ||
@@ -116,12 +111,14 @@ class DeviceStatusFragment :
         ) {
             if (!refreshingUiMode) {
                 context?.let {
-                    Crashlytics.log(Log.DEBUG, TAG, " starting notification service from onPause")
+                    Crashlytics.log(Log.DEBUG, TAG, " starting notification service from onStop")
                     startNotificationService(it)
                 }
             }
+
         }
 
+        refreshingUiMode = false
     }
 
     fun onRefreshUiMode() {

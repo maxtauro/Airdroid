@@ -57,8 +57,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setupRatingDialog()
-        setupAds()
+
 
         preferences = getSharedPreferences(
             SHARED_PREFERENCE_FILE_NAME,
@@ -73,6 +72,18 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             PreferenceDialog.newInstance(::refreshUiMode)
                 .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
+        }
+
+        val defaultNightMode = getDefaultNightMode()
+
+        // If we need to set the night mode, setDefaultNightMode will recreate the activity
+        // so we want don't want to do these things right now since the onCreate since it will be called again immediately
+        if (defaultNightMode == AppCompatDelegate.getDefaultNightMode()) {
+            setupRatingDialog()
+            setupAds()
+        } else {
+            deviceStatusFragment.onRefreshUiMode()
+            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
         }
 
         rebindDialog()
@@ -206,6 +217,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshUiMode() {
+        val defaultNightMode = getDefaultNightMode()
+
+        deviceStatusFragment.onRefreshUiMode()
+        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    private fun getDefaultNightMode(): Int {
         val isDarkModeBySettingsEnabled =
             preferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
 
@@ -225,14 +243,13 @@ class MainActivity : AppCompatActivity() {
                 else -> AppCompatDelegate.MODE_NIGHT_NO
             }
 
-        deviceStatusFragment.onRefreshUiMode()
-        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+        return defaultNightMode
     }
 
     private fun setupRatingDialog() {
 
         val ratingDialog = RatingDialog.Builder(this)
-            .session(10)
+            .session(2)
             .threshold(3f)
             .title(getString(R.string.rating_dialog_title))
             .positiveButtonText(getString(R.string.rating_positive_button_text))
