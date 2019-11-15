@@ -7,8 +7,6 @@ import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.AirpodLeScanCallback
 import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
-import com.maxtauro.airdroid.mIsActivityRunning
-import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import io.reactivex.Observable
