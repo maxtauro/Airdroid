@@ -9,7 +9,7 @@ import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
 import com.maxtauro.airdroid.isHeadsetConnected
-import com.maxtauro.airdroid.mainfragment.presenter.RefreshIntent
+import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
 import org.greenrobot.eventbus.EventBus
@@ -56,7 +56,7 @@ class NotificationService: Service() {
         scannerUtil.stopScan()
 
         if (isHeadsetConnected) {
-            airpodModel?.let { EventBus.getDefault().post(RefreshIntent(it)) }
+            airpodModel?.let { EventBus.getDefault().post(RefreshAirpodModelIntent(it)) }
         }
 
         NotificationUtil.clearNotification(baseContext)
@@ -88,6 +88,7 @@ class NotificationService: Service() {
     private fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult, notification service")
         notificationUtil.onScanResult(airpodModel)
+        this.airpodModel = airpodModel
     }
 
     companion object {

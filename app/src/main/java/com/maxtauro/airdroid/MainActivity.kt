@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         preferences = getSharedPreferences(
             SHARED_PREFERENCE_FILE_NAME,
             Context.MODE_PRIVATE
@@ -81,8 +79,9 @@ class MainActivity : AppCompatActivity() {
         if (defaultNightMode == AppCompatDelegate.getDefaultNightMode()) {
             setupRatingDialog()
             setupAds()
+            deviceStatusFragment.refreshingUiMode = false
         } else {
-            deviceStatusFragment.onRefreshUiMode()
+            deviceStatusFragment.refreshingUiMode = true
             AppCompatDelegate.setDefaultNightMode(defaultNightMode)
         }
 
@@ -101,8 +100,6 @@ class MainActivity : AppCompatActivity() {
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
-        } else if (bluetoothAdapter.isEnabled) {
-            deviceStatusFragment.startBluetoothService()
         }
     }
 
@@ -126,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "Bluetooth has been enabled", Toast.LENGTH_SHORT).show()
-                deviceStatusFragment.startBluetoothService()
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
             }
@@ -230,26 +226,23 @@ class MainActivity : AppCompatActivity() {
         val isDarkModeByToggleEnabled =
             preferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
 
-        val defaultNightMode =
-            when {
-                isDarkModeBySettingsEnabled -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    } else {
-                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                    }
+        return when {
+            isDarkModeBySettingsEnabled -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
                 }
-                isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
-                else -> AppCompatDelegate.MODE_NIGHT_NO
             }
-
-        return defaultNightMode
+            isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_NO
+        }
     }
 
     private fun setupRatingDialog() {
 
         val ratingDialog = RatingDialog.Builder(this)
-            .session(2)
+            .session(10)
             .threshold(3f)
             .title(getString(R.string.rating_dialog_title))
             .positiveButtonText(getString(R.string.rating_positive_button_text))

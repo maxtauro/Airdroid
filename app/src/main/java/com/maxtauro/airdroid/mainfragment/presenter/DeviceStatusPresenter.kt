@@ -1,12 +1,11 @@
 package com.maxtauro.airdroid.mainfragment.presenter
 
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
-import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_POWER
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.bluetooth.callbacks.AirpodLeScanCallback
-import com.maxtauro.airdroid.mIsActivityRunning
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.utils.BluetoothScannerUtil
@@ -61,31 +60,11 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     private fun preReduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent) {
         when (intent) {
-            is ConnectedIntent -> {
-                intentsRelay.accept(InitialScanIntent(intent.deviceName))
-                scannerUtil.startScan(
-                    scanCallback = scanCallback,
-                    scanMode = if (mIsActivityRunning) {
-                        SCAN_MODE_LOW_LATENCY
-                    } else {
-                        SCAN_MODE_LOW_POWER
-                    }
-                )
-            }
-            is UpdateNameIntent -> {
-                scannerUtil.startScan(
-                    scanCallback = scanCallback,
-                    scanMode = if (mIsActivityRunning) {
-                        SCAN_MODE_LOW_LATENCY
-                    } else {
-                        SCAN_MODE_LOW_POWER
-                    }
-                )
-            }
+            is UpdateFromNotificationIntent,
+            is InitialScanIntent,
+            is InitialConnectionIntent -> startScan()
             is DisconnectedIntent,
-            is StopScanIntent -> {
-                scannerUtil.stopScan()
-            }
+            is StopScanIntent -> scannerUtil.stopScan()
         }
     }
 
@@ -94,9 +73,21 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
         intentsRelay.accept(intent)
     }
 
+    private fun startScan() {
+        scannerUtil.startScan(
+            scanCallback = scanCallback,
+            scanMode = SCAN_MODE_LOW_LATENCY
+        )
+    }
+
     private fun broadcastScanResult(airpodModel: AirpodModel) {
         if (scannerUtil.isScanning) {
-            intentsRelay.accept(RefreshIntent(airpodModel))
+            Log.d(TAG, "broadcastScanResult")
+            intentsRelay.accept(RefreshAirpodModelIntent(airpodModel))
         }
+    }
+
+    companion object {
+        private const val TAG = "DeviceStatusPresenter"
     }
 }

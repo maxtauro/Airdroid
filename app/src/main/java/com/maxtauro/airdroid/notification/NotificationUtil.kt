@@ -14,6 +14,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
+import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment.Companion.EXTRA_START_FLAG
 
 class NotificationUtil(
     private val context: Context,
@@ -139,6 +141,10 @@ class NotificationUtil(
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
+        intent.putExtra(
+            EXTRA_START_FLAG,
+            DeviceStatusFragment.Companion.StartFlag.NOTIFICATION_CLICKED
+        )
         intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
 
         return PendingIntent.getActivity(

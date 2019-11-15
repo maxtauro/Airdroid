@@ -2,7 +2,8 @@ package com.maxtauro.airdroid.mainfragment
 
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothProfile.STATE_CONNECTED
+import android.bluetooth.BluetoothProfile.STATE_CONNECTING
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,12 +18,11 @@ import com.crashlytics.android.Crashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
-import com.maxtauro.airdroid.EXTRA_DEVICE
-import com.maxtauro.airdroid.mConnectedDevice
 import com.maxtauro.airdroid.mainfragment.presenter.*
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
 import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
@@ -30,7 +30,7 @@ class DeviceStatusFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
 
-    private var refreshingUiMode: Boolean = false
+    var refreshingUiMode: Boolean = false
 
     private val subscriptions = CompositeDisposable()
 
@@ -66,7 +66,6 @@ class DeviceStatusFragment :
 
     override fun onResume() {
         super.onResume()
-
         Crashlytics.log(Log.DEBUG, TAG, ".onResume")
 
         // Whenever the app comes into the foreground we clear the notification
@@ -75,34 +74,48 @@ class DeviceStatusFragment :
             stopNotificationService(it)
         }
 
+        val startFlag: StartFlag? = getExtra<StartFlag>(EXTRA_START_FLAG)
+        Crashlytics.log(Log.DEBUG, TAG, "StartFlag = ${startFlag?.name}")
+
+        when (startFlag) {
+            StartFlag.AIRPODS_CONNECTED -> onAirPodsConnectedStartFlag()
+            StartFlag.NOTIFICATION_CLICKED -> onNotificationClickedStartFlag()
+            else -> onNoStartFlagResume()
+        }
+    }
+
+    private fun onNoStartFlagResume() {
         // Here we check if a head set (ie airpods) is connected to our device
         // Unfortunately there is no way to check is some thing that airpods are connected
         // So we just start the scan if something might be connected
-        if (connectionState == 2 || connectionState == 1) {
-            mConnectedDevice?.name?.let {
-                actionIntentsRelay.accept(UpdateNameIntent(it))
-            }.orElse {
-                val deviceName =
-                    (activity?.intent?.extras?.get(EXTRA_DEVICE) as? BluetoothDevice)?.name
-                        ?: ""
-                actionIntentsRelay.accept(ConnectedIntent(deviceName))
-            }
-
-            (activity?.intent?.extras?.get(NotificationUtil.EXTRA_AIRPOD_MODEL) as? AirpodModel)?.let {
-                actionIntentsRelay.accept(RefreshIntent(it))
-            }
-
+        if (connectionState == STATE_CONNECTED || connectionState == STATE_CONNECTING) {
+            actionIntentsRelay.accept(InitialScanIntent)
         } else {
             // When we resume the activity and nothing is connected, we need to
             // explicitly post the DisconnectedIntent or else the previous viewModel will just
             // be rendered again (since Mosby persists the viewModel).
             actionIntentsRelay.accept(DisconnectedIntent)
         }
-
     }
 
-    override fun onStop() {
-        super.onStop()
+    private fun onNotificationClickedStartFlag() {
+        getExtra<AirpodModel>(EXTRA_AIRPOD_MODEL)?.let {
+            actionIntentsRelay.accept(UpdateFromNotificationIntent(it))
+        }.orElse {
+            when (connectionState) {
+                STATE_CONNECTED,
+                STATE_CONNECTING -> actionIntentsRelay.accept(StartScanIntent)
+                else -> actionIntentsRelay.accept(DisconnectedIntent)
+            }
+        }
+    }
+
+    private fun onAirPodsConnectedStartFlag() {
+        actionIntentsRelay.accept(InitialConnectionIntent)
+    }
+
+    override fun onPause() {
+        super.onPause()
 
         actionIntentsRelay.accept(StopScanIntent)
         if (viewModel.airpods.isConnected ||
@@ -115,7 +128,6 @@ class DeviceStatusFragment :
                     startNotificationService(it)
                 }
             }
-
         }
 
         refreshingUiMode = false
@@ -150,13 +162,6 @@ class DeviceStatusFragment :
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-    @Deprecated("we subscribe to the connection broadcasts by manifest now")
-    fun startBluetoothService() {
-//        Intent(activity, BluetoothConnectionService::class.java).also { intent ->
-//            activity?.startServiceIfDeviceUnlocked(intent)
-//        }
-    }
-
     private fun startNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(NotificationUtil.EXTRA_AIRPOD_MODEL, viewModel.airpods)
@@ -178,7 +183,20 @@ class DeviceStatusFragment :
         NotificationUtil.clearNotification(context)
     }
 
+    private fun <T> getExtra(key: String): T? {
+        return activity?.intent?.extras?.get(key) as? T
+    }
+
     companion object {
         private const val TAG = "DeviceStatusFragment"
+
+        const val EXTRA_START_FLAG = "EXTRA_START_FLAG"
+
+        enum class StartFlag {
+            AIRPODS_CONNECTED,
+            NOTIFICATION_CLICKED,
+            DARK_MODE_TOGGLED,
+            NONE
+        }
     }
 }
