@@ -84,7 +84,7 @@ class DeviceStatusFragment :
             else -> onNoStartFlagResume()
         }
 
-        clearOnResumeFlag()
+        if (!refreshingUiMode) clearOnResumeFlag()
     }
 
     private fun onNoStartFlagResume() {
