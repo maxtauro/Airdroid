@@ -7,8 +7,6 @@ import android.os.Handler
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.jaredrummler.android.device.DeviceName
-import com.maxtauro.airdroid.mainfragment.presenter.ScanTimeoutIntent
-import org.greenrobot.eventbus.EventBus
 
 
 class BluetoothScannerUtil {
@@ -23,7 +21,12 @@ class BluetoothScannerUtil {
     var isScanning: Boolean = false
         private set
 
-    fun startScan(scanCallback: AirpodLeScanCallback, scanMode: Int) {
+    fun startScan(
+        scanCallback: AirpodLeScanCallback,
+        scanMode: Int,
+        disableTimeout: Boolean = false,
+        timeoutCallback: () -> Unit
+    ) {
         if (isScanning) return
 
         this.scanCallback = scanCallback
@@ -33,18 +36,19 @@ class BluetoothScannerUtil {
         scanner?.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
 
-        Handler().postDelayed({
-            if (!scanCallback.hasFoundAirPods) {
-                Log.d(TAG, "Bluetooth scan timed out")
+        if (!disableTimeout) {
+            Handler().postDelayed({
+                if (!scanCallback.hasFoundAirPods) {
+                    Log.d(TAG, "Bluetooth scan timed out")
 
-                val currentDeviceModel = DeviceName.getDeviceName()
-                Crashlytics.logException(IllegalStateException("Could not get scan result for device: $currentDeviceModel"))
+                    val currentDeviceModel = DeviceName.getDeviceName()
+                    Crashlytics.logException(IllegalStateException("Could not get scan result for device: $currentDeviceModel"))
 
-                stopScan()
-                EventBus.getDefault().post(ScanTimeoutIntent)
-            }
-        }, 10000) // Timeout after 10s
-
+                    stopScan()
+                    timeoutCallback()
+                }
+            }, 10000) // Timeout after 10s
+        }
     }
 
     fun stopScan() {

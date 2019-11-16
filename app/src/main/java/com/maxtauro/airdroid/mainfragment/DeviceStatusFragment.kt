@@ -83,6 +83,8 @@ class DeviceStatusFragment :
             StartFlag.NOTIFICATION_CLICKED -> onNotificationClickedStartFlag()
             else -> onNoStartFlagResume()
         }
+
+        clearOnResumeFlag()
     }
 
     private fun onNoStartFlagResume() {
@@ -194,6 +196,8 @@ class DeviceStatusFragment :
         }
         NotificationUtil.clearNotification(context)
     }
+
+    private fun clearOnResumeFlag() = activity?.intent?.removeExtra(EXTRA_START_FLAG)
 
     private fun <T> getExtra(key: String): T? {
         return activity?.intent?.extras?.get(key) as? T

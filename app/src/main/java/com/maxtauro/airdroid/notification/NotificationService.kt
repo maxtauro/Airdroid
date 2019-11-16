@@ -14,7 +14,7 @@ import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.orElse
 import org.greenrobot.eventbus.EventBus
 
-class NotificationService: Service() {
+class NotificationService : Service() {
 
     private lateinit var notificationUtil: NotificationUtil
     private lateinit var scanCallback: AirpodLeScanCallback
@@ -82,8 +82,18 @@ class NotificationService: Service() {
         scanCallback =
             AirpodLeScanCallback(::onScanResult, airpodModel)
 
-        scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
+        scannerUtil.startScan(
+            scanCallback,
+            ScanSettings.SCAN_MODE_LOW_POWER,
+            airpodModel?.isConnected == true,
+            ::onScanTimeout
+        )
+    }
 
+    private fun onScanTimeout() {
+        Log.d(TAG, "onScanTimeout")
+        NotificationUtil.clearNotification(baseContext)
+        stopSelf()
     }
 
     private fun onScanResult(airpodModel: AirpodModel) {

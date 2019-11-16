@@ -42,7 +42,12 @@ class NotificationJobService : JobService() {
                 onScanResult(airpodModel!!)
             }
 
-            scannerUtil.startScan(scanCallback, ScanSettings.SCAN_MODE_LOW_POWER)
+            scannerUtil.startScan(
+                scanCallback,
+                ScanSettings.SCAN_MODE_LOW_POWER,
+                true,
+                ::stopSelf
+            )
 
             return true
         }

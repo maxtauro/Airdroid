@@ -56,16 +56,24 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     private fun reduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent): DeviceViewModel {
         preReduce(viewModel, intent)
-        return reducer.reduce(viewModel, intent)
+        val updatedViewModel = reducer.reduce(viewModel, intent)
+        postReduce(updatedViewModel, intent)
+
+        return updatedViewModel
     }
 
     private fun preReduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent) {
         when (intent) {
-            is UpdateFromNotificationIntent,
-            is InitialScanIntent,
-            is InitialConnectionIntent -> startScan()
             is DisconnectedIntent,
             is StopScanIntent -> scannerUtil.stopScan()
+        }
+    }
+
+    private fun postReduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent) {
+        when (intent) {
+            is UpdateFromNotificationIntent,
+            is InitialScanIntent,
+            is InitialConnectionIntent -> startScan(viewModel)
         }
     }
 
@@ -74,10 +82,12 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
         intentsRelay.accept(intent)
     }
 
-    private fun startScan() {
+    private fun startScan(viewModel: DeviceViewModel) {
         scannerUtil.startScan(
             scanCallback = scanCallback,
-            scanMode = SCAN_MODE_LOW_LATENCY
+            scanMode = SCAN_MODE_LOW_LATENCY,
+            disableTimeout = viewModel.airpods.isConnected,
+            timeoutCallback = { intentsRelay.accept(ScanTimeoutIntent) }
         )
     }
 
