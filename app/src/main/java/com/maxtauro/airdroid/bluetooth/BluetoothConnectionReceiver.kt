@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.bluetooth.receivers
+package com.maxtauro.airdroid.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter.*
@@ -12,8 +12,10 @@ import android.provider.Settings
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.mainfragment.presenter.ConnectedIntent
+import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
+import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment.Companion.EXTRA_START_FLAG
 import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
+import com.maxtauro.airdroid.mainfragment.presenter.InitialConnectionIntent
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import org.greenrobot.eventbus.EventBus
@@ -55,30 +57,9 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 mConnectedDevice = connectedDevice
 
                 if (isActivityInForeground) {
-                    eventBus.post(ConnectedIntent(connectedDevice.name))
+                    eventBus.post(InitialConnectionIntent)
                 } else {
-                    val preferences =
-                        context.getSharedPreferences(
-                            SHARED_PREFERENCE_FILE_NAME,
-                            Context.MODE_PRIVATE
-                        )
-                            ?: throw IllegalStateException("Preferences haven't been initialized yet")
-
-                    val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)
-                    val isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
-
-                    if (isOpenAppEnabled &&
-                        context.isDeviceUnlocked() &&
-                        isSystemAlertWindowPermissionGranted(context)
-                    ) {
-                        startMainActivity(
-                            context,
-                            connectedDevice
-                        )
-                    } else if (isNotificationEnabled) {
-                        Crashlytics.log(Log.DEBUG, TAG, " starting notification service")
-                        startNotificationService(context, connectedDevice)
-                    }
+                    handleBluetoothConnectedAppBackgrounded(context, connectedDevice)
                 }
             }
         }
@@ -116,6 +97,34 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         }
     }
 
+    private fun handleBluetoothConnectedAppBackgrounded(
+        context: Context,
+        connectedDevice: BluetoothDevice
+    ) {
+        val preferences =
+            context.getSharedPreferences(
+                SHARED_PREFERENCE_FILE_NAME,
+                Context.MODE_PRIVATE
+            )
+                ?: throw IllegalStateException("Preferences haven't been initialized yet")
+
+        val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)
+        val isNotificationEnabled = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
+
+        if (isOpenAppEnabled &&
+            context.isDeviceUnlocked() &&
+            isSystemAlertWindowPermissionGranted(context)
+        ) {
+            startMainActivity(
+                context,
+                connectedDevice
+            )
+        } else if (isNotificationEnabled) {
+            Crashlytics.log(Log.DEBUG, TAG, " starting notification service")
+            startNotificationService(context, connectedDevice)
+        }
+    }
+
     private fun stopNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
             context.stopService(intent)
@@ -138,6 +147,10 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     private fun startMainActivity(context: Context, connectedDevice: BluetoothDevice) {
         Intent(context, MainActivity::class.java).also { intent ->
             intent.putExtra(EXTRA_DEVICE, connectedDevice)
+            intent.putExtra(
+                EXTRA_START_FLAG,
+                DeviceStatusFragment.Companion.StartFlag.AIRPODS_CONNECTED
+            )
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }

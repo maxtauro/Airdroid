@@ -34,7 +34,7 @@
         </activity>
 
         <receiver
-                android:name="com.maxtauro.airdroid.bluetooth.receivers.BluetoothConnectionReceiver"
+                android:name="com.maxtauro.airdroid.bluetooth.BluetoothConnectionReceiver"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
@@ -42,11 +42,6 @@
                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
             </intent-filter>
         </receiver>
-
-        <service
-                android:name="com.maxtauro.airdroid.bluetooth.services.BluetoothConnectionService"
-                android:enabled="true"
-                android:exported="true" />
 
         <service android:name=".notification.NotificationService"
                 android:enabled="true"

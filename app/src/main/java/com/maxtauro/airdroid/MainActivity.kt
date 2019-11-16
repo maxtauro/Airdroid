@@ -57,9 +57,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setupRatingDialog()
-        setupAds()
-
         preferences = getSharedPreferences(
             SHARED_PREFERENCE_FILE_NAME,
             Context.MODE_PRIVATE
@@ -73,6 +70,19 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             PreferenceDialog.newInstance(::refreshUiMode)
                 .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
+        }
+
+        val defaultNightMode = getDefaultNightMode()
+
+        // If we need to set the night mode, setDefaultNightMode will recreate the activity
+        // so we want don't want to do these things right now since the onCreate since it will be called again immediately
+        if (defaultNightMode == AppCompatDelegate.getDefaultNightMode()) {
+            setupRatingDialog()
+            setupAds()
+            deviceStatusFragment.refreshingUiMode = false
+        } else {
+            deviceStatusFragment.refreshingUiMode = true
+            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
         }
 
         rebindDialog()
@@ -90,8 +100,6 @@ class MainActivity : AppCompatActivity() {
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
-        } else if (bluetoothAdapter.isEnabled) {
-            deviceStatusFragment.startBluetoothService()
         }
     }
 
@@ -115,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_ENABLE_BT) {
             if (resultCode == Activity.RESULT_OK) {
                 Toast.makeText(this, "Bluetooth has been enabled", Toast.LENGTH_SHORT).show()
-                deviceStatusFragment.startBluetoothService()
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText(this, "Bluetooth is not enabled", Toast.LENGTH_SHORT).show()
             }
@@ -206,27 +213,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshUiMode() {
+        val defaultNightMode = getDefaultNightMode()
+
+        deviceStatusFragment.onRefreshUiMode()
+        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    private fun getDefaultNightMode(): Int {
         val isDarkModeBySettingsEnabled =
             preferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
 
         val isDarkModeByToggleEnabled =
             preferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
 
-        val defaultNightMode =
-            when {
-                isDarkModeBySettingsEnabled -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    } else {
-                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                    }
+        return when {
+            isDarkModeBySettingsEnabled -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
                 }
-                isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
-                else -> AppCompatDelegate.MODE_NIGHT_NO
             }
-
-        deviceStatusFragment.onRefreshUiMode()
-        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+            isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_NO
+        }
     }
 
     private fun setupRatingDialog() {
