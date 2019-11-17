@@ -47,6 +47,8 @@ class LEScanProcessor(
     private var scanStartTime: Long? = null
 ) {
 
+    private var currentModelIsSticky = false
+
     // The map of LE beacons that are potentially our AirPods, the map is MAC -> AirPod Model
     private var candidateAirpodBeacons = HashMap<String, AirpodModel>()
     private val recentBeacons = arrayListOf<AirpodModel>()
@@ -88,6 +90,14 @@ class LEScanProcessor(
             }
         }
 
+    init {
+        currentAirpodModel?.let {
+            candidateAirpodBeacons[it.macAddress] = it
+            recentBeacons.add(it)
+            scanStartTime = it.lastConnected
+        }
+    }
+
     fun processScanResult(result: ScanResult) {
         result.toAirpodModel().let { airpodModel ->
 
@@ -111,10 +121,9 @@ class LEScanProcessor(
 
         if (strongestBeacon != null) {
             currentAirpodModel = strongestBeacon
+            if (strongestBeacon == null) currentModelIsSticky = false
             Log.d(TAG, "Updated current AirPodModel to : ${currentAirpodModel!!.macAddress}")
-
         }
-
 
         return strongestBeacon
     }
@@ -137,10 +146,22 @@ class LEScanProcessor(
             return
         }
 
-        if (airpodModel.rssi < MIN_RSSI) return
+        if (airpodModel.rssi < MIN_RSSI &&
+            (!currentModelIsSticky && airpodModel.macAddress != currentAirpodModel?.macAddress)
+        ) {
+            return
+        }
 
+        if (airpodModel.rssi < MIN_RSSI_CANDIDATE) {
+            filterVeryWeakBeacon(airpodModel)
+            return
+        }
+
+        if (currentModelIsSticky && airpodModel.macAddress == currentAirpodModel?.macAddress) {
+            candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
+        }
         // If we are within the first 5s of the scan
-        if (airpodModel.lastConnected - scanStartTime!! < INITIAL_SCAN_PERIOD_T_NS
+        else if (airpodModel.lastConnected - scanStartTime!! < INITIAL_SCAN_PERIOD_T_NS
         ) {
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         } else if (airpodModel.isValidCandidate()) {
@@ -152,9 +173,26 @@ class LEScanProcessor(
         }
     }
 
+    private fun filterVeryWeakBeacon(airpodModel: AirpodModel) {
+        Log.d(TAG, "Candidate: ${airpodModel.macAddress} is too, weak removing.")
+        candidateAirpodBeacons.remove(airpodModel.macAddress)
+        recentBeacons.removeAll { it.macAddress == airpodModel.macAddress }
+
+        if (currentAirpodModel?.macAddress == airpodModel.macAddress) {
+            Log.d(TAG, "Clearing model as well")
+            currentModelIsSticky = false
+            currentAirpodModel = null
+        }
+    }
+
     private fun processGuaranteedCandidate(airpodModel: AirpodModel) {
         candidateAirpodBeacons.clear()
         recentBeacons.clear()
+
+        if (airpodModel.rssi > -40 || currentAirpodModel?.macAddress == airpodModel.macAddress){
+            currentModelIsSticky = true
+            Log.d(TAG, "Strong beacon is sticky")
+        }
 
         candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         recentBeacons.add(airpodModel)
@@ -162,28 +200,17 @@ class LEScanProcessor(
     }
 
     private fun AirpodModel.isValidCandidate(): Boolean {
-        if (this.rssi < MIN_RSSI_CANDIDATE) {
-            Log.d(TAG, "Candidate: ${this.macAddress} is too, weak removing.")
-            candidateAirpodBeacons.remove(this.macAddress)
-            recentBeacons.removeAll { it.macAddress == this.macAddress }
-
-            if (currentAirpodModel?.macAddress == this.macAddress) {
-                Log.d(TAG, "Clearing model as well")
-                currentAirpodModel = null
-            }
-            return false
-        }
 
         if (candidateAirpodBeacons.isEmpty() && (currentAirpodModel == null || this.isSimilarToCurrentAirpodModel())) {
-            Log.d(TAG, "candidates are empty, and this is similar to " +
-                    "${ if (currentAirpodModel != null) "currentAirPodModel" else null}, so we add to candidates")
+            Log.d(
+                TAG, "candidates are empty, and this is similar to " +
+                        "${if (currentAirpodModel != null) "currentAirPodModel" else null}, so we add to candidates"
+            )
             return true
-        }
-        else if (currentAirpodModel.isAboutToExpire() && this.isSimilarToCurrentAirpodModel()) {
+        } else if (currentAirpodModel.isAboutToExpire() && this.isSimilarToCurrentAirpodModel()) {
             Log.d(TAG, "currentAirPodModel is about to expire && this beacon is similar to it")
             return true
-        }
-        else if (candidateAirpodBeacons.containsKey(this.macAddress)) {
+        } else if (candidateAirpodBeacons.containsKey(this.macAddress)) {
 
             return true
         }
@@ -228,6 +255,7 @@ class LEScanProcessor(
                 !candidateAirpodBeacons.containsKey(it.macAddress)
             ) {
                 Log.d(TAG, "Current airpod model expired ${currentAirpodModel?.macAddress}")
+                currentModelIsSticky = false
                 currentAirpodModel = null
                 scanStartTime = null
             }

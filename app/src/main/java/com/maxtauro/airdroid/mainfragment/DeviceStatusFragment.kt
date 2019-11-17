@@ -87,36 +87,6 @@ class DeviceStatusFragment :
         if (!refreshingUiMode) clearOnResumeFlag()
     }
 
-    private fun onNoStartFlagResume() {
-        // Here we check if a head set (ie airpods) is connected to our device
-        // Unfortunately there is no way to check is some thing that airpods are connected
-        // So we just start the scan if something might be connected
-        if (connectionState == STATE_CONNECTED || connectionState == STATE_CONNECTING) {
-            actionIntentsRelay.accept(InitialScanIntent)
-        } else {
-            // When we resume the activity and nothing is connected, we need to
-            // explicitly post the DisconnectedIntent or else the previous viewModel will just
-            // be rendered again (since Mosby persists the viewModel).
-            actionIntentsRelay.accept(DisconnectedIntent)
-        }
-    }
-
-    private fun onNotificationClickedStartFlag() {
-        getExtra<AirpodModel>(EXTRA_AIRPOD_MODEL)?.let {
-            actionIntentsRelay.accept(UpdateFromNotificationIntent(it))
-        }.orElse {
-            when (connectionState) {
-                STATE_CONNECTED,
-                STATE_CONNECTING -> actionIntentsRelay.accept(StartScanIntent)
-                else -> actionIntentsRelay.accept(DisconnectedIntent)
-            }
-        }
-    }
-
-    private fun onAirPodsConnectedStartFlag() {
-        actionIntentsRelay.accept(InitialConnectionIntent)
-    }
-
     override fun onPause() {
         super.onPause()
 
@@ -176,9 +146,39 @@ class DeviceStatusFragment :
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
+    private fun onNoStartFlagResume() {
+        // Here we check if a head set (ie airpods) is connected to our device
+        // Unfortunately there is no way to check is some thing that airpods are connected
+        // So we just start the scan if something might be connected
+        if (connectionState == STATE_CONNECTED || connectionState == STATE_CONNECTING) {
+            actionIntentsRelay.accept(InitialScanIntent)
+        } else {
+            // When we resume the activity and nothing is connected, we need to
+            // explicitly post the DisconnectedIntent or else the previous viewModel will just
+            // be rendered again (since Mosby persists the viewModel).
+            actionIntentsRelay.accept(DisconnectedIntent)
+        }
+    }
+
+    private fun onNotificationClickedStartFlag() {
+        getExtra<AirpodModel>(EXTRA_AIRPOD_MODEL)?.let {
+            actionIntentsRelay.accept(UpdateFromNotificationIntent(it))
+        }.orElse {
+            when (connectionState) {
+                STATE_CONNECTED,
+                STATE_CONNECTING -> actionIntentsRelay.accept(StartScanIntent)
+                else -> actionIntentsRelay.accept(DisconnectedIntent)
+            }
+        }
+    }
+
+    private fun onAirPodsConnectedStartFlag() {
+        actionIntentsRelay.accept(InitialConnectionIntent)
+    }
+
     private fun startNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
-            intent.putExtra(NotificationUtil.EXTRA_AIRPOD_MODEL, viewModel.airpods)
+            intent.putExtra(EXTRA_AIRPOD_MODEL, viewModel.airpods)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -195,10 +195,12 @@ class DeviceStatusFragment :
             activity?.stopService(intent)
         }
         NotificationUtil.clearNotification(context)
+        (0..1).last
     }
 
     private fun clearOnResumeFlag() = activity?.intent?.removeExtra(EXTRA_START_FLAG)
 
+    @Suppress("UNCHECKED_CAST")
     private fun <T> getExtra(key: String): T? {
         return activity?.intent?.extras?.get(key) as? T
     }
