@@ -39,8 +39,8 @@ class NotificationService : Service() {
             Crashlytics.log(Log.DEBUG, TAG, " starting notification service")
             Log.d(TAG, "Starting Notification Service")
 
-            initializeScanner()
             initializeNotification(intent)
+            initializeScanner()
 
             return START_STICKY
         }

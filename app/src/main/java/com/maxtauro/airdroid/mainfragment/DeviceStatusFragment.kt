@@ -125,6 +125,8 @@ class DeviceStatusFragment :
             connectionState == 2 ||
             connectionState == 1
         ) {
+            Log.d(TAG, "onPause, refreshingUiMode = $refreshingUiMode")
+
             if (!refreshingUiMode) {
                 context?.let {
                     Crashlytics.log(Log.DEBUG, TAG, " starting notification service from onStop")
@@ -137,6 +139,7 @@ class DeviceStatusFragment :
     }
 
     fun onRefreshUiMode() {
+        Log.d(TAG, "onRefreshUiMode called")
         refreshingUiMode = true
     }
 

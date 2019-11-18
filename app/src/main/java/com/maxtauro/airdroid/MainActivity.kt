@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -72,17 +73,11 @@ class MainActivity : AppCompatActivity() {
                 .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
         }
 
-        val defaultNightMode = getDefaultNightMode()
+        configureNightMode()
 
-        // If we need to set the night mode, setDefaultNightMode will recreate the activity
-        // so we want don't want to do these things right now since the onCreate since it will be called again immediately
-        if (defaultNightMode == AppCompatDelegate.getDefaultNightMode()) {
+        if (!deviceStatusFragment.refreshingUiMode) {
             setupRatingDialog()
             setupAds()
-            deviceStatusFragment.refreshingUiMode = false
-        } else {
-            deviceStatusFragment.refreshingUiMode = true
-            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
         }
 
         rebindDialog()
@@ -217,6 +212,28 @@ class MainActivity : AppCompatActivity() {
 
         deviceStatusFragment.onRefreshUiMode()
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    private fun configureNightMode() {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val defaultNightMode = getDefaultNightMode()
+
+        val willChangeUiMode =
+            (currentNightMode == Configuration.UI_MODE_NIGHT_YES && defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) ||
+                    (currentNightMode == Configuration.UI_MODE_NIGHT_NO && defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES)
+
+        if (willChangeUiMode) {
+            deviceStatusFragment.refreshingUiMode = true
+            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+        } else if (
+            (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM || defaultNightMode == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY) &&
+            defaultNightMode != AppCompatDelegate.getDefaultNightMode()
+        ) {
+            deviceStatusFragment.refreshingUiMode = true
+            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+        } else {
+            deviceStatusFragment.refreshingUiMode = false
+        }
     }
 
     private fun getDefaultNightMode(): Int {
