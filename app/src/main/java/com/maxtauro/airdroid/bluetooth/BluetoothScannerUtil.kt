@@ -38,7 +38,7 @@ class BluetoothScannerUtil {
 
         if (!disableTimeout) {
             Handler().postDelayed({
-                if (!scanCallback.hasFoundAirPods) {
+                if (!scanCallback.hasFoundAirPods && isScanning) {
                     Log.d(TAG, "Bluetooth scan timed out")
 
                     val currentDeviceModel = DeviceName.getDeviceName()

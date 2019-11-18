@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.Switch
 import androidx.fragment.app.DialogFragment
 
@@ -57,7 +58,7 @@ class PreferenceDialog : DialogFragment() {
         val dialog = builder.create()
 
         // TODO will implement this once the flickering background bug is fixed
-//        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation //style id
+        // dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation //style id
 
         return dialog
     }
@@ -86,43 +87,49 @@ class PreferenceDialog : DialogFragment() {
         darkModeByToggleSwitch.isChecked = isDarkModeByToggleEnabled
         darkModeByToggleSwitch.isEnabled = !isDarkModeBySettingsEnabled
 
-
-        openAppSwitch.setOnCheckedChangeListener { _, isChecked ->
-            isOpenAppEnabled = isChecked
-
-            if (isChecked &&
-                !isSystemAlertWindowPermissionGranted &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-            ) {
-                context?.showSystemAlertWindowDialog {
-                    openAppSwitch.isChecked =
-                        isOpenAppEnabled && isSystemAlertWindowPermissionGranted
-                }
-            }
-        }
         showNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             isNotificationEnabled = isChecked
         }
 
-        darkModeBySettingsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            isDarkModeBySettingsEnabled = isChecked
-            darkModeByToggleSwitch.isEnabled = !isChecked
-
-            if (!isChecked) {
-                darkModeByToggleSwitch.isChecked = false
-            }
-
-            save()
-            onUiModeChanged()
-        }
-
-        darkModeByToggleSwitch.setOnCheckedChangeListener { _, isChecked ->
-            isDarkModeByToggleEnabled = isChecked
-            save()
-            onUiModeChanged()
-        }
+        openAppSwitch.setOnCheckedChangeListener(::onOpenAppSwitchCheckChanged)
+        darkModeBySettingsSwitch.setOnCheckedChangeListener(::onDarkModeBySettingsCheckChanged)
+        darkModeByToggleSwitch.setOnCheckedChangeListener(::onDarkModeByToggleCheckChanged)
 
         return view
+    }
+
+    private fun onOpenAppSwitchCheckChanged(_unused_: CompoundButton, isChecked: Boolean) {
+        isOpenAppEnabled = isChecked
+
+        save()
+
+        if (isChecked &&
+            !isSystemAlertWindowPermissionGranted &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        ) {
+            context?.showSystemAlertWindowDialog {
+                openAppSwitch.isChecked =
+                    isOpenAppEnabled && isSystemAlertWindowPermissionGranted
+            }
+        }
+    }
+
+    private fun onDarkModeByToggleCheckChanged(_unused_: CompoundButton, isChecked: Boolean) {
+        isDarkModeByToggleEnabled = isChecked
+        save()
+        onUiModeChanged()
+    }
+
+    private fun onDarkModeBySettingsCheckChanged(_unused_: CompoundButton, isChecked: Boolean) {
+        isDarkModeBySettingsEnabled = isChecked
+        darkModeByToggleSwitch.isEnabled = !isChecked
+
+        if (!isChecked) {
+            darkModeByToggleSwitch.isChecked = false
+        }
+
+        save()
+        onUiModeChanged()
     }
 
     private fun save() {
