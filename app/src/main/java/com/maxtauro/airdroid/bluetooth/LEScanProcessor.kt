@@ -53,23 +53,22 @@ class LEScanProcessor(
     private var candidateAirpodBeacons = HashMap<String, AirpodModel>()
     private val recentBeacons = arrayListOf<AirpodModel>()
 
-    // This will be a list of the beacons we see around us.  The number of beacons will determine how
-    // strict our MIN_RSSI will be
-    private val distinctBeacons = HashMap<String, Long>() // TODO, do we actually need this?
-
     private val BEACON_EXPIRY_T_NS = 10000000000L //10s
     private val INITIAL_SCAN_PERIOD_T_NS = 5000000000L //5s
     private val CURRENT_EXPIRY_T_NS = 20000000000L //20s
 
-    private val MIN_RSSI_RELAXED = -65
-    private val MIN_RSSI_STRICT = -60
+    private val MIN_RSSI_TWO_AIRPODS_RELAXED = -70
+    private val MIN_RSSI_TWO_AIRPODS_STRICT = -60
+    private val MIN_RSSI_SINGLE_POD_RELAXED = -60
+    private val MIN_RSSI_SINGLE_POD_STRICT = -55
+
     private val MIN_RSSI_CANDIDATE = -75
 
     // If we see a beacon with rssi stronger than this, we take it as our AirPods
     private val MIN_RSSI_GUARANTEE = -45
 
     // Minimum received signal strength indication that airpods can have to be considered ours
-    private val MIN_RSSI: Int
+    private val MIN_RSSI_TWO_AIRPODS: Int
         get() {
             filterOldBeacons()
 
@@ -79,14 +78,34 @@ class LEScanProcessor(
 
             return if (currentAirpodModel != null || recentBeacons
                     .distinctMaxRssi()
-                    .filter { it.rssi > MIN_RSSI_RELAXED }
+                    .filter { it.rssi > MIN_RSSI_TWO_AIRPODS_RELAXED }
                     .size > 1
             ) {
                 Log.d(TAG, "RSSI is Strict")
-                MIN_RSSI_STRICT
+                MIN_RSSI_TWO_AIRPODS_STRICT
             } else {
                 Log.d(TAG, "RSSI is relaxed")
-                MIN_RSSI_RELAXED
+                MIN_RSSI_TWO_AIRPODS_RELAXED
+            }
+        }
+
+    private val MIN_RSSI_SINGLE_POD: Int
+        get() {
+            filterOldBeacons()
+
+            // If there are multiple airpods nearby, we make the min rssi strict
+            // this will slow down the time until we get a strongest beacon but
+            // will ensure that the user isn't getting invalid data
+            return if (currentAirpodModel != null || recentBeacons
+                    .distinctMaxRssi()
+                    .filter { it.rssi > MIN_RSSI_TWO_AIRPODS_RELAXED }
+                    .size > 1
+            ) {
+                Log.d(TAG, "RSSI is single pod Strict")
+                MIN_RSSI_SINGLE_POD_STRICT
+            } else {
+                Log.d(TAG, "RSSI is single pod relaxed")
+                MIN_RSSI_SINGLE_POD_RELAXED
             }
         }
 
@@ -146,7 +165,10 @@ class LEScanProcessor(
             return
         }
 
-        if (airpodModel.rssi < MIN_RSSI &&
+        val MIN_RSSI_TO_COMPARE_WITH =
+            if (airpodModel.isSingle()) MIN_RSSI_SINGLE_POD else MIN_RSSI_TWO_AIRPODS
+
+        if (airpodModel.rssi < MIN_RSSI_TO_COMPARE_WITH &&
             (!currentModelIsSticky && airpodModel.macAddress != currentAirpodModel?.macAddress)
         ) {
             return
@@ -158,13 +180,16 @@ class LEScanProcessor(
         }
 
         if (currentModelIsSticky && airpodModel.macAddress == currentAirpodModel?.macAddress) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by stickiness")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         }
         // If we are within the first 5s of the scan
         else if (airpodModel.lastConnected - scanStartTime!! < INITIAL_SCAN_PERIOD_T_NS
         ) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by initial period")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         } else if (airpodModel.isValidCandidate()) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by isValidCandidate")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         }
 
@@ -189,10 +214,8 @@ class LEScanProcessor(
         candidateAirpodBeacons.clear()
         recentBeacons.clear()
 
-        if (airpodModel.rssi > -40 || currentAirpodModel?.macAddress == airpodModel.macAddress){
-            currentModelIsSticky = true
-            Log.d(TAG, "Strong beacon is sticky")
-        }
+        currentModelIsSticky = true
+        Log.d(TAG, "Strong beacon is sticky")
 
         candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         recentBeacons.add(airpodModel)
@@ -314,7 +337,14 @@ class LEScanProcessor(
 
             return ArrayList(macRssiMap.values)
         }
+
+        private fun AirpodModel.isSingle(): Boolean {
+            return (leftAirpod.isConnected && !rightAirpod.isConnected) ||
+                    (!leftAirpod.isConnected && rightAirpod.isConnected)
+        }
     }
 }
+
+
 
 
