@@ -57,7 +57,7 @@ class LEScanProcessor(
     private val INITIAL_SCAN_PERIOD_T_NS = 5000000000L //5s
     private val CURRENT_EXPIRY_T_NS = 20000000000L //20s
 
-    private val MIN_RSSI_TWO_AIRPODS_RELAXED = -65
+    private val MIN_RSSI_TWO_AIRPODS_RELAXED = -70
     private val MIN_RSSI_TWO_AIRPODS_STRICT = -60
     private val MIN_RSSI_SINGLE_POD_RELAXED = -60
     private val MIN_RSSI_SINGLE_POD_STRICT = -55
@@ -180,13 +180,16 @@ class LEScanProcessor(
         }
 
         if (currentModelIsSticky && airpodModel.macAddress == currentAirpodModel?.macAddress) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by stickiness")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         }
         // If we are within the first 5s of the scan
         else if (airpodModel.lastConnected - scanStartTime!! < INITIAL_SCAN_PERIOD_T_NS
         ) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by initial period")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         } else if (airpodModel.isValidCandidate()) {
+            Log.d(TAG, "Candidate updated w/ ${airpodModel.macAddress} rssi: ${airpodModel.rssi} by isValidCandidate")
             candidateAirpodBeacons[airpodModel.macAddress] = airpodModel
         }
 
