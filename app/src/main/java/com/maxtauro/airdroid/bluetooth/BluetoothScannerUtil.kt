@@ -47,7 +47,7 @@ class BluetoothScannerUtil {
                     stopScan()
                     timeoutCallback()
                 }
-            }, 10000) // Timeout after 10s
+            }, 30000) // Timeout after 30s
         }
     }
 

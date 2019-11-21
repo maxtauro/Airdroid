@@ -14,8 +14,8 @@ android {
         applicationId "com.maxtauro.airdroid"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20
-        versionName "1.5 Meagle Alpha"
+        versionCode 21
+        versionName "1.5 Meagle"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string" , "APP_AD_ID" ,  "\"$APP_AD_ID\""
         resValue "string" , "RELEASE_AD_UNIT_ID" ,  "\"$TEST_AD_UNIT_ID\""
