@@ -54,6 +54,8 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                     "Device Connected, Name: ${connectedDevice.name}, Address: ${connectedDevice.address}"
                 )
 
+                if (!connectedDevice.isConnectedDeviceHeadset()) return
+
                 mConnectedDevice = connectedDevice
 
                 if (isActivityInForeground) {

@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var deviceStatusFragment: DeviceStatusFragment
 
-    lateinit var settingsButton: FloatingActionButton
-    lateinit var preferences: SharedPreferences
+    private lateinit var settingsButton: FloatingActionButton
+    private lateinit var preferences: SharedPreferences
 
     private val shouldShowSystemAlertWindowDialog: Boolean
         get() = preferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
