@@ -1,14 +1,14 @@
-package com.maxtauro.airdroid.mainfragment.presenter
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter
 
 import android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY
 import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceFragmentReducer
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.bluetooth.AirpodLeScanCallback
 import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import org.greenrobot.eventbus.EventBus

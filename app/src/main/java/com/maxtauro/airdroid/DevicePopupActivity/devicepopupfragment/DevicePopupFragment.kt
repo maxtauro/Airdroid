@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.mainfragment
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment
 
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
@@ -19,15 +19,15 @@ import com.crashlytics.android.Crashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
-import com.maxtauro.airdroid.mainfragment.presenter.*
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.*
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
 import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
-class DeviceStatusFragment :
+class DevicePopupFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
 
@@ -35,7 +35,7 @@ class DeviceStatusFragment :
 
     private val subscriptions = CompositeDisposable()
 
-    private lateinit var view: DeviceFragmentView
+    private lateinit var view: DevicePopupFragmentView
     private var viewModel = DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
 
     private val connectionState: Int?
@@ -59,7 +59,7 @@ class DeviceStatusFragment :
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val view = DeviceFragmentView(inflater, container)
+        val view = DevicePopupFragmentView(inflater, container)
 
         this.view = view
         return view.view

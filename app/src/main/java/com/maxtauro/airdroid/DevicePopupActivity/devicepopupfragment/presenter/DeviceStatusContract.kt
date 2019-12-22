@@ -1,8 +1,8 @@
-package com.maxtauro.airdroid.mainfragment.presenter
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter
 
 import com.hannesdorfmann.mosby3.mvi.MviPresenter
 import com.hannesdorfmann.mosby3.mvp.MvpView
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
 import io.reactivex.Observable
 
 interface DeviceStatusContract {

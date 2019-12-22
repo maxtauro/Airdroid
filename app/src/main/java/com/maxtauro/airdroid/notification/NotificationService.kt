@@ -7,10 +7,10 @@ import android.os.IBinder
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.bluetooth.AirpodLeScanCallback
 import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
 import com.maxtauro.airdroid.isHeadsetConnected
-import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.orElse
 import org.greenrobot.eventbus.EventBus
 
