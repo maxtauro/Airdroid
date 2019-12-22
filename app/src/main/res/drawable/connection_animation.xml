@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_full"
+            android:duration="100" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_0padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_5padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_10padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_15padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_20padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_25padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_30padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_35padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_40padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_45padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_50padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_45padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_40padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_35padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_30padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_25padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_20padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_15padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_10padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_5padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_0padding"
+            android:duration="75" />
+    <item
+            android:drawable="@drawable/ic_dark_notification_icon_full"
+            android:duration="100" />
+</animation-list>
