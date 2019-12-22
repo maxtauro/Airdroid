@@ -90,6 +90,18 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
 
+
+        Crashlytics.log(
+            Log.DEBUG,
+            TAG,
+            "onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}"
+        )
+        // TODO, find a better way to deal with this bug
+        // This check is added here because, sometimes onPause will be called immediately following
+        // onResume if there is no window focus, if that is the case, trying to start the service will
+        // cause a crash.
+        if (activity?.hasWindowFocus() != true) return
+
         actionIntentsRelay.accept(StopScanIntent)
         if (viewModel.airpods.isConnected ||
             connectionState == 2 ||
@@ -198,7 +210,6 @@ class DeviceStatusFragment :
             activity?.stopService(intent)
         }
         NotificationUtil.clearNotification(context)
-        (0..1).last
     }
 
     private fun clearOnResumeFlag() = activity?.intent?.removeExtra(EXTRA_START_FLAG)
