@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.mainfragment.viewmodel
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel
 
 import android.os.Parcelable
 import com.maxtauro.airdroid.AirpodModel

@@ -1,14 +1,14 @@
-package com.maxtauro.airdroid.mainfragment
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.R
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
-import com.maxtauro.airdroidcommon.airpodviews.AirpodPieceView
+import com.maxtauro.airdroid.airpodviews.AirpodPieceView
 
-class DeviceFragmentView(
+class DevicePopupFragmentView(
     inflater: LayoutInflater,
     container: ViewGroup?
 ) {

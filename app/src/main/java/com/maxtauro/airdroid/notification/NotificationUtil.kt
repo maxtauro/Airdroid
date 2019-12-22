@@ -13,9 +13,13 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
-import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment.Companion.EXTRA_START_FLAG
+import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.DevicePopupActivity.DevicePopupActivity
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment.Companion.EXTRA_START_FLAG
+import com.maxtauro.airdroid.NOTIFICATION_PREF_KEY
+import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.SHARED_PREFERENCE_FILE_NAME
 
 class NotificationUtil(
     private val context: Context,
@@ -140,12 +144,12 @@ class NotificationUtil(
     }
 
     private fun buildContentIntent(airpodModel: AirpodModel): PendingIntent? {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, DevicePopupActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         intent.putExtra(
             EXTRA_START_FLAG,
-            DeviceStatusFragment.Companion.StartFlag.NOTIFICATION_CLICKED
+            DevicePopupFragment.Companion.StartFlag.NOTIFICATION_CLICKED
         )
         intent.putExtra(EXTRA_AIRPOD_MODEL, airpodModel)
 

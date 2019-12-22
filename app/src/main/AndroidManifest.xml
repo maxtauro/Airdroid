@@ -21,11 +21,15 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme.Transparent">
+        <activity
+                android:name=".preferenceactivity.PreferenceActivity"
+                android:label="@string/title_activity_preference"></activity>
+
         <meta-data
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/APP_AD_ID" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".DevicePopupActivity.DevicePopupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

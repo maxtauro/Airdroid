@@ -2,9 +2,9 @@ package com.maxtauro.airdroid
 
 import android.os.SystemClock
 import android.util.Log
-import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceFragmentReducer
-import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.RefreshAirpodModelIntent
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceFragmentReducer
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic

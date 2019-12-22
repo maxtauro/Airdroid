@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.mainfragment.presenter
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter
 
 import com.maxtauro.airdroid.AirpodModel
 

@@ -14,6 +14,7 @@ import android.widget.CompoundButton
 import android.widget.Switch
 import androidx.fragment.app.DialogFragment
 
+@Deprecated("Transitioning to using Preference Activity")
 class PreferenceDialog : DialogFragment() {
 
     lateinit var onUiModeChanged: () -> Unit

@@ -5,7 +5,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:onClick="closeWindow"
-        tools:context=".MainActivity">
+        tools:context=".DevicePopupActivity.DevicePopupActivity">
 
     <FrameLayout
             android:id="@+id/pref_container"
@@ -53,7 +53,7 @@
 
     <fragment
             android:id="@+id/fragment_devices"
-            android:name="com.maxtauro.airdroid.mainfragment.DeviceStatusFragment"
+            android:name="com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment"
             android:layout_width="320dp"
             android:layout_height="320dp"
             android:layout_marginTop="8dp"

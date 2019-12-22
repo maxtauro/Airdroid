@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid
+package com.maxtauro.airdroid.DevicePopupActivity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -24,14 +24,15 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
-import com.maxtauro.airdroid.mainfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
 
 var mIsActivityRunning = false
 
-class MainActivity : AppCompatActivity() {
+class DevicePopupActivity : AppCompatActivity() {
 
-    private lateinit var deviceStatusFragment: DeviceStatusFragment
+    private lateinit var deviceStatusFragment: DevicePopupFragment
 
     private lateinit var settingsButton: FloatingActionButton
     private lateinit var preferences: SharedPreferences
@@ -65,12 +66,14 @@ class MainActivity : AppCompatActivity() {
             ?: throw IllegalStateException("Preferences haven't been initialized yet")
 
         deviceStatusFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
+            supportFragmentManager.findFragmentById(R.id.fragment_devices) as DevicePopupFragment
 
         settingsButton = findViewById(R.id.settings_btn)
         settingsButton.setOnClickListener {
             PreferenceDialog.newInstance(::refreshUiMode)
-                .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
+                .show(supportFragmentManager,
+                    PREFERENCE_DIALOG_TAG
+                )
         }
 
         configureNightMode()
@@ -94,7 +97,9 @@ class MainActivity : AppCompatActivity() {
             showBluetoothNotSupportedAlertDialog()
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            startActivityForResult(enableBtIntent,
+                REQUEST_ENABLE_BT
+            )
         }
     }
 
@@ -267,7 +272,11 @@ class MainActivity : AppCompatActivity() {
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"
-                Crashlytics.logException(UserFeedbackException(msg))
+                Crashlytics.logException(
+                    UserFeedbackException(
+                        msg
+                    )
+                )
             }.build()
 
         ratingDialog.show()
@@ -275,7 +284,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun rebindDialog() {
         (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
-            this.onUiModeChanged = this@MainActivity::refreshUiMode
+            this.onUiModeChanged = this@DevicePopupActivity::refreshUiMode
         }
     }
 

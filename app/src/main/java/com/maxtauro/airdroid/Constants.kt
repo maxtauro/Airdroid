@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.crashlytics.android.Crashlytics
+import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
 
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
 
