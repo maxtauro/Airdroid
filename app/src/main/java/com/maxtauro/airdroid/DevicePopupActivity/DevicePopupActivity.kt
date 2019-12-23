@@ -27,6 +27,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
 
@@ -57,7 +58,7 @@ class DevicePopupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_device_popup)
 
         preferences = getSharedPreferences(
             SHARED_PREFERENCE_FILE_NAME,
@@ -69,12 +70,7 @@ class DevicePopupActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragment_devices) as DevicePopupFragment
 
         settingsButton = findViewById(R.id.settings_btn)
-        settingsButton.setOnClickListener {
-            PreferenceDialog.newInstance(::refreshUiMode)
-                .show(supportFragmentManager,
-                    PREFERENCE_DIALOG_TAG
-                )
-        }
+        settingsButton.setOnClickListener { startPreferenceActivity() }
 
         configureNightMode()
 
@@ -97,7 +93,8 @@ class DevicePopupActivity : AppCompatActivity() {
             showBluetoothNotSupportedAlertDialog()
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent,
+            startActivityForResult(
+                enableBtIntent,
                 REQUEST_ENABLE_BT
             )
         }
@@ -209,6 +206,13 @@ class DevicePopupActivity : AppCompatActivity() {
             showSystemAlertWindowDialog()
             preferences.edit().putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, false)
                 .apply()
+        }
+    }
+
+    private fun startPreferenceActivity() {
+        Intent(this, PreferenceActivity::class.java).also { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            this.startActivity(intent)
         }
     }
 

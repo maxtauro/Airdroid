@@ -10,6 +10,8 @@
     <color name="colorPodMain">#fff4f4f4</color>
     <color name="colorPodShadow">#ffbfbfbf</color>
 
+    <color name="colorDarkGrey">#42221f1f</color>
+
     <color name="bestBlue">#2196F3</color>
     <color name="bestBlueLighter">#2094F3</color>
 
