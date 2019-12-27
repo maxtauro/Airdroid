@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.maxtauro.airdroid">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -20,12 +21,11 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme.Transparent">
-
         <meta-data
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/APP_AD_ID" />
 
-        <activity android:name="com.maxtauro.airdroid.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +34,7 @@
         </activity>
 
         <receiver
-                android:name="com.maxtauro.airdroid.bluetooth.BluetoothConnectionReceiver"
+                android:name=".bluetooth.BluetoothConnectionReceiver"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
@@ -43,11 +43,10 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".notification.NotificationService"
+        <service
+                android:name=".notification.NotificationService"
                 android:enabled="true"
-                android:exported="true"
-                />
-
+                android:exported="true" />
         <service android:name=".notification.NotificationJobService" />
     </application>
 
