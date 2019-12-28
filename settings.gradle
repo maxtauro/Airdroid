@@ -1,1 +1,1 @@
-include ':app', ':airdroidwearmodule'
+include ':app', ':airdroidwearmodule', ':common'

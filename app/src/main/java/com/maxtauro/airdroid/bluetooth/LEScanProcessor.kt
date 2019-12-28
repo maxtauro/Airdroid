@@ -4,7 +4,6 @@ import android.bluetooth.le.ScanResult
 import android.os.SystemClock
 import android.util.Log
 import com.maxtauro.airdroid.AirpodModel
-import kotlin.math.absoluteValue
 
 /** This class is responsible for processing our BLE scan results and determining
  *  which BLE beacon is most likely the correct beacon. This is a tough problem for the following reasons:

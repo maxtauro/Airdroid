@@ -28,15 +28,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-        debugScanLoggingEnabled {
-            buildConfigField "String", "BUILD_VARIANT", "\"debugScanLoggingEnabled\""
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
+//        debugScanLoggingEnabled {
+//            buildConfigField "String", "BUILD_VARIANT", "\"debugScanLoggingEnabled\""
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
     }
 }
 
 dependencies {
+
+    wearApp project(path: ':airdroidwearmodule')
+    implementation project(path: ':common')
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
