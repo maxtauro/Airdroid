@@ -7,6 +7,7 @@
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application
+            android:name=".AirDroidApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -22,10 +23,10 @@
         -->
         <meta-data
                 android:name="com.google.android.wearable.standalone"
-                android:value="true" />
+                android:value="false" />
 
         <activity
-                android:name=".MainActivity"
+                android:name=".DeviceStatusActivity"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,6 +34,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".AirdroidWearableListenerService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:host="*"
+                        android:pathPrefix="/airpodStatusRequest"
+                        android:scheme="wear" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

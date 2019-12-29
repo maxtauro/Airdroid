@@ -24,6 +24,7 @@ import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
+import com.maxtauro.airdroid.orElse
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :

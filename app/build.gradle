@@ -39,6 +39,8 @@ android {
 dependencies {
 
     wearApp project(path: ':airdroidwearmodule')
+    implementation 'com.google.android.gms:play-services-wearable:16.0.1'
+
     implementation project(path: ':common')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])

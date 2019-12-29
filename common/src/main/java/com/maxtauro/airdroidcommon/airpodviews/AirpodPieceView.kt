@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.airpodviews
+package com.maxtauro.airdroidcommon.airpodviews
 
 import android.content.Context
 import android.util.AttributeSet
@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.maxtauro.airdroid.AirpodPiece
-import com.maxtauro.airdroid.R
 import com.maxtauro.airdroid.WhichPiece
+import com.maxtauro.airdroidcommon.R
 
 class AirpodPieceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -67,7 +67,8 @@ class AirpodPieceView @JvmOverloads constructor(
     }
 
     private fun renderChargeTxt(chargeLevel: Int) {
-        airpodPieceChargeText.text = "$chargeLevel%" //resources.getString(R.string.charge_text, chargeLevel)
+        airpodPieceChargeText.text =
+            "$chargeLevel%" //resources.getString(R.string.charge_text, chargeLevel)
         airpodPieceChargeText.visibility = View.VISIBLE
     }
 

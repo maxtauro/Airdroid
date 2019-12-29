@@ -104,6 +104,47 @@ data class AirpodModel(
             )
         }
 
+        fun create(
+            leftChargeLevel: Int,
+            rightChargeLevel: Int,
+            caseChargeLevel: Int,
+            leftChargingStatus: Boolean,
+            rightChargingStatus: Boolean,
+            caseChargingStatus: Boolean,
+            rssi: Int = -1,
+            address: String = ""
+        ): AirpodModel {
+            val isLeftConnected = leftChargeLevel != 150
+            val isRightConnected = rightChargeLevel != 150
+            val isCaseConnected = caseChargeLevel != 150
+
+            return AirpodModel(
+                AirpodPiece(
+                    leftChargeLevel,
+                    leftChargingStatus,
+                    isLeftConnected,
+                    WhichPiece.LEFT,
+                    true
+                ),
+                AirpodPiece(
+                    rightChargeLevel,
+                    rightChargingStatus,
+                    isRightConnected,
+                    WhichPiece.RIGHT,
+                    true
+                ),
+                AirpodPiece(
+                    caseChargeLevel,
+                    caseChargingStatus,
+                    isCaseConnected,
+                    WhichPiece.CASE,
+                    true
+                ),
+                macAddress = address,
+                rssi = rssi
+            )
+        }
+
         private fun isFlipped(str: String): Boolean {
             return (Integer.parseInt("" + str[10], 16) + 0x10).toString(2)[3] == '0'
         }

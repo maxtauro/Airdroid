@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.maxtauro.airdroid.R
-import com.maxtauro.airdroid.airpodviews.AirpodPieceView
 import com.maxtauro.airdroid.mainfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroidcommon.airpodviews.AirpodPieceView
 
 class DeviceFragmentView(
     inflater: LayoutInflater,
