@@ -33,12 +33,12 @@ class WearableDataManager {
 
             return PutDataMapRequest.create(WEARABLE_DATA_AIRPOD_STATUS_PATH).setUrgent().apply {
                 dataMap.putInt(WEARABLE_DATA_LEFT_CHARGE_LEVEL, airpodModel.leftAirpod.chargeLevel)
-                dataMap.putInt(WEARABLE_DATA_RIGHT_CHARGE_LEVEL, airpodModel.leftAirpod.chargeLevel)
-                dataMap.putInt(WEARABLE_DATA_CASE_CHARGE_LEVEL, airpodModel.leftAirpod.chargeLevel)
+                dataMap.putInt(WEARABLE_DATA_RIGHT_CHARGE_LEVEL, airpodModel.rightAirpod.chargeLevel)
+                dataMap.putInt(WEARABLE_DATA_CASE_CHARGE_LEVEL, airpodModel.case.chargeLevel)
 
                 dataMap.putBoolean(WEARABLE_DATA_LEFT_CHARGE_STATE, airpodModel.leftAirpod.isCharging)
-                dataMap.putBoolean(WEARABLE_DATA_RIGHT_CHARGE_STATE, airpodModel.leftAirpod.isCharging)
-                dataMap.putBoolean(WEARABLE_DATA_CASE_CHARGE_STATE, airpodModel.leftAirpod.isCharging)
+                dataMap.putBoolean(WEARABLE_DATA_RIGHT_CHARGE_STATE, airpodModel.rightAirpod.isCharging)
+                dataMap.putBoolean(WEARABLE_DATA_CASE_CHARGE_STATE, airpodModel.case.isCharging)
 
                 mConnectedDevice?.name?.let { dataMap.putString(WEARABLE_DATA_AIRPOD_NAME, it) }
             }
