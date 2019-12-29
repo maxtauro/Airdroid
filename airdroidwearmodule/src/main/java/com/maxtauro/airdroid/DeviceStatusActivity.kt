@@ -18,8 +18,6 @@ class DeviceStatusActivity : WearableActivity() {
 
         view = DeviceStatusActivityView(this)
         eventBus.register(this)
-
-        setAmbientEnabled()
     }
 
     override fun onResume() {
