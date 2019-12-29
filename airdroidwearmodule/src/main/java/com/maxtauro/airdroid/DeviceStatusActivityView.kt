@@ -19,7 +19,7 @@ class DeviceStatusActivityView(private val activity: DeviceStatusActivity) {
     }
 
     fun render(airpodModel: AirpodModel?, airpodName: String? = null) {
-        if (airpodModel != null && airpodModel.isConnected) renderConnected(airpodModel, airpodName)
+        if (airpodModel != null && airpodModel.isConnected && airpodModel != AirpodModel.EMPTY) renderConnected(airpodModel, airpodName)
         else renderDisconnected()
     }
 

@@ -2,14 +2,12 @@ package com.maxtauro.airdroid
 
 import android.app.Application
 import com.google.android.gms.wearable.DataMap
-import com.maxtauro.airdroidcommon.WEARABLE_DATA_AIRPOD_NAME
-import com.maxtauro.airdroidcommon.WEARABLE_DATA_LEFT_CHARGE_LEVEL
-import com.maxtauro.airdroidcommon.WEARABLE_DATA_LEFT_CHARGE_STATE
+import com.maxtauro.airdroidcommon.*
 import org.greenrobot.eventbus.EventBus
 
 class AirDroidApplication : Application() {
 
-    var mAirpodName: String = ""
+    var mAirpodName: String? = ""
         private set
     var mAirpodModel: AirpodModel? = null
         private set
@@ -29,12 +27,12 @@ class AirDroidApplication : Application() {
     private fun createAirpodModel(dataMap: DataMap): AirpodModel {
         dataMap.apply {
             val leftChargeLevel = getInt(WEARABLE_DATA_LEFT_CHARGE_LEVEL)
-            val rightChargeLevel = getInt(WEARABLE_DATA_LEFT_CHARGE_LEVEL)
-            val caseChargeLevel = getInt(WEARABLE_DATA_LEFT_CHARGE_LEVEL)
+            val rightChargeLevel = getInt(WEARABLE_DATA_RIGHT_CHARGE_LEVEL)
+            val caseChargeLevel = getInt(WEARABLE_DATA_CASE_CHARGE_LEVEL)
 
             val leftChargingStatus = getBoolean(WEARABLE_DATA_LEFT_CHARGE_STATE)
-            val rightChargingStatus = getBoolean(WEARABLE_DATA_LEFT_CHARGE_STATE)
-            val caseChargingStatus = getBoolean(WEARABLE_DATA_LEFT_CHARGE_STATE)
+            val rightChargingStatus = getBoolean(WEARABLE_DATA_RIGHT_CHARGE_STATE)
+            val caseChargingStatus = getBoolean(WEARABLE_DATA_CASE_CHARGE_STATE)
 
             return AirpodModel.create(
                 leftChargeLevel = leftChargeLevel,
