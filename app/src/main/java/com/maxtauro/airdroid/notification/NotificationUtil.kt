@@ -125,7 +125,7 @@ class NotificationUtil(
         } else if (!airpodModel.leftAirpod.isConnected && airpodModel.rightAirpod.isConnected) {
             notificationBuilder.setSmallIcon(R.mipmap.right_airpod_notification_icon)
         } else if (airpodModel.isConnected) {
-            notificationBuilder.setSmallIcon(R.mipmap.both_airpods_notification_icon)
+            notificationBuilder.setSmallIcon(R.drawable.both_airpods_notification_icon)
         } else {
             notificationBuilder.setSmallIcon(R.drawable.connection_animation)
         }
