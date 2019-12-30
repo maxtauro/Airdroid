@@ -19,7 +19,6 @@ class AirDroidApplication : Application() {
         mAirpodName = dataMap.getString(WEARABLE_DATA_AIRPOD_NAME)
 
         Log.d(TAG, "Airpod model updated cleared")
-        EventBus.getDefault().post(AirpodUpdateEvent)
     }
 
     fun clearAirpodModel() {
