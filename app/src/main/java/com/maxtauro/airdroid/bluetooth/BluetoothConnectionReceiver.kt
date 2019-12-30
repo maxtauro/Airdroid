@@ -18,6 +18,7 @@ import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
 import com.maxtauro.airdroid.mainfragment.presenter.InitialConnectionIntent
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
 import org.greenrobot.eventbus.EventBus
 
 @SuppressLint("LongLogTag")
@@ -84,6 +85,9 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 Crashlytics.log(Log.DEBUG, TAG, " Stopping notification service")
                 stopNotificationService(context)
             }
+
+
+            WearableDataManager.sendDisconnectedUpdate(context)
         }
     }
 

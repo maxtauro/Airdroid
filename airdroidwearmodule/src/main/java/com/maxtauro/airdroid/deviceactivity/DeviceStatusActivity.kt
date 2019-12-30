@@ -1,8 +1,10 @@
-package com.maxtauro.airdroid
+package com.maxtauro.airdroid.deviceactivity
 
 import android.os.Bundle
 import android.support.wearable.activity.WearableActivity
 import android.util.Log
+import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.datalayer.AirpodUpdateEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

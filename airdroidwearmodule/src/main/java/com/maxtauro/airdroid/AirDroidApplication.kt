@@ -1,7 +1,9 @@
 package com.maxtauro.airdroid
 
 import android.app.Application
+import android.util.Log
 import com.google.android.gms.wearable.DataMap
+import com.maxtauro.airdroid.datalayer.AirpodUpdateEvent
 import com.maxtauro.airdroidcommon.*
 import org.greenrobot.eventbus.EventBus
 
@@ -16,12 +18,16 @@ class AirDroidApplication : Application() {
         mAirpodModel = createAirpodModel(dataMap)
         mAirpodName = dataMap.getString(WEARABLE_DATA_AIRPOD_NAME)
 
+        Log.d(TAG, "Airpod model updated cleared")
         EventBus.getDefault().post(AirpodUpdateEvent)
     }
 
     fun clearAirpodModel() {
         mAirpodModel = null
         mAirpodName = ""
+
+        Log.d(TAG, "Airpod model cleared")
+        EventBus.getDefault().post(AirpodUpdateEvent)
     }
 
     private fun createAirpodModel(dataMap: DataMap): AirpodModel {

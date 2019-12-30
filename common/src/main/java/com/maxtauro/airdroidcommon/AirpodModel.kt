@@ -197,21 +197,21 @@ data class AirpodPiece(
     companion object {
 
         val LEFT_EMPTY = AirpodPiece(
-            0,
+            150,
             isCharging = false,
             isConnected = false,
             whichPiece = WhichPiece.LEFT,
             shouldShowBatteryInfo = false
         )
         val RIGHT_EMPTY = AirpodPiece(
-            0,
+            150,
             isCharging = false,
             isConnected = false,
             whichPiece = WhichPiece.RIGHT,
             shouldShowBatteryInfo = false
         )
         val CASE_EMPTY = AirpodPiece(
-            0,
+            150,
             isCharging = false,
             isConnected = false,
             whichPiece = WhichPiece.CASE,
