@@ -12,6 +12,7 @@ import com.maxtauro.airdroid.bluetooth.BluetoothScannerUtil
 import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.mainfragment.presenter.RefreshAirpodModelIntent
 import com.maxtauro.airdroid.orElse
+import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
 import org.greenrobot.eventbus.EventBus
 
 class NotificationService : Service() {
@@ -98,8 +99,16 @@ class NotificationService : Service() {
 
     private fun onScanResult(airpodModel: AirpodModel) {
         Log.d(TAG, "onScanResult, notification service")
+
         notificationUtil.onScanResult(airpodModel)
+        sendWearableUpdate(airpodModel)
+
         this.airpodModel = airpodModel
+    }
+
+    private fun sendWearableUpdate(airpodModel: AirpodModel) {
+        // We only want to send the update if there has been any change
+        if (airpodModel != this.airpodModel) WearableDataManager.sendAirpodUpdate(airpodModel, this)
     }
 
     companion object {

@@ -2,5 +2,8 @@
 /.idea
 /debug
 /release
+/Project.xml
+/gradle.xml
+/proguard-rules.*
 /debugScanLogginEnabled
 google-services.json

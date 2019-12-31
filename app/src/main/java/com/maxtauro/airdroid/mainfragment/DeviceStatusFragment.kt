@@ -25,6 +25,7 @@ import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
 import com.maxtauro.airdroid.orElse
+import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
 import io.reactivex.disposables.CompositeDisposable
 
 class DeviceStatusFragment :
@@ -90,7 +91,6 @@ class DeviceStatusFragment :
     override fun onPause() {
         super.onPause()
 
-
         Crashlytics.log(
             Log.DEBUG,
             TAG,
@@ -127,7 +127,10 @@ class DeviceStatusFragment :
 
     override fun actionIntents() = actionIntentsRelay
 
-    override fun createPresenter() = DeviceStatusPresenter(::isLocationPermissionEnabled)
+    override fun createPresenter() = DeviceStatusPresenter(
+        isLocationPermissionEnabled = ::isLocationPermissionEnabled,
+        sendWearableUpdate = ::sendWearableUpdate
+    )
 
     override fun render(viewModel: DeviceViewModel) {
 
@@ -160,6 +163,15 @@ class DeviceStatusFragment :
             context!!,
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+
+    override fun sendWearableUpdate(airpodModel: AirpodModel) {
+        context?.let {
+            WearableDataManager.sendAirpodUpdate(
+                airpodModel,
+                it
+            )
+        }
+    }
 
     private fun onNoStartFlagResume() {
         // Here we check if a head set (ie airpods) is connected to our device
