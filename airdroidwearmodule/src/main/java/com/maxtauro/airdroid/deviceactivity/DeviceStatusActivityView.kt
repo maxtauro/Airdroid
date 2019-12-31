@@ -173,19 +173,41 @@ class DeviceStatusActivityView(private val activity: DeviceStatusActivity) {
         val pieceView: LinearLayout = activity.findViewById(layoutId)
 
         if (isConnected) {
-            val pieceImageView: ImageView = activity.findViewById(pieceImageViewId)
-
-            pieceView.visibility = View.VISIBLE
-            pieceImageView.setImageResource(pieceImageResId)
-
-            renderChargeImg(
-                isCharging = isCharging,
-                chargeLevel = chargeLevel,
-                chargingImgId = chargeImageViewId,
-                chargingTextId = chargeTextViewId,
-                progressBarId = progressBarId
+            renderConnectedPiece(
+                pieceImageViewId,
+                pieceView,
+                pieceImageResId,
+                isCharging,
+                chargeLevel,
+                chargeImageViewId,
+                chargeTextViewId,
+                progressBarId
             )
         } else pieceView.visibility = View.GONE
+    }
+
+    private fun renderConnectedPiece(
+        pieceImageViewId: Int,
+        pieceView: LinearLayout,
+        pieceImageResId: Int,
+        isCharging: Boolean,
+        chargeLevel: Int,
+        chargeImageViewId: Int,
+        chargeTextViewId: Int,
+        progressBarId: Int
+    ) {
+        val pieceImageView: ImageView = activity.findViewById(pieceImageViewId)
+
+        pieceView.visibility = View.VISIBLE
+        pieceImageView.setImageResource(pieceImageResId)
+
+        renderChargeImg(
+            isCharging = isCharging,
+            chargeLevel = chargeLevel,
+            chargingImgId = chargeImageViewId,
+            chargingTextId = chargeTextViewId,
+            progressBarId = progressBarId
+        )
     }
 
     private fun renderLoadingPiece(
@@ -261,32 +283,35 @@ class DeviceStatusActivityView(private val activity: DeviceStatusActivity) {
         chargeImageView.visibility = View.VISIBLE
         chargeImgTextView.visibility = View.VISIBLE
 
-        val chargeImgResId: Int =
-            if (isCharging) {
-                when (chargeLevel) {
-                    in 0..20 -> BatteryImgResId.BATTERY_CHARGING_20.resId
-                    in 21..30 -> BatteryImgResId.BATTERY_CHARGING_30.resId
-                    in 31..50 -> BatteryImgResId.BATTERY_CHARGING_50.resId
-                    in 51..60 -> BatteryImgResId.BATTERY_CHARGING_60.resId
-                    in 61..80 -> BatteryImgResId.BATTERY_CHARGING_80.resId
-                    in 81..90 -> BatteryImgResId.BATTERY_CHARGING_90.resId
-                    else -> BatteryImgResId.BATTERY_CHARGING_FULL.resId
-                }
-            } else {
-                when (chargeLevel) {
-                    in 0..20 -> BatteryImgResId.BATTERY_20.resId
-                    in 21..30 -> BatteryImgResId.BATTERY_30.resId
-                    in 31..50 -> BatteryImgResId.BATTERY_50.resId
-                    in 51..60 -> BatteryImgResId.BATTERY_60.resId
-                    in 61..80 -> BatteryImgResId.BATTERY_80.resId
-                    in 81..90 -> BatteryImgResId.BATTERY_90.resId
-                    else -> BatteryImgResId.BATTERY_FULL.resId
-
-                }
-            }
+        val chargeImgResId: Int = getBatteryResId(isCharging, chargeLevel)
 
         chargeImageView.setImageResource(chargeImgResId)
         chargeImgTextView.text = "$chargeLevel%"
+    }
+
+    private fun getBatteryResId(isCharging: Boolean, chargeLevel: Int): Int {
+        return if (isCharging) {
+            when (chargeLevel) {
+                in 0..20 -> BatteryImgResId.BATTERY_CHARGING_20.resId
+                in 21..30 -> BatteryImgResId.BATTERY_CHARGING_30.resId
+                in 31..50 -> BatteryImgResId.BATTERY_CHARGING_50.resId
+                in 51..60 -> BatteryImgResId.BATTERY_CHARGING_60.resId
+                in 61..80 -> BatteryImgResId.BATTERY_CHARGING_80.resId
+                in 81..90 -> BatteryImgResId.BATTERY_CHARGING_90.resId
+                else -> BatteryImgResId.BATTERY_CHARGING_FULL.resId
+            }
+        } else {
+            when (chargeLevel) {
+                in 0..20 -> BatteryImgResId.BATTERY_20.resId
+                in 21..30 -> BatteryImgResId.BATTERY_30.resId
+                in 31..50 -> BatteryImgResId.BATTERY_50.resId
+                in 51..60 -> BatteryImgResId.BATTERY_60.resId
+                in 61..80 -> BatteryImgResId.BATTERY_80.resId
+                in 81..90 -> BatteryImgResId.BATTERY_90.resId
+                else -> BatteryImgResId.BATTERY_FULL.resId
+
+            }
+        }
     }
 
     private enum class BatteryImgResId(val resId: Int) {
