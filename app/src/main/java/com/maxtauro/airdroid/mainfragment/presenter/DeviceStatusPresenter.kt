@@ -15,7 +15,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
+class DeviceStatusPresenter(
+    var isLocationPermissionEnabled: () -> Boolean,
+    var sendWearableUpdate: (AirpodModel) -> Unit
+) :
     DeviceStatusContract.Presenter,
     MviBasePresenter<DeviceStatusContract.View, DeviceViewModel>() {
 
@@ -29,7 +32,6 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
     private val intentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
 
     override fun bindIntents() {
-
         val viewModelObservable = Observable.merge(
             intentsRelay,
             intent(DeviceStatusContract.View::actionIntents)
@@ -64,9 +66,21 @@ class DeviceStatusPresenter(var isLocationPermissionEnabled: () -> Boolean) :
 
     private fun preReduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent) {
         when (intent) {
+            is RefreshAirpodModelIntent -> sendWearableUpdateIfAirpodChanged(
+                viewModel.airpods,
+                intent.updatedAirpods
+            )
             is DisconnectedIntent,
             is StopScanIntent -> scannerUtil.stopScan()
         }
+    }
+
+    private fun sendWearableUpdateIfAirpodChanged(
+        prevAirpodModel: AirpodModel,
+        updatedAirpods: AirpodModel
+    ) {
+        // We only want to send the update if there has been any change
+        if (updatedAirpods != prevAirpodModel) sendWearableUpdate(updatedAirpods)
     }
 
     private fun postReduce(viewModel: DeviceViewModel, intent: DeviceStatusIntent) {

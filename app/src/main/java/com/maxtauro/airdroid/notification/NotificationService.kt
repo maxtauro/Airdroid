@@ -101,14 +101,14 @@ class NotificationService : Service() {
         Log.d(TAG, "onScanResult, notification service")
 
         notificationUtil.onScanResult(airpodModel)
-        sendWearbleUpdate(airpodModel)
+        sendWearableUpdate(airpodModel)
 
         this.airpodModel = airpodModel
     }
 
-    private fun sendWearbleUpdate(airpodModel: AirpodModel) {
-        // TODO don't send duplicate models
-        WearableDataManager.sendAirpodUpdate(airpodModel, this)
+    private fun sendWearableUpdate(airpodModel: AirpodModel) {
+        // We only want to send the update if there has been any change
+        if (airpodModel != this.airpodModel) WearableDataManager.sendAirpodUpdate(airpodModel, this)
     }
 
     companion object {

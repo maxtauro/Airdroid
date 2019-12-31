@@ -1,7 +1,6 @@
 package com.maxtauro.airdroid.wearablecomponents
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wearable.DataItem
@@ -30,27 +29,18 @@ class WearableDataManager {
         }
 
         @JvmStatic
-        fun sendAirpodLoadingUpdate(context: Context) {
-
-        }
-
-        @JvmStatic
         fun sendDisconnectedUpdate(context: Context) {
             // TODO do this in a corountine
-            val uri = Uri.parse(WEARABLE_DATA_AIRPOD_STATUS_PATH)
             Wearable.getDataClient(context).apply {
                 dataItems.addOnSuccessListener {
                     it.forEach { dataItem ->
                         this.deleteDataItems(dataItem.uri).addOnSuccessListener {
                             Log.d(TAG, "Disconnected Update sent")
                         }
-
                     }
                 }
             }
-
         }
-
 
         private fun createPutDataMapRequest(airpodModel: AirpodModel): PutDataMapRequest {
             // TODO figure out how to pass this as a bundle and not as individual primitives
