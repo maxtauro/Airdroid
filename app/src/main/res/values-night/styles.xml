@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PreferenceTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/darculaLight</item>
+        <item name="colorPrimary">@color/darculaPrimary</item>
+        <item name="colorPrimaryDark">@color/darculaDark</item>
+        <item name="colorAccent">@color/bestBlue</item>
+    </style>
+
+</resources>

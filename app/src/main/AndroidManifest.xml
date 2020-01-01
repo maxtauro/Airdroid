@@ -19,18 +19,27 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme.Transparent">
+            android:supportsRtl="true">
+
         <meta-data
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/APP_AD_ID" />
 
-        <activity android:name=".MainActivity">
+        <activity
+                android:name=".DevicePopupActivity.DevicePopupActivity"
+                android:theme="@style/AppTheme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+                android:name=".preferenceactivity.PreferenceActivity"
+                android:label="@string/title_activity_preference"
+                android:theme="@style/PreferenceTheme">
+
         </activity>
 
         <receiver

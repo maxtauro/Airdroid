@@ -1,9 +1,9 @@
-package com.maxtauro.airdroid.mainfragment.viewmodel
+package com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel
 
 import android.util.Log
 import com.maxtauro.airdroid.AirpodModel
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.*
 import com.maxtauro.airdroid.mConnectedDevice
-import com.maxtauro.airdroid.mainfragment.presenter.*
 
 class DeviceFragmentReducer(
     private val isLocationPermissionEnabled: () -> Boolean

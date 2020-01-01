@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid
+package com.maxtauro.airdroid.DevicePopupActivity
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -18,20 +18,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.codemybrainsout.ratingdialog.RatingDialog
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
-import com.maxtauro.airdroid.mainfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
 
-class MainActivity : AppCompatActivity() {
+class DevicePopupActivity : AppCompatActivity() {
 
-    private lateinit var deviceStatusFragment: DeviceStatusFragment
+    private lateinit var deviceStatusFragment: DevicePopupFragment
 
     private lateinit var settingsButton: FloatingActionButton
     private lateinit var preferences: SharedPreferences
@@ -56,22 +59,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_device_popup)
 
-        preferences = getSharedPreferences(
-            SHARED_PREFERENCE_FILE_NAME,
-            Context.MODE_PRIVATE
-        )
-            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        migratePreferences()
 
         deviceStatusFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_devices) as DeviceStatusFragment
+            supportFragmentManager.findFragmentById(R.id.fragment_devices) as DevicePopupFragment
 
         settingsButton = findViewById(R.id.settings_btn)
-        settingsButton.setOnClickListener {
-            PreferenceDialog.newInstance(::refreshUiMode)
-                .show(supportFragmentManager, PREFERENCE_DIALOG_TAG)
-        }
+        settingsButton.setOnClickListener { startPreferenceActivity() }
 
         configureNightMode()
 
@@ -94,7 +91,10 @@ class MainActivity : AppCompatActivity() {
             showBluetoothNotSupportedAlertDialog()
         } else if (!bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
+            startActivityForResult(
+                enableBtIntent,
+                REQUEST_ENABLE_BT
+            )
         }
     }
 
@@ -163,6 +163,43 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
     }
 
+    /**
+     * This method is used to migrate from an old shared preferences file to a new shared preferences file after updating the app
+     * This is needed because we are now using the AndroidX Preference library to handle out preferences
+     */
+    private fun migratePreferences() {
+        val oldPreferences = getSharedPreferences(
+            SHARED_PREFERENCE_FILE_NAME,
+            Context.MODE_PRIVATE
+        )
+            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+
+        val hasMigratedPreferences =
+            preferences.getBoolean(HAS_MIGRATED_PREF_KEY, false)
+
+        if (!hasMigratedPreferences) {
+
+            val oldNotificationPref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, true)
+            val oldOpenAppPref = oldPreferences.getBoolean(OPEN_APP_PREF_KEY, true)
+            val oldShouldShowSystemAlertPref =
+                oldPreferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
+            val oldDarkModeBySystemPref =
+                oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
+            val oldDarkModeByTogglePref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, false)
+
+            val editor = preferences.edit()
+
+            editor.putBoolean(NOTIFICATION_PREF_KEY, oldNotificationPref)
+            editor.putBoolean(OPEN_APP_PREF_KEY, oldOpenAppPref)
+            editor.putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, oldShouldShowSystemAlertPref)
+            editor.putBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, oldDarkModeBySystemPref)
+            editor.putBoolean(NOTIFICATION_PREF_KEY, oldDarkModeByTogglePref)
+            editor.putBoolean(HAS_MIGRATED_PREF_KEY, true)
+
+            editor.apply()
+        }
+    }
+
     private fun showBluetoothNotSupportedAlertDialog() {
         AlertDialog
             .Builder(this)
@@ -204,6 +241,13 @@ class MainActivity : AppCompatActivity() {
             showSystemAlertWindowDialog()
             preferences.edit().putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, false)
                 .apply()
+        }
+    }
+
+    private fun startPreferenceActivity() {
+        Intent(this, PreferenceActivity::class.java).also { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            this.startActivity(intent)
         }
     }
 
@@ -267,7 +311,11 @@ class MainActivity : AppCompatActivity() {
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"
-                Crashlytics.logException(UserFeedbackException(msg))
+                Crashlytics.logException(
+                    UserFeedbackException(
+                        msg
+                    )
+                )
             }.build()
 
         ratingDialog.show()
@@ -275,7 +323,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun rebindDialog() {
         (supportFragmentManager.findFragmentByTag(PREFERENCE_DIALOG_TAG) as? PreferenceDialog)?.apply {
-            this.onUiModeChanged = this@MainActivity::refreshUiMode
+            this.onUiModeChanged = this@DevicePopupActivity::refreshUiMode
         }
     }
 
@@ -284,6 +332,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAG = "DevicePopupActivity"
+
         private const val PREFERENCE_DIALOG_TAG = "PreferenceDialog.TAG"
 
         private const val REQUEST_ENABLE_BT = 1000

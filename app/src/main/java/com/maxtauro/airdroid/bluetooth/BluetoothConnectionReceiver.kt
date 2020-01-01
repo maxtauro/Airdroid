@@ -10,12 +10,15 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.*
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment
-import com.maxtauro.airdroid.mainfragment.DeviceStatusFragment.Companion.EXTRA_START_FLAG
-import com.maxtauro.airdroid.mainfragment.presenter.DisconnectedIntent
-import com.maxtauro.airdroid.mainfragment.presenter.InitialConnectionIntent
+import com.maxtauro.airdroid.DevicePopupActivity.DevicePopupActivity
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment.Companion.EXTRA_START_FLAG
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.DisconnectedIntent
+import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.InitialConnectionIntent
+import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
@@ -108,10 +111,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         connectedDevice: BluetoothDevice
     ) {
         val preferences =
-            context.getSharedPreferences(
-                SHARED_PREFERENCE_FILE_NAME,
-                Context.MODE_PRIVATE
-            )
+            PreferenceManager.getDefaultSharedPreferences(context)
                 ?: throw IllegalStateException("Preferences haven't been initialized yet")
 
         val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)
@@ -151,11 +151,11 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     }
 
     private fun startMainActivity(context: Context, connectedDevice: BluetoothDevice) {
-        Intent(context, MainActivity::class.java).also { intent ->
+        Intent(context, DevicePopupActivity::class.java).also { intent ->
             intent.putExtra(EXTRA_DEVICE, connectedDevice)
             intent.putExtra(
                 EXTRA_START_FLAG,
-                DeviceStatusFragment.Companion.StartFlag.AIRPODS_CONNECTED
+                DevicePopupFragment.Companion.StartFlag.AIRPODS_CONNECTED
             )
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)

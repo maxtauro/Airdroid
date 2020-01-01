@@ -10,6 +10,12 @@
     <color name="colorPodMain">#fff4f4f4</color>
     <color name="colorPodShadow">#ffbfbfbf</color>
 
+    <color name="colorDarkGrey">#42221f1f</color>
+
+    <color name="darculaLight">#676565</color>
+    <color name="darculaPrimary">#474444</color>
+    <color name="darculaDark">#2B2727</color>
+
     <color name="bestBlue">#2196F3</color>
     <color name="bestBlueLighter">#2094F3</color>
 

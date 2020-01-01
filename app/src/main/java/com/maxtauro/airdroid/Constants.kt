@@ -13,6 +13,9 @@ import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.crashlytics.android.Crashlytics
+import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
+
+// TODO This whole class is super gross, each of these things deserves a better home
 
 const val EXTRA_DEVICE_ADDRESS = "DEVICE_ADDRESS"
 
@@ -26,6 +29,7 @@ const val OPEN_APP_PREF_KEY = "9998"
 const val SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY = "9997"
 const val DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY = "9996"
 const val DARK_MODE_BY_TOGGLE_PREF_KEY = "9995"
+const val HAS_MIGRATED_PREF_KEY = "9994"
 
 
 inline fun <R> R?.orElse(block: () -> R): R {
