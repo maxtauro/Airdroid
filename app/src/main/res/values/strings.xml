@@ -11,30 +11,37 @@
     <string name="no_airpods_connected">No AirPods Connected</string>
     <string name="listening_mode_btn_label">Start Listening Mode</string>
     <string name="location_permission_explanation_message">In order for this app to work, Android requires location access</string>
-    <string name="opening_preference">Automatically open app when AirPods are connected</string>
-    <string name="show_notification_preference">Show Battery in Notification</string>
     <string name="location_services_need_to_be_enabled_for_this_application_to_work">Location Services need to be enabled for this application to work</string>
     <string name="notification_channel_name">AirPod Status</string>
     <string name="display_over_other_apps">Please enable "Allow display over other apps"</string>
-    <string name="enable_dark_mode_device_settings">Toggle Dark Mode by Device settings</string>
-    <string name="enable_dark_mode">Enable Dark Mode</string>
     <string name="rating_dialog_title">What would you rate AirDroid?</string>
     <string name="rating_positive_button_text">Maybe Later</string>
     <string name="rating_negative_button_text">Don\'t Ask Again</string>
     <string name="title_activity_preference">Preferences</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
 
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+
+    <!-- Preference Titles -->
+    <string name="display_header">Display</string>
+    <string name="sync_header">TODO</string>
+
+    <!-- Display Preferences -->
+    <string name="opening_preference">Show Popup</string>
+    <string name="opening_preference_summary">Automatically show popup when AirPods are connected</string>
+    <string name="show_notification_preference">Show Battery in Notification</string>
+    <string name="enable_dark_mode_device_settings">Toggle Dark Mode by Device settings</string>
+    <string name="enable_dark_mode">Enable Dark Mode</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="sync_title">Sync Title</string>
+    <string name="attachment_title">attachment_title</string>
+    <string name="attachment_summary_on">attachment_summary_on</string>
+    <string name="attachment_summary_off">attachment_summary_off</string>
+
+    <!-- Preference Keys -->
+    <string name="NOTIFICATION_PREF_KEY">9999</string>
+    <string name="OPEN_APP_PREF_KEY">9998</string>
+    <string name="SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY">9997</string>
+    <string name="DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY">9996</string>
+    <string name="DARK_MODE_BY_TOGGLE_PREF_KEY">9995</string>
 </resources>

@@ -10,6 +10,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.crashlytics.android.Crashlytics
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.DevicePopupActivity
@@ -110,10 +111,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         connectedDevice: BluetoothDevice
     ) {
         val preferences =
-            context.getSharedPreferences(
-                SHARED_PREFERENCE_FILE_NAME,
-                Context.MODE_PRIVATE
-            )
+            PreferenceManager.getDefaultSharedPreferences(context)
                 ?: throw IllegalStateException("Preferences haven't been initialized yet")
 
         val isOpenAppEnabled = preferences.getBoolean(OPEN_APP_PREF_KEY, true)

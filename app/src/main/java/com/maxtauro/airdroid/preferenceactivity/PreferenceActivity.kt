@@ -1,9 +1,13 @@
 package com.maxtauro.airdroid.preferenceactivity
 
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
+import com.maxtauro.airdroid.DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY
+import com.maxtauro.airdroid.DARK_MODE_BY_TOGGLE_PREF_KEY
 import com.maxtauro.airdroid.R
 
 class PreferenceActivity : AppCompatActivity() {
@@ -13,9 +17,26 @@ class PreferenceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_preferences)
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
+            .replace(R.id.settings, PreferenceFragment())
             .commit()
 
+        setupToolbar()
+    }
+
+    override fun onBackPressed() {
+        finish()
+    }
+
+    fun onUiModeChanged(
+        isDarkModeBySettingsChecked: Boolean?,
+        isDarkModeByToggleChecked: Boolean?
+    ) {
+        val defaultNightMode =
+            getDefaultNightMode(isDarkModeBySettingsChecked, isDarkModeByToggleChecked)
+        AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    private fun setupToolbar() {
         val toolbar = findViewById<Toolbar>(R.id.preference_activity_toolbar)
         setSupportActionBar(findViewById(R.id.preference_activity_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -26,9 +47,31 @@ class PreferenceActivity : AppCompatActivity() {
         }
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
-        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey)
+    private fun getDefaultNightMode(
+        darkModeBySettingsChecked: Boolean?,
+        darkModeByToggleChecked: Boolean?
+    ): Int {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val isDarkModeBySettingsEnabled =
+            darkModeBySettingsChecked ?: preferences.getBoolean(
+                DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY,
+                true
+            )
+
+        val isDarkModeByToggleEnabled =
+            darkModeByToggleChecked ?: preferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
+
+        return when {
+            isDarkModeBySettingsEnabled -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                }
+            }
+            isDarkModeByToggleEnabled -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_NO
         }
     }
 }

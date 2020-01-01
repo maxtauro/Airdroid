@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.codemybrainsout.ratingdialog.RatingDialog
 import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdRequest
@@ -60,11 +61,8 @@ class DevicePopupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device_popup)
 
-        preferences = getSharedPreferences(
-            SHARED_PREFERENCE_FILE_NAME,
-            Context.MODE_PRIVATE
-        )
-            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        migratePreferences()
 
         deviceStatusFragment =
             supportFragmentManager.findFragmentById(R.id.fragment_devices) as DevicePopupFragment
@@ -163,6 +161,43 @@ class DevicePopupActivity : AppCompatActivity() {
                 AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
             }
         adView.loadAd(adRequest)
+    }
+
+    /**
+     * This method is used to migrate from an old shared preferences file to a new shared preferences file after updating the app
+     * This is needed because we are now using the AndroidX Preference library to handle out preferences
+     */
+    private fun migratePreferences() {
+        val oldPreferences = getSharedPreferences(
+            SHARED_PREFERENCE_FILE_NAME,
+            Context.MODE_PRIVATE
+        )
+            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+
+        val hasMigratedPreferences =
+            preferences.getBoolean(HAS_MIGRATED_PREF_KEY, false)
+
+        if (!hasMigratedPreferences) {
+
+            val oldNotificationPref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, true)
+            val oldOpenAppPref = oldPreferences.getBoolean(OPEN_APP_PREF_KEY, true)
+            val oldShouldShowSystemAlertPref =
+                oldPreferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
+            val oldDarkModeBySystemPref =
+                oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
+            val oldDarkModeByTogglePref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, false)
+
+            val editor = preferences.edit()
+
+            editor.putBoolean(NOTIFICATION_PREF_KEY, oldNotificationPref)
+            editor.putBoolean(OPEN_APP_PREF_KEY, oldOpenAppPref)
+            editor.putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, oldShouldShowSystemAlertPref)
+            editor.putBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, oldDarkModeBySystemPref)
+            editor.putBoolean(NOTIFICATION_PREF_KEY, oldDarkModeByTogglePref)
+            editor.putBoolean(HAS_MIGRATED_PREF_KEY, true)
+
+            editor.apply()
+        }
     }
 
     private fun showBluetoothNotSupportedAlertDialog() {
@@ -297,6 +332,8 @@ class DevicePopupActivity : AppCompatActivity() {
     }
 
     companion object {
+        private const val TAG = "DevicePopupActivity"
+
         private const val PREFERENCE_DIALOG_TAG = "PreferenceDialog.TAG"
 
         private const val REQUEST_ENABLE_BT = 1000

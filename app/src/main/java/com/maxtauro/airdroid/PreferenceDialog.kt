@@ -2,7 +2,6 @@ package com.maxtauro.airdroid
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context.MODE_PRIVATE
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
@@ -39,15 +38,15 @@ class PreferenceDialog : DialogFragment() {
         }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        preferences = activity?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME, MODE_PRIVATE)
-            ?: throw IllegalStateException("Preferences haven't been initialized yet")
-
-        isOpenAppEnabled = preferences?.getBoolean(OPEN_APP_PREF_KEY, true) ?: true
-        isNotificationEnabled = preferences?.getBoolean(NOTIFICATION_PREF_KEY, true) ?: true
-        isDarkModeBySettingsEnabled =
-            preferences?.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true) ?: true
-        isDarkModeByToggleEnabled =
-            preferences?.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true) ?: false
+//        preferences = activity?.getSharedPreferences(SHARED_PREFERENCE_FILE_NAME, MODE_PRIVATE)
+//            ?: throw IllegalStateException("Preferences haven't been initialized yet")
+//
+//        isOpenAppEnabled = preferences?.getBoolean(OPEN_APP_PREF_KEY, true) ?: true
+//        isNotificationEnabled = preferences?.getBoolean(NOTIFICATION_PREF_KEY, true) ?: true
+//        isDarkModeBySettingsEnabled =
+//            preferences?.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true) ?: true
+//        isDarkModeByToggleEnabled =
+//            preferences?.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true) ?: false
 
         val builder = AlertDialog.Builder(activity)
             .setTitle("Preferences")
