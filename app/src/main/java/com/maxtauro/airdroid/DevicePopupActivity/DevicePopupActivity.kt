@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.customtap.DummyMediaSessionService
 import com.maxtauro.airdroid.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
@@ -96,6 +97,14 @@ class DevicePopupActivity : AppCompatActivity() {
                 REQUEST_ENABLE_BT
             )
         }
+
+        startDummyMediaSessionService()
+    }
+
+    private fun startDummyMediaSessionService() {
+        Intent(this, DummyMediaSessionService::class.java).also {
+            startService(it)
+        }
     }
 
     // TODO, find more elegant way to check this
@@ -106,6 +115,11 @@ class DevicePopupActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+
+        Intent(this, DummyMediaSessionService::class.java).also {
+            stopService(it)
+        }
+
         mIsActivityRunning = false
     }
 
