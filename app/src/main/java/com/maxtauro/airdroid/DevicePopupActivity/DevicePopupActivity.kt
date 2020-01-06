@@ -29,7 +29,7 @@ import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
 import com.maxtauro.airdroid.customtap.DummyMediaSessionService
-import com.maxtauro.airdroid.preferenceactivity.PreferenceActivity
+import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
 
@@ -45,6 +45,7 @@ class DevicePopupActivity : AppCompatActivity() {
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
+    // TODO, extract these to a util class
     private val isLocationPermissionEnabled
         get() = ContextCompat.checkSelfPermission(
             this,
@@ -57,6 +58,12 @@ class DevicePopupActivity : AppCompatActivity() {
         } else {
             true
         }
+
+    private val isNotificationPermissionGranted
+        get() = ContextCompat.checkSelfPermission(
+            this,
+            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+        ) == PackageManager.PERMISSION_GRANTED || true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,13 @@ class DevicePopupActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+
+        if (!isNotificationPermissionGranted) {
+            requestNotificationPermission()
+        } else {
+            startDummyMediaSessionService()
+        }
+
         if (!isLocationPermissionEnabled) {
             showLocationPermissionDialog()
         } else requestSystemAlertWindowPermission()
@@ -98,7 +112,6 @@ class DevicePopupActivity : AppCompatActivity() {
             )
         }
 
-        startDummyMediaSessionService()
     }
 
     private fun startDummyMediaSessionService() {
@@ -237,6 +250,15 @@ class DevicePopupActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
             .show()
+    }
+
+    // TODO, only ask for this when the user tries customizing their buttons
+    private fun requestNotificationPermission() {
+        startActivity(
+            Intent(
+                Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+            )
+        )
     }
 
     private fun requestLocationPermission() {

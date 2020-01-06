@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.preferenceactivity
+package com.maxtauro.airdroid.preferences.preferenceactivity
 
 import android.os.Build
 import android.os.Bundle

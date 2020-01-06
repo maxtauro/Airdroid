@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.preferenceactivity
+package com.maxtauro.airdroid.preferences.preferenceactivity
 
 //    private var isOpenAppEnabled = true
 //    private var isNotificationEnabled = true

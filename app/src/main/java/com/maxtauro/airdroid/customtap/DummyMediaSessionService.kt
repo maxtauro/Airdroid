@@ -38,25 +38,13 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
     }
 
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
-        Log.d(TAG, "Active Media Session Changed")
-    }
+        Log.d(TAG, "Active Media Session Changed, ${controllers?.firstOrNull()?.packageName}")
 
-    private fun initializeMediaSessionManager() {
-        dummyMediaSessionManager = getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager ?: TODO("What if we can't get the manager?")
-
-        val sessionChangeListener = OnActiveSessionsChangedListener {
-            Log.d(TAG, "Active Media Session Changed")
-//            makeMediaSessionActive()
+        when {
+            controllers.isNullOrEmpty() -> return
+            controllers.first().packageName == application.packageName -> return
+            else -> makeMediaSessionActive()
         }
-
-        dummyMediaSessionManager.addOnActiveSessionsChangedListener(
-            sessionChangeListener, ComponentName(packageName, javaClass.simpleName)
-        )
-
-    }
-
-    private fun makeMediaSessionActive() {
-        startDummyMediaSession()
     }
 
     override fun onDestroy() {
@@ -66,6 +54,40 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun makeMediaSessionActive() {
+        startDummyMediaPlayer()
+    }
+
+    private fun initializeMediaSessionManager() {
+        dummyMediaSessionManager =
+            getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+
+        dummyMediaSessionManager.addOnActiveSessionsChangedListener(
+            this, ComponentName(this, DummyNotificationListener::class.java)
+        )
+    }
+
+    private fun startDummyMediaPlayer() {
+        if (::dummyMediaSession.isInitialized) {
+            Thread(Runnable {
+                dummyAudioTrack = AudioTrack(
+                    AudioManager.STREAM_MUSIC,
+                    48000,
+                    AudioFormat.CHANNEL_OUT_STEREO,
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    AudioTrack.getMinBufferSize(
+                        48000,
+                        AudioFormat.CHANNEL_OUT_STEREO,
+                        AudioFormat.ENCODING_PCM_16BIT
+                    ),
+                    AudioTrack.MODE_STREAM
+                )
+
+                dummyAudioTrack.play()
+            }).start()
+        }
     }
 
     private fun startDummyMediaSession() {
@@ -90,23 +112,9 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
         dummyMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
         dummyMediaSession.isActive = true
 
-        val dummyAudioTrack = AudioTrack(
-            AudioManager.STREAM_MUSIC,
-            48000,
-            AudioFormat.CHANNEL_OUT_STEREO,
-            AudioFormat.ENCODING_PCM_16BIT,
-            AudioTrack.getMinBufferSize(
-                48000,
-                AudioFormat.CHANNEL_OUT_STEREO,
-                AudioFormat.ENCODING_PCM_16BIT
-            ),
-            AudioTrack.MODE_STREAM
-        )
-
-        dummyAudioTrack.play()
-
         Log.d(TAG, "DummyMediaSession Started")
     }
+
     companion object {
         private const val TAG = "DummyMediaSessionService"
 
