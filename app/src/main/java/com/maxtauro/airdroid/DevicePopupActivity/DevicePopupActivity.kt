@@ -28,7 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
-import com.maxtauro.airdroid.customtap.DummyMediaSessionService
+import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
@@ -115,7 +115,7 @@ class DevicePopupActivity : AppCompatActivity() {
     }
 
     private fun startDummyMediaSessionService() {
-        Intent(this, DummyMediaSessionService::class.java).also {
+        Intent(this, MediaSessionService::class.java).also {
             startService(it)
         }
     }
@@ -129,7 +129,7 @@ class DevicePopupActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
 
-        Intent(this, DummyMediaSessionService::class.java).also {
+        Intent(this, MediaSessionService::class.java).also {
             stopService(it)
         }
 

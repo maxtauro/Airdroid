@@ -12,27 +12,23 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
-import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 
 @SuppressLint("LongLogTag")
-class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
+class MediaSessionService : Service(), OnActiveSessionsChangedListener {
 
     private lateinit var dummyMediaSession: MediaSessionCompat
     private lateinit var dummyMediaSessionManager: MediaSessionManager
     private lateinit var dummyAudioTrack: AudioTrack
 
-    private val mediaSessionCallback = object : MediaSessionCompat.Callback() {
-        override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
-            Log.d(TAG, "onMediaButtonEvent")
-            return super.onMediaButtonEvent(mediaButtonEvent)
-        }
-    }
+    private lateinit var mediaSessionCallback: AirdroidMediaSessionCallback
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startDummyMediaSession()
+        mediaSessionCallback = AirdroidMediaSessionCallback(context = this)
+
+        initializeDummyMediaSession()
         initializeMediaSessionManager()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -40,10 +36,14 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
         Log.d(TAG, "Active Media Session Changed, ${controllers?.firstOrNull()?.packageName}")
 
-        when {
-            controllers.isNullOrEmpty() -> return
-            controllers.first().packageName == application.packageName -> return
-            else -> makeMediaSessionActive()
+        controllers?.let {
+            mediaSessionCallback.addMediaControllers(it)
+
+            when {
+                controllers.isEmpty() -> return
+                controllers.first().packageName == application.packageName -> return
+                else -> makeMediaSessionActive()
+            }
         }
     }
 
@@ -52,9 +52,7 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?)=  null
 
     private fun makeMediaSessionActive() {
         startDummyMediaPlayer()
@@ -69,6 +67,7 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
         )
     }
 
+    // TODO Coroutine this
     private fun startDummyMediaPlayer() {
         if (::dummyMediaSession.isInitialized) {
             Thread(Runnable {
@@ -90,7 +89,8 @@ class DummyMediaSessionService : Service(), OnActiveSessionsChangedListener {
         }
     }
 
-    private fun startDummyMediaSession() {
+    private fun initializeDummyMediaSession() {
+
         dummyMediaSession = MediaSessionCompat(this, "MAX's Media session GANG GANG")
 
         val mStateBuilder = PlaybackStateCompat.Builder()

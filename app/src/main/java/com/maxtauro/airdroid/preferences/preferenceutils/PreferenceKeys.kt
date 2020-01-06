@@ -8,7 +8,7 @@ enum class PreferenceKeys(val key: String) {
     DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY("9996"),
     DARK_MODE_BY_TOGGLE_PREF_KEY("9995"),
     HAS_MIGRATED_PREF_KEY("9994"),
-    NOTIFICATION_ACCESS_PREF_KEY("9993");
+    CUSTOM_TAP_KEYS("9993");
 
     companion object {
         private const val TAG = "PreferenceKeys"
