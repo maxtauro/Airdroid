@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/display_header">
 
@@ -39,19 +40,23 @@
                 app:persistent="true"
                 app:title="@string/enable_dark_mode" />
 
+    </PreferenceCategory>
 
-        <!--        <EditTextPreference-->
-        <!--                app:key="signature"-->
-        <!--                app:title="@string/signature_title"-->
-        <!--                app:useSimpleSummaryProvider="true" />-->
+    <PreferenceCategory app:title="Customize Double Tap">
 
-        <!--        <ListPreference-->
-        <!--                app:defaultValue="reply"-->
-        <!--                app:entries="@array/reply_entries"-->
-        <!--                app:entryValues="@array/reply_values"-->
-        <!--                app:key="reply"-->
-        <!--                app:title="@string/reply_title"-->
-        <!--                app:useSimpleSummaryProvider="true" />-->
+        <SwitchPreferenceCompat
+                app:key="@string/ENABLE_CUSTOM_TAP_PREF_KEY"
+                app:persistent="true"
+                app:title="@string/enable_custom_double_tap_title" />
+
+        <ListPreference
+                app:defaultValue="OFF"
+                app:dependency="@string/ENABLE_CUSTOM_TAP_PREF_KEY"
+                app:entries="@array/custom_tap_options_text"
+                app:entryValues="@array/custom_tap_options_values"
+                app:key="@string/CUSTOM_TAP_ACTION_PREF_KEY"
+                app:title="@string/custom_tap_action_title"
+                app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

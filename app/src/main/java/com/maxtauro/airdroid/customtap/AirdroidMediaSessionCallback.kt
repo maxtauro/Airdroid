@@ -23,7 +23,7 @@ class AirdroidMediaSessionCallback(
 
     private val doubleTapPref = CustomTapOptions.valueOf(
         preferences.getString(
-            PreferenceKeys.CUSTOM_TAP_KEYS.toString(),
+            PreferenceKeys.CUSTOM_TAP_ACTION_PREF_KEY.toString(),
             CustomTapOptions.OFF.toString()
         )!!
     )
