@@ -48,11 +48,12 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
     }
 
     override fun onDestroy() {
-        dummyMediaSession.release()
+        // TODO this isn't quite right
+        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
         super.onDestroy()
     }
 
-    override fun onBind(intent: Intent?)=  null
+    override fun onBind(intent: Intent?) = null
 
     private fun makeMediaSessionActive() {
         startDummyMediaPlayer()

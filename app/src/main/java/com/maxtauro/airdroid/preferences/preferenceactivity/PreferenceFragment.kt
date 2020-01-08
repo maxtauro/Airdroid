@@ -1,9 +1,5 @@
 package com.maxtauro.airdroid.preferences.preferenceactivity
 
-//    private var isOpenAppEnabled = true
-//    private var isNotificationEnabled = true
-//    private var isDarkModeBySettingsEnabled = true
-
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build

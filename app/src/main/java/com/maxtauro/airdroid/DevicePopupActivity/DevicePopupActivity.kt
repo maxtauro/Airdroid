@@ -3,10 +3,7 @@ package com.maxtauro.airdroid.DevicePopupActivity
 import android.app.Activity
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
@@ -28,6 +25,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
+import com.maxtauro.airdroid.customtap.DummyNotificationListener
 import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
 
@@ -59,11 +57,17 @@ class DevicePopupActivity : AppCompatActivity() {
             true
         }
 
-    private val isNotificationPermissionGranted
-        get() = ContextCompat.checkSelfPermission(
-            this,
-            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-        ) == PackageManager.PERMISSION_GRANTED || true
+    // TODO tidy this up
+    private fun isNotificationPermissionGranted(): Boolean {
+        val cn = ComponentName(
+            this, DummyNotificationListener::class.java
+        )
+        val secureSettings = Settings.Secure.getString(
+            this.contentResolver,
+            "enabled_notification_listeners"
+        )
+        return secureSettings != null && secureSettings.contains(cn.flattenToString())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +96,7 @@ class DevicePopupActivity : AppCompatActivity() {
         super.onStart()
 
 
-        if (!isNotificationPermissionGranted) {
+        if (!isNotificationPermissionGranted()) {
             requestNotificationPermission()
         } else {
             startDummyMediaSessionService()

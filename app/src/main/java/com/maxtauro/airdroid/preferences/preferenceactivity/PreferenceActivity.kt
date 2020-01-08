@@ -27,6 +27,11 @@ class PreferenceActivity : AppCompatActivity() {
         finish()
     }
 
+    override fun onUserLeaveHint() {
+        finish()
+        super.onUserLeaveHint()
+    }
+
     fun onUiModeChanged(
         isDarkModeBySettingsChecked: Boolean?,
         isDarkModeByToggleChecked: Boolean?

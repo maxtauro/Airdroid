@@ -43,8 +43,8 @@
     <string name="SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY">9997</string>
     <string name="DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY">9996</string>
     <string name="DARK_MODE_BY_TOGGLE_PREF_KEY">9995</string>
-    <string name="ENABLE_CUSTOM_TAP_PREF_KEY">9994</string>
-    <string name="CUSTOM_TAP_ACTION_PREF_KEY">9993</string>
+    <string name="ENABLE_CUSTOM_TAP_PREF_KEY">9993</string>
+    <string name="CUSTOM_TAP_ACTION_PREF_KEY">9992</string>
 
     <!-- Custom Tap Options -->
     <string name="enable_custom_double_tap_title">Enable Custom Double-Tap</string>

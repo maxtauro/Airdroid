@@ -21,12 +21,13 @@ class AirdroidMediaSessionCallback(
     private val preferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
 
-    private val doubleTapPref = CustomTapOptions.valueOf(
-        preferences.getString(
-            PreferenceKeys.CUSTOM_TAP_ACTION_PREF_KEY.toString(),
-            CustomTapOptions.OFF.toString()
-        )!!
-    )
+    private val doubleTapPref: CustomTapOptions
+        get() = CustomTapOptions.valueOf(
+            preferences.getString(
+                PreferenceKeys.CUSTOM_TAP_ACTION_PREF_KEY.key,
+                CustomTapOptions.OFF.toString()
+            )!!
+        )
 
     override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
         Log.d(TAG, "$mediaButtonEvent")
@@ -34,6 +35,8 @@ class AirdroidMediaSessionCallback(
         val keyEvent =
             mediaButtonEvent?.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
                 ?: return false
+
+        // TODO if there is no active media session, we need to start the most recent one
 
         keyEvent.let {
             return when (doubleTapPref) {
