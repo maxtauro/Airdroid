@@ -15,6 +15,7 @@ import android.media.session.PlaybackState
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
+import com.maxtauro.airdroid.AirDroidApplication
 
 @SuppressLint("LongLogTag")
 class MediaSessionService : Service(), OnActiveSessionsChangedListener {
@@ -30,6 +31,11 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
 
         initializeDummyMediaSession()
         initializeMediaSessionManager()
+        makeMediaSessionActive()
+
+        (application as AirDroidApplication).isMediaSessionServiceRunning = true
+
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -48,8 +54,11 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "service is being destroyed")
+
         // TODO this isn't quite right
         if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
+        (application as AirDroidApplication).isMediaSessionServiceRunning = false
         super.onDestroy()
     }
 

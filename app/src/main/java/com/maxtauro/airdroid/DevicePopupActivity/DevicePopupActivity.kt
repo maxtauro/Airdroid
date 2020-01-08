@@ -26,7 +26,6 @@ import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
 import com.maxtauro.airdroid.customtap.DummyNotificationListener
-import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
@@ -96,12 +95,10 @@ class DevicePopupActivity : AppCompatActivity() {
         super.onStart()
 
 
+        // TODO: extract the permision workflow into something more cohesive
         if (!isNotificationPermissionGranted()) {
             requestNotificationPermission()
-        } else {
-            startDummyMediaSessionService()
         }
-
         if (!isLocationPermissionEnabled) {
             showLocationPermissionDialog()
         } else requestSystemAlertWindowPermission()
@@ -118,12 +115,6 @@ class DevicePopupActivity : AppCompatActivity() {
 
     }
 
-    private fun startDummyMediaSessionService() {
-        Intent(this, MediaSessionService::class.java).also {
-            startService(it)
-        }
-    }
-
     // TODO, find more elegant way to check this
     override fun onResume() {
         super.onResume()
@@ -132,10 +123,6 @@ class DevicePopupActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-
-        Intent(this, MediaSessionService::class.java).also {
-            stopService(it)
-        }
 
         mIsActivityRunning = false
     }

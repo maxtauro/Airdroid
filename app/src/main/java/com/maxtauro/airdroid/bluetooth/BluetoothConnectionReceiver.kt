@@ -19,6 +19,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopup
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.DisconnectedIntent
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.InitialConnectionIntent
 import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
+import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
@@ -62,14 +63,18 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
                 mConnectedDevice = connectedDevice
 
+                // TODO extract this
                 if (isActivityInForeground) {
                     eventBus.post(InitialConnectionIntent)
                 } else {
                     handleBluetoothConnectedAppBackgrounded(context, connectedDevice)
                 }
+
+                startMediaSessionService(context)
             }
         }
     }
+
 
     private fun handleBluetoothDisconnected(intent: Intent, context: Context) {
         intent.extras?.let {
@@ -89,7 +94,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 stopNotificationService(context)
             }
 
-
+            stopMediaSessionService(context)
             WearableDataManager.sendDisconnectedUpdate(context)
         }
     }
@@ -131,13 +136,6 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun stopNotificationService(context: Context) {
-        Intent(context, NotificationService::class.java).also { intent ->
-            context.stopService(intent)
-        }
-        NotificationUtil.clearNotification(context)
-    }
-
     private fun startNotificationService(context: Context, connectedDevice: BluetoothDevice) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(EXTRA_AIRPOD_NAME, connectedDevice.name)
@@ -147,6 +145,26 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             } else {
                 context.startService(intent)
             }
+        }
+    }
+
+    private fun stopNotificationService(context: Context) {
+        Intent(context, NotificationService::class.java).also { intent ->
+            context.stopService(intent)
+        }
+        NotificationUtil.clearNotification(context)
+    }
+
+    private fun startMediaSessionService(context: Context) {
+        // TODO Why does this work when the device is locked?
+        Intent(context, MediaSessionService::class.java).also { intent ->
+            context.startService(intent)
+        }
+    }
+
+    private fun stopMediaSessionService(context: Context) {
+        Intent(context, MediaSessionService::class.java).also { intent ->
+            context.stopService(intent)
         }
     }
 
