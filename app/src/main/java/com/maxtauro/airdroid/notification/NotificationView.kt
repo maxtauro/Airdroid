@@ -5,8 +5,13 @@ import android.widget.RemoteViews
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.AirpodPiece
 import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.WhichPiece
 
-class NotificationView(packageName: String, isLargeNotification: Boolean) :
+class NotificationView(
+    private val isProEnabled: () -> Boolean,
+    packageName: String,
+    isLargeNotification: Boolean
+) :
     RemoteViews(
         packageName,
         if (isLargeNotification) {
@@ -37,8 +42,10 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     private fun renderLeftPiece(leftAirpod: AirpodPiece) {
         if (leftAirpod.isConnected) {
+            val podImgResId = getImgResId(WhichPiece.LEFT, true)
+
             setViewVisibility(R.id.left_airpod_piece, View.VISIBLE)
-            setImageViewResource(R.id.left_airpod_piece_img, R.drawable.left_pod)
+            setImageViewResource(R.id.left_airpod_piece_img, podImgResId)
             renderChargeImg(
                 leftAirpod.isCharging,
                 leftAirpod.chargeLevel,
@@ -65,8 +72,10 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
 
     private fun renderRightPiece(rightAirpod: AirpodPiece) {
         if (rightAirpod.isConnected) {
+            val podImgResId = getImgResId(WhichPiece.RIGHT, true)
+
             setViewVisibility(R.id.right_airpod_piece, View.VISIBLE)
-            setImageViewResource(R.id.right_airpod_piece_img, R.drawable.right_pod)
+            setImageViewResource(R.id.right_airpod_piece_img, podImgResId)
             renderChargeImg(
                 rightAirpod.isCharging,
                 rightAirpod.chargeLevel,
@@ -78,8 +87,10 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     }
 
     private fun renderLoadingLeftPiece() {
+        val podImgResId = getImgResId(WhichPiece.LEFT, false)
+
         setViewVisibility(R.id.left_airpod_piece, View.VISIBLE)
-        setImageViewResource(R.id.left_airpod_piece_img, R.drawable.left_pod_disconnected)
+        setImageViewResource(R.id.left_airpod_piece_img, podImgResId)
         renderProgressBar(
             R.id.left_airpod_progress_bar,
             R.id.left_airpod_piece_charge_img,
@@ -98,8 +109,10 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
     }
 
     private fun renderLoadingRightPiece() {
+        val podImgResId = getImgResId(WhichPiece.RIGHT, false)
+
         setViewVisibility(R.id.right_airpod_piece, View.VISIBLE)
-        setImageViewResource(R.id.right_airpod_piece_img, R.drawable.right_pod_disconnected)
+        setImageViewResource(R.id.right_airpod_piece_img, podImgResId)
         renderProgressBar(
             R.id.right_airpod_progress_bar,
             R.id.right_airpod_piece_charge_img,
@@ -154,6 +167,43 @@ class NotificationView(packageName: String, isLargeNotification: Boolean) :
             }
         setImageViewResource(chargingImgId, resId)
         setTextViewText(chargingTextId, "$chargeLevel%")
+    }
+
+    private fun getImgResId(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        return if (isProEnabled()) getProImgResID(whichPiece, isConnected)
+        else getStandardPodImgResId(whichPiece, isConnected)
+    }
+
+    private fun getStandardPodImgResId(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        return if (isConnected) {
+            when (whichPiece) {
+                WhichPiece.LEFT -> com.maxtauro.airdroidcommon.R.drawable.left_pod
+                WhichPiece.RIGHT -> com.maxtauro.airdroidcommon.R.drawable.right_pod
+                WhichPiece.CASE -> com.maxtauro.airdroidcommon.R.drawable.pod_case
+            }
+        } else {
+            when (whichPiece) {
+                WhichPiece.LEFT -> com.maxtauro.airdroidcommon.R.drawable.left_pod_disconnected
+                WhichPiece.RIGHT -> com.maxtauro.airdroidcommon.R.drawable.right_pod_disconnected
+                WhichPiece.CASE -> com.maxtauro.airdroidcommon.R.drawable.pod_case_disconnected
+            }
+        }
+    }
+
+    private fun getProImgResID(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        return if (isConnected) {
+            when (whichPiece) {
+                WhichPiece.LEFT -> com.maxtauro.airdroidcommon.R.drawable.left_pod_pro
+                WhichPiece.RIGHT -> com.maxtauro.airdroidcommon.R.drawable.right_pod_pro
+                WhichPiece.CASE -> com.maxtauro.airdroidcommon.R.drawable.pod_case
+            }
+        } else {
+            when (whichPiece) {
+                WhichPiece.LEFT -> com.maxtauro.airdroidcommon.R.drawable.left_pod_pro_disconnected
+                WhichPiece.RIGHT -> com.maxtauro.airdroidcommon.R.drawable.right_pod_pro_disconnected
+                WhichPiece.CASE -> com.maxtauro.airdroidcommon.R.drawable.pod_case_disconnected
+            }
+        }
     }
 
     private enum class BatteryImgResId(val resId: Int) {

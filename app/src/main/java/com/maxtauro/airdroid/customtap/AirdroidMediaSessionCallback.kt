@@ -15,7 +15,7 @@ import android.view.KeyEvent.*
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.maxtauro.airdroid.BuildConfig
-import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import com.maxtauro.airdroidcommon.PreferenceKeys
 import java.util.prefs.InvalidPreferencesFormatException
 
 

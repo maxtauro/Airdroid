@@ -1,6 +1,7 @@
 package com.maxtauro.airdroidcommon.airpodviews
 
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
@@ -9,6 +10,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.maxtauro.airdroid.AirpodPiece
 import com.maxtauro.airdroid.WhichPiece
+import com.maxtauro.airdroidcommon.PreferenceKeys
 import com.maxtauro.airdroidcommon.R
 
 class AirpodPieceView @JvmOverloads constructor(
@@ -107,6 +109,16 @@ class AirpodPieceView @JvmOverloads constructor(
     }
 
     private fun getImgResId(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        val isProEnabled = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
+            PreferenceKeys.USE_AIRPOD_PRO_IMAGE_PREF_KEY.key,
+            false
+        )
+
+        return if (isProEnabled) getProImgResID(whichPiece, isConnected)
+        else getStandardPodImgResId(whichPiece, isConnected)
+    }
+
+    private fun getStandardPodImgResId(whichPiece: WhichPiece, isConnected: Boolean): Int {
         return if (isConnected) {
             when (whichPiece) {
                 WhichPiece.LEFT -> R.drawable.left_pod
@@ -117,6 +129,22 @@ class AirpodPieceView @JvmOverloads constructor(
             when (whichPiece) {
                 WhichPiece.LEFT -> R.drawable.left_pod_disconnected
                 WhichPiece.RIGHT -> R.drawable.right_pod_disconnected
+                WhichPiece.CASE -> R.drawable.pod_case_disconnected
+            }
+        }
+    }
+
+    private fun getProImgResID(whichPiece: WhichPiece, isConnected: Boolean): Int {
+        return if (isConnected) {
+            when (whichPiece) {
+                WhichPiece.LEFT -> R.drawable.left_pod_pro
+                WhichPiece.RIGHT -> R.drawable.right_pod_pro
+                WhichPiece.CASE -> R.drawable.pod_case
+            }
+        } else {
+            when (whichPiece) {
+                WhichPiece.LEFT -> R.drawable.left_pod_pro_disconnected
+                WhichPiece.RIGHT -> R.drawable.right_pod_pro_disconnected
                 WhichPiece.CASE -> R.drawable.pod_case_disconnected
             }
         }

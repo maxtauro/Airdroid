@@ -15,7 +15,7 @@ import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.orElse
-import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import com.maxtauro.airdroidcommon.PreferenceKeys
 import com.maxtauro.airdroid.showSystemAlertWindowDialog
 
 class PreferenceFragment : PreferenceFragmentCompat() {

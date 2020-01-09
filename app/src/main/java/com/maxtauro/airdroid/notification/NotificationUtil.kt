@@ -20,6 +20,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopup
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment.Companion.EXTRA_START_FLAG
 import com.maxtauro.airdroid.NOTIFICATION_PREF_KEY
 import com.maxtauro.airdroid.R
+import com.maxtauro.airdroidcommon.PreferenceKeys
 
 class NotificationUtil(
     private val context: Context,
@@ -48,6 +49,12 @@ class NotificationUtil(
 
     val isNotificationEnabled: Boolean
         get() = preferences.getBoolean(NOTIFICATION_PREF_KEY, true)
+
+    private val isProEnabled: Boolean
+        get() = preferences.getBoolean(
+            PreferenceKeys.USE_AIRPOD_PRO_IMAGE_PREF_KEY.key,
+            false
+        )
 
     init {
         bindViews(packageName)
@@ -94,9 +101,17 @@ class NotificationUtil(
 
     private fun bindViews(packageName: String) {
         largeNotificationView =
-            NotificationView(isLargeNotification = true, packageName = packageName)
+            NotificationView(
+                isProEnabled = ::isProEnabled,
+                isLargeNotification = true,
+                packageName = packageName
+            )
         smallNotificationView =
-            NotificationView(isLargeNotification = false, packageName = packageName)
+            NotificationView(
+                isProEnabled = ::isProEnabled,
+                isLargeNotification = false,
+                packageName = packageName
+            )
     }
 
     fun onScanResult(airpodModel: AirpodModel) {

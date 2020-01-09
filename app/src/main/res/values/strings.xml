@@ -30,6 +30,7 @@
     <string name="show_notification_preference">Show Battery in Notification</string>
     <string name="enable_dark_mode_device_settings">Toggle Dark Mode by Device settings</string>
     <string name="enable_dark_mode">Enable Dark Mode</string>
+    <string name="use_airpod_pro_image">Use AirPod Pro Icon</string>
 
     <!-- Sync Preferences -->
     <string name="sync_title">Sync Title</string>
@@ -45,6 +46,7 @@
     <string name="DARK_MODE_BY_TOGGLE_PREF_KEY">9995</string>
     <string name="ENABLE_CUSTOM_TAP_PREF_KEY">9993</string>
     <string name="CUSTOM_TAP_ACTION_PREF_KEY">9992</string>
+    <string name="USE_AIRPOD_PRO_IMAGE_PREF_KEY">9991</string>
 
     <!-- Custom Tap Options -->
     <string name="enable_custom_double_tap_title">Enable Custom Double-Tap (Beta)</string>

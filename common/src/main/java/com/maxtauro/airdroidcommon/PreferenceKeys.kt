@@ -1,4 +1,4 @@
-package com.maxtauro.airdroid.preferences.preferenceutils
+package com.maxtauro.airdroidcommon
 
 enum class PreferenceKeys(val key: String) {
 
@@ -9,7 +9,9 @@ enum class PreferenceKeys(val key: String) {
     DARK_MODE_BY_TOGGLE_PREF_KEY("9995"),
     HAS_MIGRATED_PREF_KEY("9994"),
     ENABLE_CUSTOM_TAP_PREF_KEY("9993"),
-    CUSTOM_TAP_ACTION_PREF_KEY("9992");
+    CUSTOM_TAP_ACTION_PREF_KEY("9992"),
+    USE_AIRPOD_PRO_IMAGE_PREF_KEY("9991");
+
 
     companion object {
         private const val TAG = "PreferenceKeys"

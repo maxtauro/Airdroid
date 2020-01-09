@@ -29,7 +29,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.R
 import com.maxtauro.airdroid.customtap.DummyNotificationListener
 import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
-import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import com.maxtauro.airdroidcommon.PreferenceKeys
 
 var mIsActivityRunning = false
 

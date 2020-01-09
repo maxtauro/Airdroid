@@ -22,7 +22,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
 import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
-import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import com.maxtauro.airdroidcommon.PreferenceKeys
 import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
 import org.greenrobot.eventbus.EventBus
 

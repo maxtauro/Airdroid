@@ -40,6 +40,11 @@
                 app:persistent="true"
                 app:title="@string/enable_dark_mode" />
 
+        <SwitchPreferenceCompat
+            app:key="@string/USE_AIRPOD_PRO_IMAGE_PREF_KEY"
+            app:persistent="true"
+            app:title="@string/use_airpod_pro_image"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Customize Double Tap">
