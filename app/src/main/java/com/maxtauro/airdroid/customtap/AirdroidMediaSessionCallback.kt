@@ -5,12 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.media.session.MediaController
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.KeyEvent
 import android.view.KeyEvent.*
+import android.widget.Toast
 import androidx.preference.PreferenceManager
+import com.maxtauro.airdroid.BuildConfig
 import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import java.lang.StringBuilder
+
 
 @SuppressLint("LongLogTag")
 class AirdroidMediaSessionCallback(
@@ -32,11 +38,26 @@ class AirdroidMediaSessionCallback(
     override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
         Log.d(TAG, "$mediaButtonEvent")
 
+        if (BuildConfig.BUILD_TYPE == "debug") {
+            playShortVibration()
+            showMediaButtonToast(mediaButtonEvent)
+        }
+
         val keyEvent =
             mediaButtonEvent?.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
                 ?: return false
 
         // TODO if there is no active media session, we need to start the most recent one
+
+        // TODO remove, temp for debug
+        val msg = "Has the following Media Controllers: \n"
+        val sb = StringBuilder()
+        sb.append(msg)
+        mediaControllers.forEach {
+            sb.append("${it.packageName} \n")
+        }
+
+        Log.d(TAG, sb.toString())
 
         keyEvent.let {
             return when (doubleTapPref) {
@@ -59,6 +80,15 @@ class AirdroidMediaSessionCallback(
                 mediaControllers.add(mediaController)
             }
         }
+
+        val msg = "Has the following Media Controllers: \n"
+        val sb = StringBuilder()
+        sb.append(msg)
+        mediaControllers.forEach {
+            sb.append("${it.packageName} \n")
+        }
+
+        Log.d(TAG, sb.toString())
     }
 
     private fun onDefaultMediaButtonEvent(keyEvent: KeyEvent): Boolean {
@@ -99,6 +129,15 @@ class AirdroidMediaSessionCallback(
             Log.d(TAG, "Dispatching key event: $keyEvent to controller: ${it.packageName}")
             it.dispatchMediaButtonEvent(keyEvent)
         }
+    }
+
+    private fun showMediaButtonToast(mediaButtonEvent: Intent?) {
+        Toast.makeText(context, "$mediaButtonEvent", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun playShortVibration() {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 
     companion object {

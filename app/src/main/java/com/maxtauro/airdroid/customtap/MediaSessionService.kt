@@ -35,7 +35,6 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
 
         (application as AirDroidApplication).isMediaSessionServiceRunning = true
 
-
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -49,6 +48,15 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
                 controllers.isEmpty() -> return
                 controllers.first().packageName == application.packageName -> return
                 else -> makeMediaSessionActive()
+            }
+
+            dummyMediaSessionManager.getActiveSessions(
+                ComponentName(
+                    this,
+                    DummyNotificationListener::class.java
+                )
+            ).forEach { it1 ->
+                Log.d(TAG, "Active Session: ${it1.packageName}")
             }
         }
     }
@@ -75,6 +83,13 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
         dummyMediaSessionManager.addOnActiveSessionsChangedListener(
             this, ComponentName(this, DummyNotificationListener::class.java)
         )
+
+
+        mediaSessionCallback.addMediaControllers(
+            dummyMediaSessionManager.getActiveSessions(
+                ComponentName(this, DummyNotificationListener::class.java)
+            )
+        )
     }
 
     // TODO Coroutine this
@@ -100,8 +115,7 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
     }
 
     private fun initializeDummyMediaSession() {
-
-        dummyMediaSession = MediaSessionCompat(this, "MAX's Media session GANG GANG")
+        dummyMediaSession = MediaSessionCompat(this, "AirDroid Media Session")
 
         val mStateBuilder = PlaybackStateCompat.Builder()
             .setActions(
@@ -122,11 +136,10 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
         dummyMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
         dummyMediaSession.isActive = true
 
-        Log.d(TAG, "DummyMediaSession Started")
+        Log.d(TAG, "media session initialized")
     }
 
     companion object {
-        private const val TAG = "DummyMediaSessionService"
-
+        private const val TAG = "MediaSessionService"
     }
 }

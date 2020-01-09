@@ -2,6 +2,7 @@ package com.maxtauro.airdroid.DevicePopupActivity
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.content.*
 import android.content.pm.PackageManager
@@ -26,6 +27,7 @@ import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
 import com.maxtauro.airdroid.customtap.DummyNotificationListener
+import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
 
 var mIsActivityRunning = false
@@ -112,6 +114,8 @@ class DevicePopupActivity : AppCompatActivity() {
                 REQUEST_ENABLE_BT
             )
         }
+
+        startMediaSessionService()
 
     }
 
@@ -346,6 +350,18 @@ class DevicePopupActivity : AppCompatActivity() {
             }.build()
 
         ratingDialog.show()
+    }
+
+    private fun startMediaSessionService() {
+        val connectionState = bluetoothAdapter?.getProfileConnectionState(BluetoothA2dp.HEADSET)
+
+        if (!(application as AirDroidApplication).isMediaSessionServiceRunning &&
+            (connectionState == 1 || connectionState == 2)
+        ) {
+            Intent(this, MediaSessionService::class.java).also {
+                startService(it)
+            }
+        }
     }
 
     private fun rebindDialog() {
