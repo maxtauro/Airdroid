@@ -27,10 +27,13 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
     private lateinit var mediaSessionCallback: AirdroidMediaSessionCallback
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        mediaSessionCallback = AirdroidMediaSessionCallback(context = this)
+        mediaSessionCallback = AirdroidMediaSessionCallback(
+            context = this,
+            handleEmptyMediaControllerList = ::handleNoActiveMediaSessions
+        )
 
-        initializeDummyMediaSession()
         initializeMediaSessionManager()
+        initializeDummyMediaSession()
         makeMediaSessionActive()
 
         (application as AirDroidApplication).isMediaSessionServiceRunning = true
@@ -38,36 +41,25 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    override fun onDestroy() {
+        Log.d(TAG, "service is being destroyed")
+        stopMediaSession()
+        (application as AirDroidApplication).isMediaSessionServiceRunning = false
+        super.onDestroy()
+    }
+
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
         Log.d(TAG, "Active Media Session Changed, ${controllers?.firstOrNull()?.packageName}")
 
         controllers?.let {
-            mediaSessionCallback.addMediaControllers(it)
+            mediaSessionCallback.updateMediaControllers(it)
 
             when {
                 controllers.isEmpty() -> return
                 controllers.first().packageName == application.packageName -> return
                 else -> makeMediaSessionActive()
             }
-
-            dummyMediaSessionManager.getActiveSessions(
-                ComponentName(
-                    this,
-                    DummyNotificationListener::class.java
-                )
-            ).forEach { it1 ->
-                Log.d(TAG, "Active Session: ${it1.packageName}")
-            }
         }
-    }
-
-    override fun onDestroy() {
-        Log.d(TAG, "service is being destroyed")
-
-        // TODO this isn't quite right
-        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
-        (application as AirDroidApplication).isMediaSessionServiceRunning = false
-        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?) = null
@@ -84,8 +76,7 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
             this, ComponentName(this, DummyNotificationListener::class.java)
         )
 
-
-        mediaSessionCallback.addMediaControllers(
+        mediaSessionCallback.updateMediaControllers(
             dummyMediaSessionManager.getActiveSessions(
                 ComponentName(this, DummyNotificationListener::class.java)
             )
@@ -137,6 +128,19 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
         dummyMediaSession.isActive = true
 
         Log.d(TAG, "media session initialized")
+    }
+
+    private fun stopMediaSession() {
+        // TODO this isn't quite right
+        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
+        if (::dummyAudioTrack.isInitialized) dummyAudioTrack.stop()
+        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
+    }
+
+    // Revive inactive media sessions
+    private fun handleNoActiveMediaSessions(mediaButtonEvent: Intent) {
+        stopMediaSession()
+        sendBroadcast(mediaButtonEvent)
     }
 
     companion object {

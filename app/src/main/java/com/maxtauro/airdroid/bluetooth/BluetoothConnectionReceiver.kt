@@ -157,8 +157,14 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
     private fun startMediaSessionService(context: Context) {
         // TODO Why does this work when the device is locked?
-        Intent(context, MediaSessionService::class.java).also { intent ->
-            context.startService(intent)
+        try {
+            Intent(context, MediaSessionService::class.java).also { intent ->
+                context.startService(intent)
+            }
+        }
+        // TODO catch a more specific error
+        catch (e: Exception) {
+            Crashlytics.logException(e)
         }
     }
 
