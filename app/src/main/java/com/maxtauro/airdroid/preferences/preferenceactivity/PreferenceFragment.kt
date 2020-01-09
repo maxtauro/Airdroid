@@ -9,9 +9,14 @@ import android.util.Log
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.customtap.MediaSessionService
+import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.orElse
+import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
+import com.maxtauro.airdroid.showSystemAlertWindowDialog
 
 class PreferenceFragment : PreferenceFragmentCompat() {
 
@@ -21,6 +26,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     private var notificationSwitchPreference: SwitchPreferenceCompat? = null
     private var darkModeBySettingsSwitchPreference: SwitchPreferenceCompat? = null
     private var darkModeByToggleSwitchPreference: SwitchPreferenceCompat? = null
+    private var enableCustomTapSwitchPreference: SwitchPreferenceCompat? = null
 
     private val isSystemAlertWindowPermissionGranted
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -40,10 +46,14 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePreferences() {
-        openAppSwitchPreference = findPreference(OPEN_APP_PREF_KEY)
-        notificationSwitchPreference = findPreference(NOTIFICATION_PREF_KEY)
-        darkModeBySettingsSwitchPreference = findPreference(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY)
-        darkModeByToggleSwitchPreference = findPreference(DARK_MODE_BY_TOGGLE_PREF_KEY)
+        openAppSwitchPreference = findPreference(PreferenceKeys.OPEN_APP_PREF_KEY.key)
+        notificationSwitchPreference = findPreference(PreferenceKeys.NOTIFICATION_PREF_KEY.key)
+        darkModeBySettingsSwitchPreference =
+            findPreference(PreferenceKeys.DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY.key)
+        darkModeByToggleSwitchPreference =
+            findPreference(PreferenceKeys.DARK_MODE_BY_TOGGLE_PREF_KEY.key)
+        enableCustomTapSwitchPreference =
+            findPreference(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key)
 
         updateDarkModeByToggle(darkModeBySettingsSwitchPreference?.isChecked == true)
     }
@@ -53,6 +63,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         notificationSwitchPreference?.setOnPreferenceChangeListener(::onNotificationSwitchCheckChanged)
         darkModeBySettingsSwitchPreference?.setOnPreferenceChangeListener(::onDarkModeBySettingsCheckChanged)
         darkModeByToggleSwitchPreference?.setOnPreferenceChangeListener(::onDarkModeByToggleCheckChanged)
+        enableCustomTapSwitchPreference?.setOnPreferenceChangeListener(::onEnableCustomTaCheckChanged)
     }
 
     private fun onOpenAppSwitchCheckChanged(
@@ -91,6 +102,24 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         return true
     }
 
+    private fun onDarkModeByToggleCheckChanged(
+        darkModeBySettingsPreference: Preference,
+        isChecked: Any
+    ): Boolean {
+        onUiModeChanged(isDarkModeByToggleChecked = isChecked as Boolean)
+        return true
+    }
+
+    private fun onEnableCustomTaCheckChanged(
+        enableCustomTapPreference: Preference,
+        isChecked: Any
+    ): Boolean {
+        if (isChecked as Boolean) startMediaSessionService()
+        else stopMediaSessionService()
+
+        return true
+    }
+
     private fun updateDarkModeByToggle(isChecked: Boolean) {
         val shouldDisableToggleSwitch =
             isChecked && darkModeByToggleSwitchPreference?.let { it.isChecked }.orElse { false }
@@ -99,13 +128,6 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         darkModeByToggleSwitchPreference?.isEnabled = !isChecked
     }
 
-    private fun onDarkModeByToggleCheckChanged(
-        darkModeBySettingsPreference: Preference,
-        isChecked: Any
-    ): Boolean {
-        onUiModeChanged(isDarkModeByToggleChecked = isChecked as Boolean)
-        return true
-    }
 
     private fun onUiModeChanged(
         isDarkModeBySettingsChecked: Boolean? = null,
@@ -138,6 +160,18 @@ class PreferenceFragment : PreferenceFragmentCompat() {
                 activity?.stopService(intent)
             }
             NotificationUtil.clearNotification(context!!)
+        }
+    }
+
+    private fun startMediaSessionService() {
+        Intent(context, MediaSessionService::class.java).also {
+            context?.startService(it)
+        }
+    }
+
+    private fun stopMediaSessionService() {
+        Intent(context, MediaSessionService::class.java).also {
+            context?.stopService(it)
         }
     }
 

@@ -22,6 +22,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
 import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
+import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
 import com.maxtauro.airdroid.wearablecomponents.WearableDataManager
 import org.greenrobot.eventbus.EventBus
 
@@ -157,6 +158,12 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
 
     private fun startMediaSessionService(context: Context) {
         // TODO Why does this work when the device is locked?
+        val isCustomTapEnabled =
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key, false)
+
+        if (!isCustomTapEnabled) return
+
         try {
             Intent(context, MediaSessionService::class.java).also { intent ->
                 context.startService(intent)

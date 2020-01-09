@@ -47,7 +47,7 @@
     <string name="CUSTOM_TAP_ACTION_PREF_KEY">9992</string>
 
     <!-- Custom Tap Options -->
-    <string name="enable_custom_double_tap_title">Enable Custom Double-Tap</string>
+    <string name="enable_custom_double_tap_title">Enable Custom Double-Tap (Beta)</string>
     <string name="custom_tap_action_title">Select Double Tap Action</string>
 
     <string-array name="custom_tap_options_text">
@@ -55,7 +55,6 @@
         <item>Next Track</item>
         <item>Previous Track</item>
         <item>Google Assistant</item>
-        <item>Off</item>
     </string-array>
 
     <string-array name="custom_tap_options_values">
@@ -63,7 +62,6 @@
         <item>NEXT</item>
         <item>PREV</item>
         <item>GOOGLE_ASSISTANT</item>
-        <item>OFF</item>
     </string-array>
 
 </resources>

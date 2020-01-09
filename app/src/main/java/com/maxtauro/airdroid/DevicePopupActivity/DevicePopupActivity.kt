@@ -29,6 +29,7 @@ import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.R
 import com.maxtauro.airdroid.customtap.DummyNotificationListener
 import com.maxtauro.airdroid.customtap.MediaSessionService
 import com.maxtauro.airdroid.preferences.preferenceactivity.PreferenceActivity
+import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
 
 var mIsActivityRunning = false
 
@@ -355,7 +356,11 @@ class DevicePopupActivity : AppCompatActivity() {
     private fun startMediaSessionService() {
         val connectionState = bluetoothAdapter?.getProfileConnectionState(BluetoothA2dp.HEADSET)
 
+        val isCustomTapEnabled =
+            preferences.getBoolean(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key, false)
+
         if (!(application as AirDroidApplication).isMediaSessionServiceRunning &&
+            isCustomTapEnabled &&
             (connectionState == 1 || connectionState == 2)
         ) {
             Intent(this, MediaSessionService::class.java).also {

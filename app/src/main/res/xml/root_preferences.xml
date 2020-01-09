@@ -50,7 +50,7 @@
                 app:title="@string/enable_custom_double_tap_title" />
 
         <ListPreference
-                app:defaultValue="OFF"
+                app:defaultValue="PLAY_PAUSE"
                 app:dependency="@string/ENABLE_CUSTOM_TAP_PREF_KEY"
                 app:entries="@array/custom_tap_options_text"
                 app:entryValues="@array/custom_tap_options_values"
