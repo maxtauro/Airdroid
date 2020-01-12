@@ -1,5 +1,6 @@
 package com.maxtauro.airdroid.preferences.preferenceactivity
 
+import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
@@ -9,14 +10,12 @@ import android.util.Log
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.maxtauro.airdroid.R
+import com.maxtauro.airdroid.*
+import com.maxtauro.airdroid.customtap.DummyNotificationListener
 import com.maxtauro.airdroid.customtap.MediaSessionService
-import com.maxtauro.airdroid.isHeadsetConnected
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
-import com.maxtauro.airdroid.orElse
 import com.maxtauro.airdroid.preferences.preferenceutils.PreferenceKeys
-import com.maxtauro.airdroid.showSystemAlertWindowDialog
 
 class PreferenceFragment : PreferenceFragmentCompat() {
 
@@ -56,6 +55,16 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             findPreference(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key)
 
         updateDarkModeByToggle(darkModeBySettingsSwitchPreference?.isChecked == true)
+        startMediaSessionServiceIfNecessary()
+    }
+
+    private fun startMediaSessionServiceIfNecessary() {
+        val isCustomTapEnabled = enableCustomTapSwitchPreference?.isChecked == true
+        val isMediaSessionServiceRunning =
+            (activity?.application as? AirDroidApplication)?.isMediaSessionServiceRunning ?: true
+
+        if (isCustomTapEnabled && !isMediaSessionServiceRunning)
+            startMediaSessionService()
     }
 
     private fun setupPreferenceChangeListeners() {
@@ -63,7 +72,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         notificationSwitchPreference?.setOnPreferenceChangeListener(::onNotificationSwitchCheckChanged)
         darkModeBySettingsSwitchPreference?.setOnPreferenceChangeListener(::onDarkModeBySettingsCheckChanged)
         darkModeByToggleSwitchPreference?.setOnPreferenceChangeListener(::onDarkModeByToggleCheckChanged)
-        enableCustomTapSwitchPreference?.setOnPreferenceChangeListener(::onEnableCustomTaCheckChanged)
+        enableCustomTapSwitchPreference?.setOnPreferenceChangeListener(::onEnableCustomTapCheckChanged)
     }
 
     private fun onOpenAppSwitchCheckChanged(
@@ -110,15 +119,41 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         return true
     }
 
-    private fun onEnableCustomTaCheckChanged(
+    private fun onEnableCustomTapCheckChanged(
         enableCustomTapPreference: Preference,
         isChecked: Any
     ): Boolean {
-        if (isChecked as Boolean) startMediaSessionService()
-        else stopMediaSessionService()
+        if (isChecked as Boolean) {
+            if (!isNotificationPermissionGranted()) requestNotificationPermission()
+            else requestNotificationPermission()
+        } else stopMediaSessionService()
 
         return true
     }
+
+    private fun isNotificationPermissionGranted(): Boolean {
+        activity?.let {
+            val cn = ComponentName(
+                it, DummyNotificationListener::class.java
+            )
+            val secureSettings = Settings.Secure.getString(
+                it.contentResolver,
+                "enabled_notification_listeners"
+            )
+            return secureSettings != null && secureSettings.contains(cn.flattenToString())
+        }.orElse {
+            return false
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        startActivity(
+            Intent(
+                Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+            )
+        )
+    }
+
 
     private fun updateDarkModeByToggle(isChecked: Boolean) {
         val shouldDisableToggleSwitch =

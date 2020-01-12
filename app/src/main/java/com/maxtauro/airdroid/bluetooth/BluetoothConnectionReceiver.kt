@@ -34,13 +34,6 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     private val isActivityInForeground: Boolean
         get() = mIsActivityRunning
 
-    private fun isSystemAlertWindowPermissionGranted(context: Context): Boolean =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Settings.canDrawOverlays(context)
-        } else {
-            true
-        }
-
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent == null || context == null) return
 
@@ -61,21 +54,10 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 )
 
                 if (!connectedDevice.isConnectedDeviceHeadset()) return
-
-                mConnectedDevice = connectedDevice
-
-                // TODO extract this
-                if (isActivityInForeground) {
-                    eventBus.post(InitialConnectionIntent)
-                } else {
-                    handleBluetoothConnectedAppBackgrounded(context, connectedDevice)
-                }
-
-                startMediaSessionService(context)
+                else onHeadsetConnected(connectedDevice, context)
             }
         }
     }
-
 
     private fun handleBluetoothDisconnected(intent: Intent, context: Context) {
         intent.extras?.let {
@@ -137,6 +119,21 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
         }
     }
 
+    private fun onHeadsetConnected(
+        connectedDevice: BluetoothDevice,
+        context: Context
+    ) {
+        mConnectedDevice = connectedDevice
+
+        if (isActivityInForeground) {
+            eventBus.post(InitialConnectionIntent)
+        } else {
+            handleBluetoothConnectedAppBackgrounded(context, connectedDevice)
+        }
+
+        startMediaSessionService(context)
+    }
+
     private fun startNotificationService(context: Context, connectedDevice: BluetoothDevice) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(EXTRA_AIRPOD_NAME, connectedDevice.name)
@@ -192,6 +189,13 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             context.startActivity(intent)
         }
     }
+
+    private fun isSystemAlertWindowPermissionGranted(context: Context): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Settings.canDrawOverlays(context)
+        } else {
+            true
+        }
 
     private fun BluetoothDevice.isConnectedDeviceHeadset() =
         this.bluetoothClass.hasService(BluetoothClass.Service.RENDER)

@@ -96,11 +96,7 @@ class DevicePopupActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-
         // TODO: extract the permision workflow into something more cohesive
-        if (!isNotificationPermissionGranted()) {
-            requestNotificationPermission()
-        }
         if (!isLocationPermissionEnabled) {
             showLocationPermissionDialog()
         } else requestSystemAlertWindowPermission()
@@ -245,15 +241,6 @@ class DevicePopupActivity : AppCompatActivity() {
             .setCancelable(false)
             .create()
             .show()
-    }
-
-    // TODO, only ask for this when the user tries customizing their buttons
-    private fun requestNotificationPermission() {
-        startActivity(
-            Intent(
-                Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-            )
-        )
     }
 
     private fun requestLocationPermission() {
