@@ -20,128 +20,135 @@ import com.maxtauro.airdroid.AirDroidApplication
 @SuppressLint("LongLogTag")
 class MediaSessionService : Service(), OnActiveSessionsChangedListener {
 
-    private lateinit var dummyMediaSession: MediaSessionCompat
-    private lateinit var dummyMediaSessionManager: MediaSessionManager
-    private lateinit var dummyAudioTrack: AudioTrack
+    private lateinit var mediaSession: MediaSessionCompat
+    private lateinit var mediaSessionManager: MediaSessionManager
+    private lateinit var silentAudioTrack: AudioTrack
 
     private lateinit var mediaSessionCallback: AirdroidMediaSessionCallback
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        mediaSessionCallback = AirdroidMediaSessionCallback(
-            context = this,
-            handleEmptyMediaControllerList = ::handleNoActiveMediaSessions
-        )
-
-        initializeMediaSessionManager()
-        initializeDummyMediaSession()
-        makeMediaSessionActive()
-
+        setupMediaSession()
         (application as AirDroidApplication).isMediaSessionServiceRunning = true
-
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "service is being destroyed")
         stopMediaSession()
         (application as AirDroidApplication).isMediaSessionServiceRunning = false
         super.onDestroy()
     }
 
+    override fun onBind(intent: Intent?) = null
+
     override fun onActiveSessionsChanged(controllers: MutableList<MediaController>?) {
         Log.d(TAG, "Active Media Session Changed, ${controllers?.firstOrNull()?.packageName}")
 
         controllers?.let {
-            mediaSessionCallback.updateMediaControllers(it)
-
-            when {
-                controllers.isEmpty() -> return
-                controllers.first().packageName == application.packageName -> return
-                else -> makeMediaSessionActive()
-            }
+            updateMediaControllers(it)
+            ensureAirDroidIsMainMediaController(it)
         }
     }
 
-    override fun onBind(intent: Intent?) = null
-
-    private fun makeMediaSessionActive() {
-        startDummyMediaPlayer()
+    private fun setupMediaSession() {
+        initializeMediaSession()
+        initializeMediaSessionManager()
+        playSilentAudioTrack()
     }
 
-    private fun initializeMediaSessionManager() {
-        dummyMediaSessionManager =
-            getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-
-        dummyMediaSessionManager.addOnActiveSessionsChangedListener(
-            this, ComponentName(this, DummyNotificationListener::class.java)
+    private fun initializeMediaSession() {
+        mediaSession = MediaSessionCompat(this, "AirDroid Media Session")
+        mediaSessionCallback = AirdroidMediaSessionCallback(
+            context = this,
+            handleEmptyMediaControllerList = ::handleNoActiveMediaSessions
         )
 
-        mediaSessionCallback.updateMediaControllers(
-            dummyMediaSessionManager.getActiveSessions(
-                ComponentName(this, DummyNotificationListener::class.java)
-            )
-        )
-    }
+        val playbackState = buildPlaybackState()
 
-    // TODO Coroutine this
-    private fun startDummyMediaPlayer() {
-        if (::dummyMediaSession.isInitialized) {
-            Thread(Runnable {
-                dummyAudioTrack = AudioTrack(
-                    AudioManager.STREAM_MUSIC,
-                    48000,
-                    AudioFormat.CHANNEL_OUT_STEREO,
-                    AudioFormat.ENCODING_PCM_16BIT,
-                    AudioTrack.getMinBufferSize(
-                        48000,
-                        AudioFormat.CHANNEL_OUT_STEREO,
-                        AudioFormat.ENCODING_PCM_16BIT
-                    ),
-                    AudioTrack.MODE_STREAM
-                )
-
-                dummyAudioTrack.play()
-            }).start()
-        }
-    }
-
-    private fun initializeDummyMediaSession() {
-        dummyMediaSession = MediaSessionCompat(this, "AirDroid Media Session")
-
-        val mStateBuilder = PlaybackStateCompat.Builder()
-            .setActions(
-                PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_PAUSE or
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE or
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-            ).setState(
-                PlaybackStateCompat.STATE_STOPPED,
-                PlaybackState.PLAYBACK_POSITION_UNKNOWN,
-                0f
-            )
-
-        dummyMediaSession.setPlaybackState(mStateBuilder.build())
-        dummyMediaSession.setCallback(mediaSessionCallback)
-
-        dummyMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
-        dummyMediaSession.isActive = true
+        mediaSession.setPlaybackState(playbackState)
+        mediaSession.setCallback(mediaSessionCallback)
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+        mediaSession.isActive = true
 
         Log.d(TAG, "media session initialized")
     }
 
-    private fun stopMediaSession() {
-        // TODO this isn't quite right
-        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
-        if (::dummyAudioTrack.isInitialized) dummyAudioTrack.stop()
-        if (::dummyMediaSession.isInitialized) dummyMediaSession.release()
+    private fun initializeMediaSessionManager() {
+        mediaSessionManager =
+            getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+
+        mediaSessionManager.addOnActiveSessionsChangedListener(
+            this, ComponentName(this, DummyNotificationListener::class.java)
+        )
+
+        updateMediaControllers()
     }
+
+    // TODO Coroutine this
+    private fun playSilentAudioTrack() {
+        Thread(Runnable {
+            silentAudioTrack = AudioTrack(
+                AudioManager.STREAM_MUSIC,
+                48000,
+                AudioFormat.CHANNEL_OUT_STEREO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                AudioTrack.getMinBufferSize(
+                    48000,
+                    AudioFormat.CHANNEL_OUT_STEREO,
+                    AudioFormat.ENCODING_PCM_16BIT
+                ),
+                AudioTrack.MODE_STREAM
+            )
+
+            silentAudioTrack.play()
+        }).start()
+    }
+
+
+    // TODO, we need to be careful that this doesn't trigger an infinite loop
+    //  (i.e Spotify becomes main controller, so we make AirDroid main controller, then Spotify tries again to be main controller, so we make AirDroid main controller, etc)
+    private fun ensureAirDroidIsMainMediaController(controllers: MutableList<MediaController>) {
+        if (controllers.isEmpty() || controllers.isAirDroidMainController()) return
+        else playSilentAudioTrack()
+    }
+
+    private fun stopMediaSession() {
+        if (::silentAudioTrack.isInitialized) silentAudioTrack.stop()
+        if (::mediaSession.isInitialized) mediaSession.release()
+    }
+
+    private fun updateMediaControllers(mediaControllers: List<MediaController> = getActiveMediaSessions()) {
+        mediaSessionCallback.updateMediaControllers(mediaControllers)
+    }
+
+    private fun getActiveMediaSessions() =
+        mediaSessionManager.getActiveSessions(
+            ComponentName(
+                this,
+                DummyNotificationListener::class.java
+            )
+        )
 
     // Revive inactive media sessions
     private fun handleNoActiveMediaSessions(mediaButtonEvent: Intent) {
         stopMediaSession()
         sendBroadcast(mediaButtonEvent)
     }
+
+    private fun buildPlaybackState() = PlaybackStateCompat.Builder()
+        .setActions(
+            PlaybackStateCompat.ACTION_PLAY or
+                    PlaybackStateCompat.ACTION_PAUSE or
+                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+                    PlaybackStateCompat.ACTION_PLAY_PAUSE or
+                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+        ).setState(
+            PlaybackStateCompat.STATE_STOPPED,
+            PlaybackState.PLAYBACK_POSITION_UNKNOWN,
+            0f
+        ).build()
+
+    private fun MutableList<MediaController>.isAirDroidMainController() =
+        !isEmpty() && first().packageName == application.packageName
 
     companion object {
         private const val TAG = "MediaSessionService"
