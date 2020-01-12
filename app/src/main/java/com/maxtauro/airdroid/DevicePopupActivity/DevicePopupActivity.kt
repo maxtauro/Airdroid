@@ -59,7 +59,6 @@ class DevicePopupActivity : AppCompatActivity() {
             true
         }
 
-    // TODO tidy this up
     private fun isNotificationPermissionGranted(): Boolean {
         val cn = ComponentName(
             this, DummyNotificationListener::class.java
@@ -116,7 +115,7 @@ class DevicePopupActivity : AppCompatActivity() {
             )
         }
 
-        startMediaSessionService()
+        startMediaSessionServiceIfEnabled()
 
     }
 
@@ -128,7 +127,6 @@ class DevicePopupActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-
         mIsActivityRunning = false
     }
 
@@ -208,7 +206,8 @@ class DevicePopupActivity : AppCompatActivity() {
                 oldPreferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
             val oldDarkModeBySystemPref =
                 oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
-            val oldDarkModeByTogglePref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, false)
+            val oldDarkModeByTogglePref =
+                oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, false)
 
             val editor = preferences.edit()
 
@@ -291,7 +290,8 @@ class DevicePopupActivity : AppCompatActivity() {
     }
 
     private fun configureNightMode() {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val currentNightMode =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val defaultNightMode = getDefaultNightMode()
 
         val willChangeUiMode =
@@ -353,16 +353,20 @@ class DevicePopupActivity : AppCompatActivity() {
         ratingDialog.show()
     }
 
-    private fun startMediaSessionService() {
+    private fun startMediaSessionServiceIfEnabled() {
         val connectionState = bluetoothAdapter?.getProfileConnectionState(BluetoothA2dp.HEADSET)
 
         val isCustomTapEnabled =
             preferences.getBoolean(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key, false)
 
-        if (!(application as AirDroidApplication).isMediaSessionServiceRunning &&
-            isCustomTapEnabled &&
-            (connectionState == 1 || connectionState == 2)
-        ) {
+        val isMediaSessionServiceRunning =
+            (application as AirDroidApplication).isMediaSessionServiceRunning
+        val isHeadSetConnected = connectionState == 1 || connectionState == 2
+
+        val shouldStartMediaSessionService =
+            !isMediaSessionServiceRunning && isCustomTapEnabled && isHeadSetConnected
+
+        if (shouldStartMediaSessionService) {
             Intent(this, MediaSessionService::class.java).also {
                 startService(it)
             }
