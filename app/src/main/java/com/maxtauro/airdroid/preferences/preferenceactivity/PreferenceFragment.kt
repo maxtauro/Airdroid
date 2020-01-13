@@ -55,7 +55,12 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             findPreference(PreferenceKeys.ENABLE_CUSTOM_TAP_PREF_KEY.key)
 
         updateDarkModeByToggle(darkModeBySettingsSwitchPreference?.isChecked == true)
+        updateMediaSessionToggle()
         startMediaSessionServiceIfNecessary()
+    }
+
+    private fun updateMediaSessionToggle() {
+        if (!isNotificationPermissionGranted()) enableCustomTapSwitchPreference?.isChecked = false
     }
 
     private fun startMediaSessionServiceIfNecessary() {
@@ -125,7 +130,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     ): Boolean {
         if (isChecked as Boolean) {
             if (!isNotificationPermissionGranted()) requestNotificationPermission()
-            else requestNotificationPermission()
+            else startMediaSessionService()
         } else stopMediaSessionService()
 
         return true

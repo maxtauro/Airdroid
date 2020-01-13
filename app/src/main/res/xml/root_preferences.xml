@@ -47,6 +47,7 @@
         <SwitchPreferenceCompat
                 app:key="@string/ENABLE_CUSTOM_TAP_PREF_KEY"
                 app:persistent="true"
+                app:defaultValue="false"
                 app:title="@string/enable_custom_double_tap_title" />
 
         <ListPreference

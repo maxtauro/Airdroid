@@ -266,6 +266,7 @@ class DevicePopupActivity : AppCompatActivity() {
         Intent(this, PreferenceActivity::class.java).also { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             this.startActivity(intent)
+            this.finish()
         }
     }
 

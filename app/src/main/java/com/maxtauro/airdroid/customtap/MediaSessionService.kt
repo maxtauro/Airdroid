@@ -12,10 +12,12 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState
+import android.provider.Settings
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import com.maxtauro.airdroid.AirDroidApplication
+import com.maxtauro.airdroid.orElse
 
 @SuppressLint("LongLogTag")
 class MediaSessionService : Service(), OnActiveSessionsChangedListener {
@@ -27,6 +29,12 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
     private lateinit var mediaSessionCallback: AirdroidMediaSessionCallback
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+        if (!isNotificationPermissionGranted()) {
+            stopSelf()
+            return super.onStartCommand(intent, flags, startId)
+        }
+
         setupMediaSession()
         (application as AirDroidApplication).isMediaSessionServiceRunning = true
         return super.onStartCommand(intent, flags, startId)
@@ -146,6 +154,21 @@ class MediaSessionService : Service(), OnActiveSessionsChangedListener {
             PlaybackState.PLAYBACK_POSITION_UNKNOWN,
             0f
         ).build()
+
+    private fun isNotificationPermissionGranted(): Boolean {
+        applicationContext?.let {
+            val cn = ComponentName(
+                it, DummyNotificationListener::class.java
+            )
+            val secureSettings = Settings.Secure.getString(
+                it.contentResolver,
+                "enabled_notification_listeners"
+            )
+            return secureSettings != null && secureSettings.contains(cn.flattenToString())
+        }.orElse {
+            return false
+        }
+    }
 
     private fun MutableList<MediaController>.isAirDroidMainController() =
         !isEmpty() && first().packageName == application.packageName
