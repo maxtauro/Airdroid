@@ -1,8 +1,5 @@
 package com.maxtauro.airdroid.preferenceactivity
 
-//    private var isOpenAppEnabled = true
-//    private var isNotificationEnabled = true
-//    private var isDarkModeBySettingsEnabled = true
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -91,7 +88,9 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         isChecked: Any
     ): Boolean {
         updateDarkModeByToggle(isChecked as Boolean)
-        onUiModeChanged()
+        onUiModeChanged(
+            isDarkModeBySettingsChecked = isChecked,
+            isDarkModeByToggleChecked = darkModeByToggleSwitchPreference?.let { it.isChecked }.orElse { false })
         return true
     }
 
