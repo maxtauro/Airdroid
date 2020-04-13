@@ -12,6 +12,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -262,17 +263,16 @@ class DevicePopupActivity : AppCompatActivity() {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val defaultNightMode = getDefaultNightMode()
 
+        Log.d(TAG, "current Night mode $currentNightMode, default: $defaultNightMode")
+
         val willChangeUiMode =
-            (currentNightMode == Configuration.UI_MODE_NIGHT_YES && defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) ||
-                    (currentNightMode == Configuration.UI_MODE_NIGHT_NO && defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES)
+            (currentNightMode == Configuration.UI_MODE_NIGHT_YES &&
+                    defaultNightMode == AppCompatDelegate.MODE_NIGHT_NO) ||
+                    (currentNightMode == Configuration.UI_MODE_NIGHT_NO &&
+                            defaultNightMode == AppCompatDelegate.MODE_NIGHT_YES)
 
         if (willChangeUiMode) {
-            deviceStatusFragment.refreshingUiMode = true
-            AppCompatDelegate.setDefaultNightMode(defaultNightMode)
-        } else if (
-            (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM || defaultNightMode == AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY) &&
-            defaultNightMode != AppCompatDelegate.getDefaultNightMode()
-        ) {
+            Log.d(TAG, "First if")
             deviceStatusFragment.refreshingUiMode = true
             AppCompatDelegate.setDefaultNightMode(defaultNightMode)
         } else {
