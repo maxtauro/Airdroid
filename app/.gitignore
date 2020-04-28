@@ -6,4 +6,6 @@
 /gradle.xml
 /proguard-rules.*
 /debugScanLogginEnabled
+/.idea/*
 google-services.json
+*.apk

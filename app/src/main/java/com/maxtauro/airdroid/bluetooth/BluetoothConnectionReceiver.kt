@@ -163,7 +163,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
     }
 
     private fun BluetoothDevice.isConnectedDeviceHeadset() =
-        this.bluetoothClass.hasService(BluetoothClass.Service.RENDER)
+        this.bluetoothClass?.hasService(BluetoothClass.Service.RENDER) == true
 
     companion object {
 
