@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.PreferenceManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.maxtauro.airdroid.BuildConfig
 import com.maxtauro.airdroid.DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY
 import com.maxtauro.airdroid.DARK_MODE_BY_TOGGLE_PREF_KEY
 import com.maxtauro.airdroid.R
@@ -21,6 +24,7 @@ class PreferenceActivity : AppCompatActivity() {
             .commit()
 
         setupToolbar()
+        setupAds()
     }
 
     override fun onBackPressed() {
@@ -45,6 +49,18 @@ class PreferenceActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             finish()
         }
+    }
+
+    private fun setupAds() {
+        val adView: AdView = findViewById(R.id.adView)
+
+        val adRequest =
+            if (BuildConfig.BUILD_TYPE == "release") {
+                AdRequest.Builder().build()
+            } else {
+                AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
+            }
+        adView.loadAd(adRequest)
     }
 
     private fun getDefaultNightMode(
