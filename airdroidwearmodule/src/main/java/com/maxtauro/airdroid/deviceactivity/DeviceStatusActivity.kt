@@ -25,7 +25,7 @@ class DeviceStatusActivity : WearableActivity() {
         view = DeviceStatusActivityView(this)
         eventBus.register(this)
 
-        mHandler.postDelayed({ finish() }, 5000)
+        mHandler.postDelayed({ finish() }, 10000)
     }
 
     override fun onResume() {

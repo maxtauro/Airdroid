@@ -48,10 +48,14 @@ class AirpodComplicationProviderService : ComplicationProviderService() {
         Log.d(TAG, "onIconComplicationUpdate")
 
         val iconResId = getIconResId()
+        val burnInSafeIconId = R.drawable.ic_airpods_connected_safe
+
         val icon = Icon.createWithResource(this, iconResId)
+        val burnInSafeIcon = Icon.createWithResource(this, burnInSafeIconId)
 
         return ComplicationData.Builder(ComplicationData.TYPE_ICON)
             .setIcon(icon)
+            .setBurnInProtectionIcon(burnInSafeIcon)
             .setTapAction(buildComplicationIntent())
             .build()
     }
@@ -61,10 +65,14 @@ class AirpodComplicationProviderService : ComplicationProviderService() {
         Log.d(TAG, "onSmallImageComplicationUpdate")
 
         val iconResId = getIconResId()
+        val burnInSafeIconId = R.drawable.ic_airpods_connected_safe
+
         val icon = Icon.createWithResource(this, iconResId)
+        val burnInSafeIcon = Icon.createWithResource(this, burnInSafeIconId)
 
         return ComplicationData.Builder(ComplicationData.TYPE_SMALL_IMAGE)
             .setSmallImage(icon)
+            .setBurnInProtectionSmallImage(burnInSafeIcon)
             .setTapAction(buildComplicationIntent())
             .build()
     }
