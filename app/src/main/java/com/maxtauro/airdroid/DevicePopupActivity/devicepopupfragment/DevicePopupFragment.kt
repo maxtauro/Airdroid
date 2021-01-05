@@ -15,7 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
@@ -40,7 +40,8 @@ class DevicePopupFragment :
     private var viewModel = DeviceViewModel.createEmptyViewModel(isLocationPermissionEnabled())
 
     private val connectionState: Int?
-        get() = BluetoothAdapter.getDefaultAdapter()?.getProfileConnectionState(BluetoothA2dp.HEADSET)
+        get() = BluetoothAdapter.getDefaultAdapter()
+            ?.getProfileConnectionState(BluetoothA2dp.HEADSET)
 
     private val actionIntentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
 
@@ -68,16 +69,17 @@ class DevicePopupFragment :
 
     override fun onResume() {
         super.onResume()
-        Crashlytics.log(Log.DEBUG, TAG, ".onResume")
+        FirebaseCrashlytics.getInstance().log("$TAG .onResume")
 
         // Whenever the app comes into the foreground we clear the notification
         context?.let {
-            Crashlytics.log(Log.DEBUG, TAG, " stopping notification service from onResume")
+            FirebaseCrashlytics.getInstance()
+                .log("$TAG stopping notification service from onResume")
             stopNotificationService(it)
         }
 
         val startFlag: StartFlag? = getExtra<StartFlag>(EXTRA_START_FLAG)
-        Crashlytics.log(Log.DEBUG, TAG, "StartFlag = ${startFlag?.name}")
+        FirebaseCrashlytics.getInstance().log("$TAG StartFlag = ${startFlag?.name}")
 
         when (startFlag) {
             StartFlag.AIRPODS_CONNECTED -> onAirPodsConnectedStartFlag()
@@ -91,10 +93,8 @@ class DevicePopupFragment :
     override fun onPause() {
         super.onPause()
 
-        Crashlytics.log(
-            Log.DEBUG,
-            TAG,
-            "onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}"
+        FirebaseCrashlytics.getInstance().log(
+            "$TAG onPause, activity.hasWindowFocus() = ${activity?.hasWindowFocus()}"
         )
         // TODO, find a better way to deal with this bug
         // This check is added here because, sometimes onPause will be called immediately following
@@ -111,7 +111,7 @@ class DevicePopupFragment :
 
             if (!refreshingUiMode) {
                 context?.let {
-                    Crashlytics.log(Log.DEBUG, TAG, " starting notification service from onStop")
+                    FirebaseCrashlytics.getInstance().log("$TAG starting notification service from onStop")
                     startNotificationService(it)
                 }
             }
@@ -160,7 +160,7 @@ class DevicePopupFragment :
 
     override fun isLocationPermissionEnabled() =
         context != null && ContextCompat.checkSelfPermission(
-            context!!,
+            requireContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
@@ -216,7 +216,7 @@ class DevicePopupFragment :
     }
 
     private fun stopNotificationService(context: Context) {
-        Crashlytics.log(Log.DEBUG, TAG, " stopping notification service")
+        FirebaseCrashlytics.getInstance().log("$TAG stopping notification service")
 
         Intent(activity, NotificationService::class.java).also { intent ->
             activity?.stopService(intent)

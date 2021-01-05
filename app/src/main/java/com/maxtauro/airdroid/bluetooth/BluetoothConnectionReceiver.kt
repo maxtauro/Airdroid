@@ -11,7 +11,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.preference.PreferenceManager
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.DevicePopupActivity
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
@@ -85,7 +85,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
             if (isActivityInForeground) {
                 eventBus.post(DisconnectedIntent)
             } else {
-                Crashlytics.log(Log.DEBUG, TAG, " Stopping notification service")
+                FirebaseCrashlytics.getInstance().log("$TAG Stopping notification service")
                 stopNotificationService(context)
             }
 
@@ -126,7 +126,7 @@ class BluetoothConnectionReceiver : BroadcastReceiver() {
                 connectedDevice
             )
         } else if (isNotificationEnabled) {
-            Crashlytics.log(Log.DEBUG, TAG, " starting notification service")
+            FirebaseCrashlytics.getInstance().log("$TAG  starting notification service")
             startNotificationService(context, connectedDevice)
         }
     }

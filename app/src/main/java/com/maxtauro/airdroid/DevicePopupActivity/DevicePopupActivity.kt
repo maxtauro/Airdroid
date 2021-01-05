@@ -21,11 +21,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.codemybrainsout.ratingdialog.RatingDialog
-import com.crashlytics.android.Crashlytics
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
@@ -311,7 +311,7 @@ class DevicePopupActivity : AppCompatActivity() {
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"
-                Crashlytics.logException(
+                FirebaseCrashlytics.getInstance().recordException(
                     UserFeedbackException(
                         msg
                     )

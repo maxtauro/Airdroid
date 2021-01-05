@@ -12,7 +12,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
 
 // TODO This whole class is super gross, each of these things deserves a better home
@@ -49,7 +49,7 @@ fun Context?.startServiceIfDeviceUnlocked(intent: Intent) {
         }
     } else {
         val msg = "Device locked, did not start service with intent: $intent"
-        Crashlytics.logException(IllegalStateException(msg))
+        FirebaseCrashlytics.getInstance().recordException(IllegalStateException(msg))
         Log.d(this?.javaClass?.simpleName, msg)
     }
 }

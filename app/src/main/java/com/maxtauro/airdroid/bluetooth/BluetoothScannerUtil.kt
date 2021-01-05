@@ -5,7 +5,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.os.Handler
 import android.util.Log
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.jaredrummler.android.device.DeviceName
 
 
@@ -42,7 +42,8 @@ class BluetoothScannerUtil {
                     Log.d(TAG, "Bluetooth scan timed out")
 
                     val currentDeviceModel = DeviceName.getDeviceName()
-                    Crashlytics.logException(IllegalStateException("Could not get scan result for device: $currentDeviceModel"))
+                    FirebaseCrashlytics.getInstance()
+                        .recordException(IllegalStateException("Could not get scan result for device: $currentDeviceModel"))
 
                     stopScan()
                     timeoutCallback()
@@ -59,7 +60,7 @@ class BluetoothScannerUtil {
                 scanner?.stopScan(scanCallback)
             } catch (e: IllegalStateException) {
                 val msg = e.message + " Thrown after failing to stop scan"
-                Crashlytics.logException(IllegalStateException(msg))
+                FirebaseCrashlytics.getInstance().recordException(IllegalStateException(msg))
             }
 
             isScanning = false
