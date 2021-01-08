@@ -9,8 +9,8 @@ android {
         applicationId "com.maxtauro.airdroid"
         minSdkVersion 27
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0 - Wear"
+        versionCode 102
+        versionName "1.1 - Wear"
     }
     buildTypes {
         release {
