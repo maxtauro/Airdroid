@@ -16,8 +16,6 @@ import com.maxtauro.airdroid.notification.NotificationUtil
 
 class PreferenceFragment : PreferenceFragmentCompat() {
 
-    private var preferences: SharedPreferences? = null
-
     private var openAppSwitchPreference: SwitchPreferenceCompat? = null
     private var notificationSwitchPreference: SwitchPreferenceCompat? = null
     private var darkModeBySettingsSwitchPreference: SwitchPreferenceCompat? = null
@@ -38,6 +36,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     private fun setupPreferences() {
         initializePreferences()
         setupPreferenceChangeListeners()
+        adjustOpenAppPreferenceForPermission()
     }
 
     private fun initializePreferences() {
@@ -56,6 +55,17 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         darkModeByToggleSwitchPreference?.setOnPreferenceChangeListener(::onDarkModeByToggleCheckChanged)
     }
 
+    private fun adjustOpenAppPreferenceForPermission() {
+        openAppSwitchPreference?.let {
+            if (!isSystemAlertWindowPermissionGranted
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                && it.isChecked
+            ) {
+                it.performClick()
+            }
+        }
+    }
+
     private fun onOpenAppSwitchCheckChanged(
         openAppPreference: Preference,
         isChecked: Any
@@ -67,7 +77,11 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         ) {
             context?.showSystemAlertWindowDialog {
-                openAppPreference.setDefaultValue(isChecked && isSystemAlertWindowPermissionGranted)
+                if (isSystemAlertWindowPermissionGranted) {
+                    openAppPreference.setDefaultValue(isChecked && isSystemAlertWindowPermissionGranted)
+                } else {
+                    openAppPreference.performClick()
+                }
             }
         }
         return true
@@ -90,7 +104,8 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         updateDarkModeByToggle(isChecked as Boolean)
         onUiModeChanged(
             isDarkModeBySettingsChecked = isChecked,
-            isDarkModeByToggleChecked = darkModeByToggleSwitchPreference?.let { it.isChecked }.orElse { false })
+            isDarkModeByToggleChecked = darkModeByToggleSwitchPreference?.let { it.isChecked }
+                .orElse { false })
         return true
     }
 

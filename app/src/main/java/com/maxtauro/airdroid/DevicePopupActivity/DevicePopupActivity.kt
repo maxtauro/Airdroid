@@ -185,16 +185,16 @@ class DevicePopupActivity : AppCompatActivity() {
             val oldShouldShowSystemAlertPref =
                 oldPreferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
             val oldDarkModeBySystemPref =
-                oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, true)
-            val oldDarkModeByTogglePref = oldPreferences.getBoolean(NOTIFICATION_PREF_KEY, false)
+                oldPreferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
+            val oldDarkModeByTogglePref = oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, false)
 
             val editor = preferences.edit()
 
             editor.putBoolean(NOTIFICATION_PREF_KEY, oldNotificationPref)
             editor.putBoolean(OPEN_APP_PREF_KEY, oldOpenAppPref)
             editor.putBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, oldShouldShowSystemAlertPref)
-            editor.putBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, oldDarkModeBySystemPref)
-            editor.putBoolean(NOTIFICATION_PREF_KEY, oldDarkModeByTogglePref)
+            editor.putBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, oldDarkModeBySystemPref)
+            editor.putBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, oldDarkModeByTogglePref)
             editor.putBoolean(HAS_MIGRATED_PREF_KEY, true)
 
             editor.apply()
