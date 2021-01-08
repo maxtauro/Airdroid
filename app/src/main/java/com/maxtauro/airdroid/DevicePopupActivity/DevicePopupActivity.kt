@@ -11,6 +11,8 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -186,7 +188,8 @@ class DevicePopupActivity : AppCompatActivity() {
                 oldPreferences.getBoolean(SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY, true)
             val oldDarkModeBySystemPref =
                 oldPreferences.getBoolean(DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY, true)
-            val oldDarkModeByTogglePref = oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, false)
+            val oldDarkModeByTogglePref =
+                oldPreferences.getBoolean(DARK_MODE_BY_TOGGLE_PREF_KEY, false)
 
             val editor = preferences.edit()
 

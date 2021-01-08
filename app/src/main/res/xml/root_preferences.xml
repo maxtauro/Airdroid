@@ -30,6 +30,20 @@
                 app:title="@string/show_notification_preference" />
 
         <SwitchPreferenceCompat
+                app:key="@string/AUTO_DISMISS_ENABLED_PREF_KEY"
+                app:persistent="true"
+                app:title="@string/auto_close_enabled_title" />
+
+        <com.maxtauro.airdroid.preferenceactivity.NumberPickerPreference
+                app:key="@string/AUTO_DISMISS_DURATION_PREF_KEY"
+                app:persistent="true"
+                app:title="@string/auto_close_app_title" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/dark_mode_header">
+
+        <SwitchPreferenceCompat
                 app:key="@string/DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY"
                 app:persistent="true"
                 app:title="@string/enable_dark_mode_device_settings" />
@@ -38,20 +52,6 @@
                 app:key="@string/DARK_MODE_BY_TOGGLE_PREF_KEY"
                 app:persistent="true"
                 app:title="@string/enable_dark_mode" />
-
-
-        <!--        <EditTextPreference-->
-        <!--                app:key="signature"-->
-        <!--                app:title="@string/signature_title"-->
-        <!--                app:useSimpleSummaryProvider="true" />-->
-
-        <!--        <ListPreference-->
-        <!--                app:defaultValue="reply"-->
-        <!--                app:entries="@array/reply_entries"-->
-        <!--                app:entryValues="@array/reply_values"-->
-        <!--                app:key="reply"-->
-        <!--                app:title="@string/reply_title"-->
-        <!--                app:useSimpleSummaryProvider="true" />-->
 
     </PreferenceCategory>
 

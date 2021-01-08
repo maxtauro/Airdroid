@@ -9,18 +9,23 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hannesdorfmann.mosby3.mvi.MviFragment
 import com.jakewharton.rxrelay2.PublishRelay
 import com.maxtauro.airdroid.AirpodModel
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.viewmodel.DeviceViewModel
+import com.maxtauro.airdroid.DevicePopupActivity.mIsActivityRunning
+import com.maxtauro.airdroid.R
 import com.maxtauro.airdroid.notification.NotificationService
 import com.maxtauro.airdroid.notification.NotificationUtil
 import com.maxtauro.airdroid.notification.NotificationUtil.Companion.EXTRA_AIRPOD_MODEL
@@ -31,6 +36,8 @@ import io.reactivex.disposables.CompositeDisposable
 class DevicePopupFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
+
+    private val autoDismissHandler = Handler(Looper.getMainLooper(), null)
 
     var refreshingUiMode: Boolean = false
 
@@ -111,7 +118,8 @@ class DevicePopupFragment :
 
             if (!refreshingUiMode) {
                 context?.let {
-                    FirebaseCrashlytics.getInstance().log("$TAG starting notification service from onStop")
+                    FirebaseCrashlytics.getInstance()
+                        .log("$TAG starting notification service from onStop")
                     startNotificationService(it)
                 }
             }
@@ -144,6 +152,10 @@ class DevicePopupFragment :
             actionIntentsRelay.accept(ScanTimeoutToastShownIntent)
         }
 
+        if (!this.viewModel.airpods.isConnected && viewModel.airpods.isConnected) {
+            setupAutoDismiss()
+        }
+
         this.viewModel = viewModel
         view.render(viewModel)
     }
@@ -169,6 +181,27 @@ class DevicePopupFragment :
             WearableDataManager.sendAirpodUpdate(
                 airpodModel,
                 it
+            )
+        }
+    }
+
+    private fun setupAutoDismiss() {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(requireActivity())
+
+        val autoDismissDuration: Int =
+            preferences.getInt(getString(R.string.AUTO_DISMISS_DURATION_PREF_KEY), -1)
+        val autoDismissDurationMillis: Int = autoDismissDuration * 1000
+
+        if (autoDismissDurationMillis > 0) {
+            autoDismissHandler.postDelayed(
+                {
+                    val isAutoDismissEnabled = preferences.getBoolean(
+                        getString(R.string.AUTO_DISMISS_ENABLED_PREF_KEY),
+                        false
+                    )
+                    if (mIsActivityRunning && isAutoDismissEnabled) requireActivity().finish()
+                },
+                autoDismissDurationMillis.toLong()
             )
         }
     }

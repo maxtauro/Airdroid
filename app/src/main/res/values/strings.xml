@@ -19,24 +19,18 @@
     <string name="rating_negative_button_text">Don\'t Ask Again</string>
     <string name="title_activity_preference">Preferences</string>
 
-
-
     <!-- Preference Titles -->
     <string name="display_header">Display</string>
-    <string name="sync_header">TODO</string>
+    <string name="dark_mode_header">Dark Mode</string>
 
     <!-- Display Preferences -->
     <string name="opening_preference">Show Popup</string>
     <string name="opening_preference_summary">Automatically show popup when AirPods are connected</string>
     <string name="show_notification_preference">Show Battery in Notification</string>
-    <string name="enable_dark_mode_device_settings">Toggle Dark Mode by Device settings</string>
+    <string name="enable_dark_mode_device_settings">Follow System Default</string>
     <string name="enable_dark_mode">Enable Dark Mode</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync Title</string>
-    <string name="attachment_title">attachment_title</string>
-    <string name="attachment_summary_on">attachment_summary_on</string>
-    <string name="attachment_summary_off">attachment_summary_off</string>
+    <string name="auto_close_enabled_title">Automatically Close Popup</string>
+    <string name="auto_close_app_title">Number of Seconds Until Popup Closes</string>
 
     <!-- Preference Keys -->
     <string name="NOTIFICATION_PREF_KEY">9999</string>
@@ -44,4 +38,7 @@
     <string name="SHOULD_SHOW_SYSTEM_ALERT_PROMPT_KEY">9997</string>
     <string name="DARK_MODE_BY_SYSTEM_SETTINGS_PREF_KEY">9996</string>
     <string name="DARK_MODE_BY_TOGGLE_PREF_KEY">9995</string>
+    <string name="AUTO_DISMISS_ENABLED_PREF_KEY">9991</string>
+    <string name="AUTO_DISMISS_DURATION_PREF_KEY">9990</string>
+    <string name="HAS_MIGRATED_PREF_KEY">9994</string>
 </resources>
