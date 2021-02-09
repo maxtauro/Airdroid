@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothProfile.STATE_CONNECTED
 import android.bluetooth.BluetoothProfile.STATE_CONNECTING
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -37,10 +38,10 @@ class DevicePopupFragment :
     MviFragment<DeviceStatusContract.View, DeviceStatusContract.Presenter>(),
     DeviceStatusContract.View {
 
-    private val autoDismissHandler = Handler(Looper.getMainLooper(), null)
 
     var refreshingUiMode: Boolean = false
 
+    private lateinit var preferences: SharedPreferences
     private val subscriptions = CompositeDisposable()
 
     private lateinit var view: DevicePopupFragmentView
@@ -50,11 +51,27 @@ class DevicePopupFragment :
         get() = BluetoothAdapter.getDefaultAdapter()
             ?.getProfileConnectionState(BluetoothA2dp.HEADSET)
 
+    private val autoDismissHandler = Handler(Looper.getMainLooper(), null)
+    private val autoDismissRunnable = Runnable {
+        activity?.let {
+            val isAutoDismissEnabled = preferences.getBoolean(
+                it.getString(R.string.AUTO_DISMISS_ENABLED_PREF_KEY),
+                false
+            )
+            if (mIsActivityRunning && isAutoDismissEnabled) {
+                FirebaseCrashlytics.getInstance().log("$TAG Auto dismissing popup")
+                it.finish()
+            }
+        }
+    }
+
     private val actionIntentsRelay = PublishRelay.create<DeviceStatusIntent>().toSerialized()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getMvpDelegate().onCreate(savedInstanceState)
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(requireActivity())
     }
 
     override fun onDestroy() {
@@ -125,6 +142,7 @@ class DevicePopupFragment :
             }
         }
 
+        autoDismissHandler.removeCallbacks(autoDismissRunnable)
         refreshingUiMode = false
     }
 
@@ -152,7 +170,7 @@ class DevicePopupFragment :
             actionIntentsRelay.accept(ScanTimeoutToastShownIntent)
         }
 
-        if (!this.viewModel.airpods.isConnected && viewModel.airpods.isConnected) {
+        if (viewModel.airpods.isConnected) {
             setupAutoDismiss()
         }
 
@@ -186,22 +204,13 @@ class DevicePopupFragment :
     }
 
     private fun setupAutoDismiss() {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(requireActivity())
-
         val autoDismissDuration: Int =
             preferences.getInt(getString(R.string.AUTO_DISMISS_DURATION_PREF_KEY), -1)
         val autoDismissDurationMillis: Int = autoDismissDuration * 1000
 
         if (autoDismissDurationMillis > 0) {
             autoDismissHandler.postDelayed(
-                {
-                    val isAutoDismissEnabled = preferences.getBoolean(
-                        getString(R.string.AUTO_DISMISS_ENABLED_PREF_KEY),
-                        false
-                    )
-                    if (mIsActivityRunning && isAutoDismissEnabled) requireActivity().finish()
-                },
-                autoDismissDurationMillis.toLong()
+                autoDismissRunnable, autoDismissDurationMillis.toLong()
             )
         }
     }
@@ -239,12 +248,12 @@ class DevicePopupFragment :
     private fun startNotificationService(context: Context) {
         Intent(context, NotificationService::class.java).also { intent ->
             intent.putExtra(EXTRA_AIRPOD_MODEL, viewModel.airpods)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startService(intent)
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                context.startForegroundService(intent)
+//            } else {
+//                context.startService(intent)
+//            }
         }
     }
 
@@ -265,7 +274,7 @@ class DevicePopupFragment :
     }
 
     companion object {
-        private const val TAG = "DeviceStatusFragment"
+        private const val TAG = "DevicePopupFragment"
 
         const val EXTRA_START_FLAG = "EXTRA_START_FLAG"
 
