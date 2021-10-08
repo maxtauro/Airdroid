@@ -14,7 +14,7 @@ android {
         applicationId "com.maxtauro.airdroid"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 32
+        versionCode 33
         versionName "1.9 Ludgate"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resValue "string", "APP_AD_ID", "\"$APP_AD_ID\""
