@@ -11,8 +11,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -26,6 +24,8 @@ import com.codemybrainsout.ratingdialog.RatingDialog
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
+import com.google.android.gms.ads.RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.maxtauro.airdroid.*
@@ -153,7 +153,13 @@ class DevicePopupActivity : AppCompatActivity() {
         // please don't remove it, it's a super unintrusive ad that gives
         // me a very very small amount of revenue for an app that
         // I've worked hard to give away for free
-        MobileAds.initialize(this, getString(R.string.APP_AD_ID))
+        val requestConfiguration = MobileAds.getRequestConfiguration()
+            .toBuilder()
+            .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
+            .setTagForChildDirectedTreatment(TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
+            .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+        MobileAds.initialize(this)
 
         val adView: AdView = findViewById(R.id.adView)
 
