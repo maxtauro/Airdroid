@@ -195,11 +195,11 @@ class DevicePopupFragment :
         if (autoDismissDurationMillis > 0) {
             autoDismissHandler.postDelayed(
                 {
-                    val isAutoDismissEnabled = preferences.getBoolean(
+                    val shouldAutoDismiss = mIsActivityRunning && preferences.getBoolean(
                         getString(R.string.AUTO_DISMISS_ENABLED_PREF_KEY),
                         false
                     )
-                    if (mIsActivityRunning && isAutoDismissEnabled) requireActivity().finish()
+                    if (shouldAutoDismiss) requireActivity().finish()
                 },
                 autoDismissDurationMillis.toLong()
             )
