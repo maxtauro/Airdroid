@@ -32,6 +32,7 @@ import com.maxtauro.airdroid.*
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.DevicePopupFragment
 import com.maxtauro.airdroid.DevicePopupActivity.devicepopupfragment.presenter.ReRenderIntent
 import com.maxtauro.airdroid.preferenceactivity.PreferenceActivity
+import java.util.*
 
 var mIsActivityRunning = false
 
@@ -153,23 +154,17 @@ class DevicePopupActivity : AppCompatActivity() {
         // please don't remove it, it's a super unintrusive ad that gives
         // me a very very small amount of revenue for an app that
         // I've worked hard to give away for free
-        val requestConfiguration = MobileAds.getRequestConfiguration()
+        val requestConfigurationBuilder = MobileAds.getRequestConfiguration()
             .toBuilder()
             .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
             .setTagForChildDirectedTreatment(TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
-            .build()
-        MobileAds.setRequestConfiguration(requestConfiguration)
-        MobileAds.initialize(this)
-
         val adView: AdView = findViewById(R.id.adView)
-
-        val adRequest =
-            if (BuildConfig.BUILD_TYPE == "release") {
-                AdRequest.Builder().build()
-            } else {
-                AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
-            }
-        adView.loadAd(adRequest)
+        if (BuildConfig.BUILD_TYPE != "release") {
+            requestConfigurationBuilder.setTestDeviceIds(Arrays.asList("A53139D0DB2A88853EAB92F23E31DDFB"))
+        }
+        MobileAds.setRequestConfiguration(requestConfigurationBuilder.build())
+        MobileAds.initialize(this)
+        adView.loadAd(AdRequest.Builder().build())
     }
 
     /**
@@ -310,13 +305,15 @@ class DevicePopupActivity : AppCompatActivity() {
     }
 
     private fun setupRatingDialog() {
-
         val ratingDialog = RatingDialog.Builder(this)
-            .session(10)
+            .session(1)
             .threshold(3f)
             .title(getString(R.string.rating_dialog_title))
             .positiveButtonText(getString(R.string.rating_positive_button_text))
             .negativeButtonText(getString(R.string.rating_negative_button_text))
+            .ratingBarColor(R.color.bestBlue)
+            .positiveButtonTextColor(R.color.bestBlue)
+            .negativeButtonTextColor(R.color.grey_500)
             .onRatingBarFormSumbit {
                 // TODO send an email instead
                 val msg = "User feedback: $it"

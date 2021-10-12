@@ -53,14 +53,7 @@ class PreferenceActivity : AppCompatActivity() {
 
     private fun setupAds() {
         val adView: AdView = findViewById(R.id.adView)
-
-        val adRequest =
-            if (BuildConfig.BUILD_TYPE == "release") {
-                AdRequest.Builder().build()
-            } else {
-                AdRequest.Builder().addTestDevice("652EBD92D970E40C0A6C7619AE8FA570").build()
-            }
-        adView.loadAd(adRequest)
+        adView.loadAd(AdRequest.Builder().build())
     }
 
     private fun getDefaultNightMode(
