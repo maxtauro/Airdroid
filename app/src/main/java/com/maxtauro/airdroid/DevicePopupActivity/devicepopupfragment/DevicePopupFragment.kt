@@ -152,6 +152,8 @@ class DevicePopupFragment :
             actionIntentsRelay.accept(ScanTimeoutToastShownIntent)
         }
 
+        // Checking if previous view model had the airpods not connected and the new view model has the airpods connected
+        // Only setup auto dismiss is transitioning from disconnected to connected state
         if (!this.viewModel.airpods.isConnected && viewModel.airpods.isConnected) {
             setupAutoDismiss()
         }
