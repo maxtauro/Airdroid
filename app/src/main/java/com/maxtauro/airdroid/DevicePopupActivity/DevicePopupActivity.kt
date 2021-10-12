@@ -306,7 +306,7 @@ class DevicePopupActivity : AppCompatActivity() {
 
     private fun setupRatingDialog() {
         val ratingDialog = RatingDialog.Builder(this)
-            .session(1)
+            .session(10)
             .threshold(3f)
             .title(getString(R.string.rating_dialog_title))
             .positiveButtonText(getString(R.string.rating_positive_button_text))
